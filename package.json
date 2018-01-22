@@ -21,8 +21,9 @@
     "API"
   ],
   "dependencies": {
+    "@barchart/common-client-js": "1.0.0",
     "@barchart/common-js": "3.2.6",
-    "@barchart/common-client-js": "1.0.0"
+    "@barchart/watchlist-api-common": "^1.1.5"
   },
   "devDependencies": {
     "babelify": "^8.0.0",
