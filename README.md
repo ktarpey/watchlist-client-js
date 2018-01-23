@@ -1,5 +1,5 @@
 # @barchart/watchlist-client-js
-## JavaScript ibrary for interfacing with Barchart's Watchlist API
+## JavaScript library for interfacing with Barchart's Watchlist API
 
 ## Documentation
 
