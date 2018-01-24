@@ -51,7 +51,7 @@ gulp.task('document', function (cb) {
 });
 
 gulp.task('commit-changes', () => {
-	return gulp.src([ './', './test/', './package.json', './lib/index.js', './example/browser/example.js', './test/SpecRunner.js' ])
+	return gulp.src([ './', './test/', './package.json', './lib/index.js', './example/example.js', './test/SpecRunner.js' ])
 		.pipe(git.add())
 		.pipe(git.commit('Release. Bump version number'));
 });
@@ -77,7 +77,7 @@ gulp.task('build-example-bundle', function() {
 		.bundle()
 		.pipe(source('example.js'))
 		.pipe(buffer())
-		.pipe(gulp.dest('./example/browser'));
+		.pipe(gulp.dest('./example'));
 });
 
 gulp.task('build-test-bundle', () => {
