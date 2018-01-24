@@ -33,6 +33,14 @@ gulp.task('bump-version', () => {
 		.pipe(gulp.dest('./'));
 });
 
+gulp.task('embed-version', function () {
+	var version = getVersionFromPackage();
+
+	return gulp.src(['./lib/index.js'])
+		.pipe(replace(/(version:\s*')([0-9]+\.[0-9]+\.[0-9]+)(')/g, '$1' + version + '$3'))
+		.pipe(gulp.dest('./lib/sms/'));
+});
+
 gulp.task('document', function (cb) {
 	exec('jsdoc . -c jsdoc.json -r -d docs', (error, stdout, stderr) => {
 		console.log(stdout);
@@ -43,7 +51,7 @@ gulp.task('document', function (cb) {
 });
 
 gulp.task('commit-changes', () => {
-	return gulp.src([ './', './test/', './package.json' ])
+	return gulp.src([ './', './test/', './package.json', './lib/index.js', './example/browser/example.js', './test/SpecRunner.js' ])
 		.pipe(git.add())
 		.pipe(git.commit('Release. Bump version number'));
 });
@@ -62,6 +70,14 @@ gulp.task('create-tag', (cb) => {
 
 		git.push('origin', 'master', { args: '--tags' }, cb);
 	});
+});
+
+gulp.task('build-example-bundle', function() {
+	return browserify('./lib/index.js', { standalone: 'Barchart.Watchlist' })
+		.bundle()
+		.pipe(source('example.js'))
+		.pipe(buffer())
+		.pipe(gulp.dest('./example/browser'));
 });
 
 gulp.task('build-test-bundle', () => {
@@ -103,6 +119,8 @@ gulp.task('release', (cb) => {
 		'execute-tests',
 		'document',
 		'bump-version',
+		'embed-version',
+		'build-example-bundle',
 		'commit-changes',
 		'push-changes',
 		'create-tag',
