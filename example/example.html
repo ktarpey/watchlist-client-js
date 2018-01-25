@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+
+    <title>Barchart Watchlist Client API</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <link rel="stylesheet" href="example.css" type="text/css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.23.0/polyfill.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script src="example.js"></script>
+
+    <script type="text/javascript">
+		'use strict';
+
+        var defaultConfiguration = Barchart.Watchlist.WatchlistGatewayConfiguration.DEFAULT;
+
+		var PageModel = function() {
+			var that = this;
+
+			that.gateway = null;
+
+			that.host = ko.observable(defaultConfiguration.host);
+			that.user = ko.observable('xxx');
+			that.secret = ko.observable('yyy');
+			
+			that.connected = ko.observable(false);
+			that.connecting = ko.observable(false);
+
+			that.console = ko.observableArray([ ]);
+
+			that.clientVersion = ko.observable();
+			that.serverVersion = ko.observable();
+
+			that.activeTemplate = ko.observable('disconnected-template');
+
+			that.symbol = ko.observable('');
+
+			that.configuration = ko.computed(function() {
+                var host = that.host();
+                var user = that.user();
+                var secret = that.secret();
+                
+                var returnRef;
+                
+                if (host && user && secret) {
+                	returnRef = new Barchart.Watchlist.WatchlistGatewayConfiguration(host, 'https', 443, function() {
+                	    return 'xxxxxxxxxxxxxxxxxx';	
+                    });
+                } else {
+                	returnRef = null;
+                }
+                
+                return returnRef;
+			});
+			that.canConnect = ko.computed(function() {
+				return !that.connecting() && !that.connected();
+			});
+			that.canDisconnect = ko.computed(function() {
+				return that.connected();
+			});
+
+			var writeConsoleText = function(text) {
+				that.console.push(text);
+			};
+
+			var writeConsoleObject = function(data) {
+				that.console.push(JSON.stringify(data, null, 2));
+			};
+
+			that.connect = function() {
+				that.disconnect();
+
+                var configuration = that.configuration();
+
+				if (!configuration) {
+					return;
+				}
+
+				that.connecting(true);
+
+				that.gateway = new Barchart.Watchlist.WatchlistGateway();
+
+                that.gateway.start(configuration)
+                    .then((started) => {
+	                    var action = 'watchlistGateway.getServerVersion()';
+
+	                    return that.gateway.getServerVersion()
+                            .then(function(version) {
+                                writeConsoleText(action);
+                                writeConsoleObject(version);
+    
+                                that.clientVersion(Barchart.Watchlist.version);
+                                that.serverVersion(version);
+
+                                that.connecting(false);
+                                that.connected(true);
+
+                                that.activeTemplate('watchlist-console-template');
+                            }).catch((e) => {
+                                writeConsoleText(action);
+                                writeConsoleObject('');
+                            });
+                    });
+			};
+			that.disconnect = function() {
+				if (that.gateway === null) {
+					return;
+                }
+
+                that.gateway.dispose();
+				that.gateway = null;
+
+				that.connecting(false);
+				that.connected(false);
+
+				that.activeTemplate('disconnected-template');
+			};
+			that.readUser = function() {
+				that.console.removeAll();
+
+				var action = 'watchlistGateway.readUser()';
+
+				return watchlistGateway.readUser()
+                    .then(function(watchlistUser) {
+                        writeConsoleText(action);
+                        writeConsoleObject(lookupResponse);
+                    }).catch((e) => {
+                        writeConsoleText(action);
+                        writeConsoleText(e);
+                    });
+			};
+			that.writeUser = function() {
+
+            };
+            that.addSymbol = function() {
+
+			};
+            that.removeSymbol = function() {
+
+            };
+
+			that.handleLoginKeypress = function(d, e) {
+				var enterKey = e.keyCode === 13;
+
+				if (enterKey) {
+					that.connect();
+				}
+
+				return !enterKey;
+			};
+		};
+
+		$(document).ready(function() {
+			var pageModel = new PageModel();
+
+            ko.applyBindings(pageModel, $('body')[0]);
+		});
+    </script>
+
+    <script type="text/html" id="disconnected-template">
+        <div class="container-center-outer">
+            <div class="container-center-inner">
+                <form class="form-horizontal login">
+                    <div class="form-group" data-bind="css: { 'has-error': host().length === 0 }, event: { keypress: handleLoginKeypress }">
+                        <label class="pull-left">Host</label>
+                        <input class="form-control" data-bind="textInput: host" type="text" placeholder="Server">
+                    </div>
+                    <div class="form-group" data-bind="css: { 'has-error': user().length === 0 }, event: { keypress: handleLoginKeypress }">
+                        <label class="pull-left">User</label>
+                        <input class="form-control" data-bind="textInput: user" type="text" placeholder="User">
+                    </div>
+                    <div class="form-group" data-bind="css: { 'has-error': secret().length === 0 }, event: { keypress: handleLoginKeypress }">
+                        <label class="pull-left">Secret</label>
+                        <input class="form-control" data-bind="textInput: secret" type="text" placeholder="Secret">
+                    </div>
+                    <div class="form-group buttons">
+                        <button class="form-control btn btn-primary" type="button" data-bind="click: connect, enable: canConnect">Connect</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/html" id="watchlist-header-template">
+        <div class="pull-left">
+            <h4 class="pull-left">Barchart Watchlist API</h4>
+
+            <div class="header-action-buttons pull-right form-inline" data-bind="visible: connected">
+                <input class="form-control" data-bind="value: symbol" type="text" placeholder="Symbol">
+                <span class="text-button glyphicon glyphicon-plus" data-bind="click: addSymbol"></span>
+                <span class="text-button glyphicon glyphicon-remove" data-bind="click: removeSymbol"></span>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/html" id="watchlist-console-template">
+        <div data-bind="foreach: console">
+            <pre data-bind="text: $data" style="font-size: 10px;"></pre>
+        </div>
+    </script>
+
+    <script type="text/html" id="footer-template">
+        <!-- ko if: configuration() !== null -->
+        <h4 class="pull-left" data-bind="visible: connected">
+            <span><span data-bind="text: configuration().host"></span>:<span data-bind="text: configuration().port"></span></span>
+        </h4>
+        <h4 class="pull-right">Client Version: <span data-bind="text: clientVersion"></span>; API Version: <span data-bind="text: serverVersion"></span></h4>
+        <!-- /ko -->
+    </script>
+</head>
+<body>
+<div class="header" data-bind="template: { name: 'watchlist-header-template' }"></div>
+<div class="main" data-bind="template: { name: activeTemplate }"></div>
+<div class="footer" data-bind="template: { name: 'footer-template' }">
+</div>
+</body>
+</html>
