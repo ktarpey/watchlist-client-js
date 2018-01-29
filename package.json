@@ -21,7 +21,7 @@
     "API"
   ],
   "dependencies": {
-    "@barchart/common-client-js": "1.0.14",
+    "@barchart/common-client-js": "1.0.22",
     "@barchart/common-js": "3.2.6",
     "@barchart/watchlist-api-common": "1.1.5"
   },
