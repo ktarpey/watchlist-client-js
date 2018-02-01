@@ -99,6 +99,8 @@ module.exports = function () {
 				var _this4 = this;
 
 				return Promise.resolve().then(function () {
+					debugger;
+
 					assert.argumentIsRequired(watchlistUser, 'watchlistUser', WatchlistUser, 'WatchlistUser');
 
 					checkStart.call(_this4);
@@ -144,6 +146,8 @@ module.exports = function () {
 	}(Disposable);
 
 	var requestInterceptorForSerialization = RequestInterceptor.fromDelegate(function (request) {
+		debugger;
+
 		assert.argumentIsRequired(request.data, 'request.data', WatchlistUser, 'WatchlistUser');
 
 		request.data = request.data.toJSObj();
@@ -3369,7 +3373,6 @@ module.exports = (() => {
 		    assert.argumentIsRequired(id, 'id', String);
 
 			this._id = id;
-			this._name = undefined;
 
 			this._entries = [];
 		}
@@ -3386,28 +3389,6 @@ module.exports = (() => {
 		}
 
 		/**
-		 * Gets the watchlist's name
-		 *
-		 * @public
-		 * @returns {String}
-		 */
-		get name() {
-			return this._name;
-		}
-
-		/**
-		 * Sets watchlist name.
-		 *
-		 * @public
-		 * @param {String} value
-		 */
-		set name(value) {
-		    assert.argumentIsRequired(value, 'value', String);
-
-			this._name = value;
-		}
-
-		/**
 		 * Gets the watchlist's entries.
 		 *
 		 * @public
@@ -3421,12 +3402,26 @@ module.exports = (() => {
 		/**
          * Adds a new {@link WatchlistEntry} to the end of the list.
          *
+		 * @public
 		 * @param {WatchlistEntry} entry
 		 */
 		addEntry(entry) {
 		    assert.argumentIsRequired(entry, 'entry', Object);
 
 			this._entries.push(entry);
+		}
+
+		/**
+		 * Removes a {@link WatchlistEntry} from the list. If no matching
+		 * entry can be found, nothing happens.
+		 *
+		 * @public
+		 * @param {WatchlistEntry} entry
+		 */
+		removeEntry(entry) {
+			assert.argumentIsRequired(entry, 'entry', Object);
+
+			this._entries = this._entries.filter((e) => e !== entry);
 		}
 
 		/**
@@ -3473,7 +3468,7 @@ module.exports = (() => {
 		}
 
 		toString() {
-			return '[Watchlist]'
+			return '[Watchlist]';
 		}
 	}
 
@@ -3661,7 +3656,7 @@ module.exports = (() => {
 		}
 
 		/**
-         * Adds (or overwrites) a watchlist item.
+         * Adds (or overwrites) a watchlist.
          *
 		 * @param {Watchlist} watchlist
 		 */
@@ -3669,6 +3664,40 @@ module.exports = (() => {
 			assert.argumentIsRequired(watchlist, 'watchlist', Watchlist, 'Watchlist');
 
 			this._watchlists[watchlist.id] = watchlist;
+		}
+
+		/**
+		 * Creates a new {@link Watchlist} for the user and returns it. If the watchlist
+		 * already exists, it is returned.
+		 *
+		 * @public
+		 * @param {String} id
+		 * @returns {Watchlist}
+		 */
+		createWatchlist(id) {
+			assert.argumentIsRequired(id, 'id', String);
+
+			if (!this._watchlists.hasOwnProperty(id)) {
+				this._watchlists[id] = new Watchlist(id);
+			}
+
+			return this._watchlists[id];
+		}
+
+		/**
+		 * Deletes an existing {@link Watchlist} for the user. If no matching watchlist
+		 * exists, nothing happens.
+		 *
+		 * @public
+		 * @param {String} id
+		 * @returns {Watchlist}
+		 */
+		deleteWatchlist(id) {
+			assert.argumentIsRequired(id, 'id', String);
+
+			if (this._watchlists.hasOwnProperty(id)) {
+				delete this._watchlists[id];
+			}
 		}
 
 		/**
@@ -3750,7 +3779,7 @@ module.exports = (() => {
 		}
 
 		toString() {
-			return '[WatchlistUser]'
+			return '[WatchlistUser]';
 		}
 	}
 
