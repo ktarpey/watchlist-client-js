@@ -29,8 +29,7 @@
 			that.gateway = null;
 
 			that.host = ko.observable(defaultConfiguration.host);
-			that.user = ko.observable('xxx');
-			that.secret = ko.observable('yyy');
+			that.user = ko.observable('14172034');
 			
 			that.connected = ko.observable(false);
 			that.connecting = ko.observable(false);
@@ -44,16 +43,43 @@
 
 			that.symbol = ko.observable('');
 
+			that.currentTokenPromise = null;
+			that.currentTokenInterval = null;
+
+			var refreshToken = function(user) {
+				var action = `watchlistGateway.getJwtTokenForDevelopment(${user})`;
+
+				return that.gateway.getJwtTokenForDevelopment(user)
+                    .then((token) => {
+                        writeConsoleText(action);
+                        writeConsoleObject(token);
+
+                        return token;
+                    }).catch((e) => {
+                        writeConsoleText(action);
+                        writeConsoleObject(e);
+
+                        return false;
+                    });
+			};
+
 			that.configuration = ko.computed(function() {
                 var host = that.host();
                 var user = that.user();
-                var secret = that.secret();
                 
                 var returnRef;
-                
-                if (host && user && secret) {
+
+                if (host && user) {
                 	returnRef = new Barchart.Watchlist.WatchlistGatewayConfiguration(host, 'https', 443, function() {
-                	    return 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWJzY3JpYmVyU3RhdHVzIjpmYWxzZSwiZXhwIjoxNTE3MDAwNzI0LCJhcHBVc2VySWQiOjExMzY5MjA2N30.Bam_NzF54Pf5bG1mYCSqU5LbUkjJRgy9CMAtEcSDRqhW_nnUWuP9DxpLT2O9O9HQfwpAFtDPfUPgM0lNyLRt9z-LfGDJv8Ol4zFUpWlWTC1LxjSAgn4fekFYXXjmviJDKv6bScndZygNe_yW_cd4m5WMdizCWdbBY22_tqgiEQ7le3rbXwoEKzrXSCQxp4N9PyQ0zXtv7dZe0ktjokLD0z2FMzGpeDiRoKQxB1DTy4gLDkdqITYww1Ibw0lb15l9qYHUNNO68LninjcaFzcicOyyGI1WIFdvUc_ryByok-1zFqAellMlsUwKvQPQtb7reBtq-mFKnyB885PghKK61g';
+		                if (that.currentTokenPromise === null) {
+		                	that.currentTokenPromise = refreshToken(user);
+
+                            that.currentTokenInterval = window.setInterval(function() {
+                            	that.currentTokenPromise = refreshToken(user);
+                            }, 300000);
+		                }
+
+                        return that.currentTokenPromise;
                     });
                 } else {
                 	returnRef = null;
@@ -91,9 +117,9 @@
 
                 that.gateway.start(configuration)
                     .then((started) => {
-	                    var action = 'watchlistGateway.getServerVersion()';
+	                    var action = 'watchlistGateway.getServerMetadata()';
 
-	                    return that.gateway.getServerVersion()
+	                    return that.gateway.getServerMetadata()
                             .then(function(data) {
 	                            writeConsoleText(action);
 	                            writeConsoleObject(data);
@@ -124,8 +150,22 @@
 					return;
                 }
 
-                that.gateway.dispose();
-				that.gateway = null;
+                if (that.currentTokenPromise) {
+	                that.currentTokenPromise = null;
+                }
+
+                if (that.currentTokenInterval) {
+	                window.clearInterval(that.currentTokenInterval);
+
+	                that.currentTokenInterval = null;
+                }
+
+                if (that.gateway) {
+	                that.gateway.dispose();
+	                that.gateway = null;
+                }
+
+				that.console.removeAll();
 
 				that.connecting(false);
 				that.connected(false);
@@ -141,13 +181,9 @@
 
 				return that.gateway.readUser()
                     .then(function(watchlistUser) {
-                    	debugger;
-
                         writeConsoleText(action);
-                        writeConsoleObject(watchlistUser);
+                        writeConsoleObject(watchlistUser.toJSObj());
                     }).catch((e) => {
-					    debugger;
-
                         writeConsoleText(action);
                         writeConsoleText(e);
                     });
@@ -192,10 +228,6 @@
                         <label class="pull-left">User</label>
                         <input class="form-control" data-bind="textInput: user" type="text" placeholder="User">
                     </div>
-                    <div class="form-group" data-bind="css: { 'has-error': secret().length === 0 }, event: { keypress: handleLoginKeypress }">
-                        <label class="pull-left">Secret</label>
-                        <input class="form-control" data-bind="textInput: secret" type="text" placeholder="Secret">
-                    </div>
                     <div class="form-group buttons">
                         <button class="form-control btn btn-primary" type="button" data-bind="click: connect, enable: canConnect">Connect</button>
                     </div>
@@ -206,12 +238,10 @@
 
     <script type="text/html" id="watchlist-header-template">
         <div class="pull-left">
-            <h4 class="pull-left">Barchart Watchlist API</h4>
+            <h4 class="pull-left">Barchart Watchlist API <span data-bind="visible: connected">(<span data-bind="text: user"></span>)</span></h4>
 
             <div class="header-action-buttons pull-right form-inline" data-bind="visible: connected">
-                <input class="form-control" data-bind="value: symbol" type="text" placeholder="Symbol">
-                <span class="text-button glyphicon glyphicon-plus" data-bind="click: addSymbol"></span>
-                <span class="text-button glyphicon glyphicon-remove" data-bind="click: removeSymbol"></span>
+                <span class="text-button glyphicon glyphicon-remove" data-bind="click: disconnect"></span>
             </div>
         </div>
     </script>

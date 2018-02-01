@@ -1,7 +1,7 @@
 {
   "name": "@barchart/common-client-js",
   "version": "1.0.0",
-  "description": "JavaScript ibrary for interfacing with Barchart's Watchlist API",
+  "description": "JavaScript library for interfacing with Barchart's Watchlist API",
   "author": {
     "name": "Bryan Ingle",
     "email": "bryan.ingle@barchart.com",
@@ -21,7 +21,7 @@
     "API"
   ],
   "dependencies": {
-    "@barchart/common-client-js": "1.0.22",
+    "@barchart/common-client-js": "1.0.23",
     "@barchart/common-js": "3.2.6",
     "@barchart/watchlist-api-common": "1.1.5"
   },

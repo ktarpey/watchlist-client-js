@@ -18,6 +18,7 @@ var EndpointBuilder = require('@barchart/common-client-js/http/builders/Endpoint
     PathParameterType = require('@barchart/common-client-js/http/definitions/PathParameterType'),
     RequestInterceptor = require('@barchart/common-client-js/http/interceptors/RequestInterceptor'),
     ResponseInterceptor = require('@barchart/common-client-js/http/interceptors/ResponseInterceptor'),
+    QueryParameterType = require('@barchart/common-client-js/http/definitions/QueryParameterType'),
     VerbType = require('@barchart/common-client-js/http/definitions/VerbType');
 
 var WatchlistUser = require('@barchart/watchlist-api-common/WatchlistUser');
@@ -48,7 +49,9 @@ module.exports = function () {
 			_this._readUserEndpoint = null;
 			_this._writeUserEndpoint = null;
 
-			_this._readMetadataEndpoint = null;
+			_this._readServerMetadataEndpoint = null;
+
+			_this._readJwtTokenForDevelopmentEndpoint = null;
 			return _this;
 		}
 
@@ -68,7 +71,9 @@ module.exports = function () {
 
 							_this2._writeUserEndpoint = EndpointBuilder.for('write-user').withVerb(VerbType.PUT).withProtocol(configurationToUse.protocol).withHost(configurationToUse.host).withPort(configurationToUse.port).withPathParameter('v1', PathParameterType.STATIC).withPathParameter('user', PathParameterType.STATIC).withRequestInterceptor(configuration.requestInterceptorForJwt).withRequestInterceptor(requestInterceptorForSerialization).endpoint;
 
-							_this2._readMetadataEndpoint = EndpointBuilder.for('read-metadata').withVerb(VerbType.GET).withProtocol(configurationToUse.protocol).withHost(configurationToUse.host).withPort(configurationToUse.port).withPathParameter('v1', PathParameterType.STATIC).withPathParameter('server', PathParameterType.STATIC).withResponseInterceptor(ResponseInterceptor.JSON).endpoint;
+							_this2._readServerMetadataEndpoint = EndpointBuilder.for('read-metadata').withVerb(VerbType.GET).withProtocol(configurationToUse.protocol).withHost(configurationToUse.host).withPort(configurationToUse.port).withPathParameter('v1', PathParameterType.STATIC).withPathParameter('server', PathParameterType.STATIC).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
+
+							_this2._readJwtTokenForDevelopmentEndpoint = EndpointBuilder.for('read-jwt-token-for-development').withVerb(VerbType.GET).withProtocol(configurationToUse.protocol).withHost(configurationToUse.host).withPort(configurationToUse.port).withPathParameter('v1', PathParameterType.STATIC).withPathParameter('token', PathParameterType.STATIC).withQueryParameter('userId', 'userId', QueryParameterType.VARIABLE, false).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
 
 							return _this2._started = true;
 						});
@@ -85,7 +90,7 @@ module.exports = function () {
 				return Promise.resolve().then(function () {
 					checkStart.call(_this3);
 
-					return Gateway.invoke(_this3._readUserEndpoint).then(function (response) {});
+					return Gateway.invoke(_this3._readUserEndpoint);
 				});
 			}
 		}, {
@@ -102,14 +107,27 @@ module.exports = function () {
 				});
 			}
 		}, {
-			key: 'getServerVersion',
-			value: function getServerVersion() {
+			key: 'getServerMetadata',
+			value: function getServerMetadata() {
 				var _this5 = this;
 
 				return Promise.resolve().then(function () {
 					checkStart.call(_this5);
 
-					return Gateway.invoke(_this5._readMetadataEndpoint);
+					return Gateway.invoke(_this5._readServerMetadataEndpoint);
+				});
+			}
+		}, {
+			key: 'getJwtTokenForDevelopment',
+			value: function getJwtTokenForDevelopment(userId) {
+				var _this6 = this;
+
+				return Promise.resolve().then(function () {
+					assert.argumentIsRequired(userId, 'userId', String);
+
+					checkStart.call(_this6);
+
+					return Gateway.invoke(_this6._readJwtTokenForDevelopmentEndpoint, { userId: userId });
 				});
 			}
 		}, {
@@ -134,7 +152,7 @@ module.exports = function () {
 	});
 
 	var responseInterceptorForDeserialization = ResponseInterceptor.fromDelegate(function (response) {
-		return WatchlistUser.fromJSObj(response.data);
+		return WatchlistUser.parse(response.data);
 	});
 
 	function checkStart() {
@@ -150,7 +168,7 @@ module.exports = function () {
 	return WatchlistGateway;
 }();
 
-},{"./WatchlistGatewayConfiguration":2,"@barchart/common-client-js/http/Gateway":4,"@barchart/common-client-js/http/builders/EndpointBuilder":5,"@barchart/common-client-js/http/definitions/PathParameterType":11,"@barchart/common-client-js/http/definitions/VerbType":16,"@barchart/common-client-js/http/interceptors/RequestInterceptor":19,"@barchart/common-client-js/http/interceptors/ResponseInterceptor":20,"@barchart/common-js/lang/Disposable":21,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25,"@barchart/watchlist-api-common/WatchlistUser":29}],2:[function(require,module,exports){
+},{"./WatchlistGatewayConfiguration":2,"@barchart/common-client-js/http/Gateway":4,"@barchart/common-client-js/http/builders/EndpointBuilder":5,"@barchart/common-client-js/http/definitions/PathParameterType":11,"@barchart/common-client-js/http/definitions/QueryParameterType":15,"@barchart/common-client-js/http/definitions/VerbType":16,"@barchart/common-client-js/http/interceptors/RequestInterceptor":19,"@barchart/common-client-js/http/interceptors/ResponseInterceptor":20,"@barchart/common-js/lang/Disposable":21,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25,"@barchart/watchlist-api-common/WatchlistUser":29}],2:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -267,7 +285,7 @@ module.exports = function () {
 		return WatchlistGatewayConfiguration;
 	}();
 
-	var defaultConfiguration = new WatchlistGatewayConfiguration('m00df5zdr2.execute-api.us-east-1.amazonaws.com/dev', 'https');
+	var defaultConfiguration = new WatchlistGatewayConfiguration('54eorn43h5.execute-api.us-east-1.amazonaws.com/dev', 'https');
 
 	return WatchlistGatewayConfiguration;
 }();
@@ -2251,7 +2269,8 @@ module.exports = function () {
 			}
 
 			/**
-    * A response interceptor that returns parsed JSON response.
+    * A response interceptor returns only the data payload in the format
+    * specified by the response's "content-type" header.
     *
     * @public
     * @static
@@ -2259,9 +2278,9 @@ module.exports = function () {
     */
 
 		}, {
-			key: 'JSON',
+			key: 'DATA',
 			get: function get() {
-				return responseInterceptorJson;
+				return responseInterceptorData;
 			}
 		}]);
 
@@ -2299,7 +2318,7 @@ module.exports = function () {
 
 	var responseInterceptorEmpty = new ResponseInterceptor();
 
-	var responseInterceptorJson = new DelegateResponseInterceptor(function (response) {
+	var responseInterceptorData = new DelegateResponseInterceptor(function (response) {
 		return response.data;
 	});
 
