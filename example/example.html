@@ -385,6 +385,7 @@
     </script>
 
     <script type="text/html" id="watchlist-view-template">
+        <!-- ko if: watchlist() !== null -->
         <table class="table table-striped small">
             <thead>
             <th class="left col-md-1"></th>
@@ -394,6 +395,7 @@
             </thead>
             <tbody data-bind="template: { name: 'watchlist-entry-template', foreach: watchlist().entries }"></tbody>
         </table>
+        <!-- /ko -->
     </script>
 
     <script type="text/html" id="watchlist-entry-template">
