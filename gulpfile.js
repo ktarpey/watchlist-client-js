@@ -9,6 +9,7 @@ const browserify = require('browserify'),
 	glob = require('glob'),
 	jasmine = require('gulp-jasmine'),
 	jshint = require('gulp-jshint'),
+	replace = require('gulp-replace'),
 	runSequence = require('run-sequence'),
 	source = require('vinyl-source-stream'),
 	util = require('gulp-util');
