@@ -486,7 +486,7 @@ module.exports = function () {
 		WatchlistGateway: WatchlistGateway,
 		WatchlistJwtProvider: WatchlistJwtProvider,
 		WatchlistServiceAddress: WatchlistServiceAddress,
-		version: '1.0.3'
+		version: '1.0.4'
 	};
 }();
 
