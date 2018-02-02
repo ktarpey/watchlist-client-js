@@ -1,5 +1,5 @@
 {
-  "name": "@barchart/common-client-js",
+  "name": "@barchart/watchlist-client-js",
   "version": "1.0.1",
   "description": "JavaScript library for interfacing with Barchart's Watchlist API",
   "author": {
