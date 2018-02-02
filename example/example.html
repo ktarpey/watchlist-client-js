@@ -21,14 +21,14 @@
     <script type="text/javascript">
 		'use strict';
 
-        var defaultConfiguration = Barchart.Watchlist.WatchlistGatewayConfiguration.DEFAULT;
+        var serviceAddress = Barchart.Watchlist.WatchlistServiceAddress.DEVELOPMENT;
 
 		var PageModel = function() {
 			var that = this;
 
 			that.gateway = null;
 
-			that.host = ko.observable(defaultConfiguration.host);
+			that.host = ko.observable(serviceAddress.host);
 			that.user = ko.observable('14172034');
 
 			that.watchlistUser = ko.observable(null);
@@ -59,49 +59,15 @@
 
 			that.mode = ko.observable('View Console');
 
-			that.currentTokenPromise = null;
-			that.currentTokenInterval = null;
+			that.address = ko.computed(function() {
+				const user = that.user();
+				const host = that.host();
 
-			var refreshToken = function(user) {
-				var action = `watchlistGateway.getJwtTokenForDevelopment(${user})`;
-
-				return that.gateway.getJwtTokenForDevelopment(user)
-                    .then((token) => {
-                        writeConsoleText(action);
-                        writeConsoleObject(token);
-
-                        return token;
-                    }).catch((e) => {
-                        writeConsoleText(action);
-                        writeConsoleObject(e);
-
-                        return false;
-                    });
-			};
-
-			that.configuration = ko.computed(function() {
-                var host = that.host();
-                var user = that.user();
-                
-                var returnRef;
-
-                if (host && user) {
-                	returnRef = new Barchart.Watchlist.WatchlistGatewayConfiguration(host, 'https', 443, function() {
-		                if (that.currentTokenPromise === null) {
-		                	that.currentTokenPromise = refreshToken(user);
-
-                            that.currentTokenInterval = window.setInterval(function() {
-                            	that.currentTokenPromise = refreshToken(user);
-                            }, 300000);
-		                }
-
-                        return that.currentTokenPromise;
-                    });
+				if (user && host) {
+					return new Barchart.Watchlist.WatchlistServiceAddress('https', that.host(), 443)
                 } else {
-                	returnRef = null;
+					return null;
                 }
-                
-                return returnRef;
 			});
 
 			that.canConnect = ko.computed(function() {
@@ -122,9 +88,9 @@
 			that.connect = function() {
 				that.disconnect();
 
-                var configuration = that.configuration();
+                var address = that.address();
 
-				if (!configuration) {
+				if (!address) {
 					return;
 				}
 
@@ -132,34 +98,31 @@
 
 				that.gateway = new Barchart.Watchlist.WatchlistGateway();
 
-                that.gateway.start(configuration)
-                    .then((started) => {
-	                    var action = 'watchlistGateway.getServerMetadata()';
+				var action = 'watchlistGateway.start()';
 
-	                    return that.gateway.getServerMetadata()
-                            .then(function(data) {
-	                            writeConsoleText(action);
-	                            writeConsoleObject(data);
+                that.gateway.start(address, Barchart.Watchlist.WatchlistJwtProvider.forDevelopment(address, that.user()))
+                    .then((metadata) => {
+                        writeConsoleText(action);
+                        writeConsoleObject(metadata);
 
-	                            that.connecting(false);
-	                            that.connected(true);
+                        that.connecting(false);
+                        that.connected(true);
 
-                                that.clientVersion(Barchart.Watchlist.version);
-                                that.serverVersion(data.semver);
+                        that.clientVersion(Barchart.Watchlist.version);
+                        that.serverVersion(metadata.semver);
 
-                                that.setConsoleMode();
+                        that.setConsoleMode();
 
-                                return true;
-                            }).catch((e) => {
-                                writeConsoleText(action);
-                                writeConsoleObject(e);
+                        return true;
+                    }).catch((e) => {
+                        writeConsoleText(action);
+                        writeConsoleObject(e);
 
-                                return false;
-                            }).then((read) => {
-	                    	    if (read) {
-			                        return that.readUser(false);
-		                        }
-                            });
+                        return false;
+                    }).then((read) => {
+                        if (read) {
+                            return that.readUser(false);
+                        }
                     });
 			};
 			that.disconnect = function() {
@@ -530,9 +493,9 @@
 
 
     <script type="text/html" id="footer-template">
-        <!-- ko if: configuration() !== null -->
+        <!-- ko if: address() !== null -->
         <h4 class="pull-left" data-bind="visible: connected">
-            <span><span data-bind="text: configuration().host"></span>:<span data-bind="text: configuration().port"></span></span>
+            <span><span data-bind="text: address().host"></span>:<span data-bind="text: address().port"></span></span>
         </h4>
         <h4 class="pull-right">Client Version: <span data-bind="text: clientVersion"></span>; API Version: <span data-bind="text: serverVersion"></span></h4>
         <!-- /ko -->
