@@ -39,6 +39,8 @@
 				return that.watchlist() !== null ? that.watchlist().id : '';
             });
 
+			that.watchlistName = ko.observable('');
+
 			that.connected = ko.observable(false);
 			that.connecting = ko.observable(false);
 
@@ -191,6 +193,7 @@
 
 				that.activeTemplate('disconnected-template');
 			};
+
 			that.readUser = function(clear) {
 				if (clear) {
 					that.console.removeAll();
@@ -220,6 +223,8 @@
                     }).catch((e) => {
                         writeConsoleText(action);
                         writeConsoleText(e);
+
+                        debugger;
 
                         that.watchlistUser(null);
                         that.watchlists([ ]);
@@ -256,6 +261,7 @@
 
                 that.activeTemplate('watchlist-console-template');
             };
+
 			that.setWatchlistMode = function() {
 				if (!that.connected()) {
 					return;
@@ -265,7 +271,6 @@
 
 				that.activeTemplate('watchlist-view-template');
             };
-
 			that.setWatchlist = function(watchlist) {
 				if (!that.connected()) {
 					return;
@@ -273,9 +278,102 @@
 
 				that.watchlist(watchlist);
             };
+			that.addWatchlist = function() {
+				if (!that.connected()) {
+					return;
+				}
 
-            that.addEntry = function() {
+				var id = that.watchlistName();
 
+				if (!id) {
+					return;
+                }
+
+				const watchlistUser = that.watchlistUser();
+
+				if (watchlistUser) {
+					const watchlist = watchlistUser.createWatchlist(id);
+					const watchlists = [ ];
+
+					for (var key in watchlistUser.watchlists) {
+						watchlists.push(watchlistUser.watchlists[key]);
+					}
+
+					that.watchlists(Object.values(watchlists));
+                    that.watchlist(watchlist);
+
+					that.watchlistUser.valueHasMutated();
+					that.watchlists.valueHasMutated();
+					that.watchlist.valueHasMutated();
+
+					that.watchlistName('');
+                }
+            };
+            that.removeWatchlist = function() {
+	            if (!that.connected()) {
+		            return;
+	            }
+
+	            var id = that.watchlistName();
+
+	            if (!id) {
+		            return;
+	            }
+
+	            const watchlistUser = that.watchlistUser();
+
+	            if (watchlistUser) {
+		            watchlistUser.removeWatchlist(id);
+
+		            const watchlists = [ ];
+
+		            for (var key in watchlistUser.watchlists) {
+			            watchlists.push(watchlistUser.watchlists[key]);
+		            }
+
+		            that.watchlists(Object.values(watchlists));
+
+		            that.watchlistUser.valueHasMutated();
+		            that.watchlists.valueHasMutated();
+
+		            var watchlist = that.watchlist();
+
+		            if (watchlistUser && watchlist.id === id) {
+		            	if (watchlists.length !== 0) {
+		            		watchlist = watchlists[0];
+                        } else {
+		            		watchlist = null;
+                        }
+
+                        that.watchlist(watchlist);
+			            that.watchlist.valueHasMutated();
+                    }
+
+		            that.watchlistName('');
+	            }
+            };
+
+            that.addSymbol = function() {
+	            if (!that.connected()) {
+		            return;
+	            }
+
+	            if (!that.watchlist()) {
+		            return;
+	            }
+
+	            var symbol = that.symbol();
+
+	            if (symbol) {
+	            	var entry = {
+                        symbol: symbol
+                    };
+
+	            	that.watchlist().addEntry({ symbol: symbol });
+		            that.watchlist.valueHasMutated();
+
+		            that.symbol('');
+                }
 			};
             that.removeEntry = function(entry) {
 	            if (!that.connected()) {
@@ -289,8 +387,8 @@
 	            that.watchlist().removeEntry(entry);
 	            that.watchlist.valueHasMutated();
             };
-            that.getSymbolForEntry = function(entry) {
-                return entry.symbol ? entry.symbol : '[null]';
+            that.getDisplayText = function(text) {
+                return text ? text : '[not specified]';
             };
 
 			that.handleLoginKeypress = function(d, e) {
@@ -344,8 +442,8 @@
             <div class="pull-right" data-bind="visible: connected() === true && loaded() === true  && mode() === 'View Watchlist'">
                 <div class="header-action-buttons form-inline">
                     <div class="input-group">
-                        <input class="form-control" data-bind="" type="text" placeholder="Add Symbol">
-                        <span class="input-group-addon glyphicon glyphicon-plus" data-bind="click: writeUser"></span>
+                        <input class="form-control" data-bind="textInput: symbol" type="text" placeholder="Add Symbol">
+                        <span class="input-group-addon glyphicon glyphicon-plus" data-bind="click: addSymbol"></span>
                     </div>
                 </div>
             </div>
@@ -368,9 +466,9 @@
             <div class="pull-right" data-bind="visible: connected() === true && loaded() === true  && mode() === 'View Watchlist'">
                 <div class="header-action-buttons form-inline">
                     <div class="input-group">
-                        <span class="input-group-addon glyphicon glyphicon-minus" data-bind="click: writeUser"></span>
-                        <input class="form-control" data-bind="" type="text" placeholder="Watchlist">
-                        <span class="input-group-addon glyphicon glyphicon-plus" data-bind="click: writeUser"></span>
+                        <span class="input-group-addon glyphicon glyphicon-minus" data-bind="click: removeWatchlist"></span>
+                        <input class="form-control" data-bind="textInput: watchlistName" type="text" placeholder="Watchlist Name">
+                        <span class="input-group-addon glyphicon glyphicon-plus" data-bind="click: addWatchlist"></span>
                     </div>
                 </div>
             </div>
@@ -422,9 +520,9 @@
             <td class="center col-md-1 watchlist-action-buttons">
                 <span class="text-button text-button-black glyphicon glyphicon-remove" data-bind="click: function() { $parent.removeEntry($data); }"></span>
             </td>
-            <td class="left col-md-2" data-bind="text: $parent.getSymbolForEntry($data)"></td>
-            <td class="left col-md-2" data-bind="text: tgam_symbol"></td>
-            <td class="left col-md-2" data-bind="text: tgam_listing_id"></td>
+            <td class="left col-md-2" data-bind="text: $parent.getDisplayText($data.symbol)"></td>
+            <td class="left col-md-2" data-bind="text: $parent.getDisplayText($data.tgam_symbol)"></td>
+            <td class="left col-md-2" data-bind="text: $parent.getDisplayText($data.tgam_listing_id)"></td>
         </tr>
     </script>
 

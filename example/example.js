@@ -82,6 +82,13 @@ module.exports = function () {
 					return _this2._startPromise;
 				});
 			}
+
+			/**
+    * Returns a promise containing the active user's {@link WatchlistUser} instance.
+    *
+    * @returns {Promise.<TResult>}
+    */
+
 		}, {
 			key: 'readUser',
 			value: function readUser() {
@@ -3677,10 +3684,6 @@ module.exports = (() => {
                 entries: this.entries.map((e) => e)
             };
 
-			if (this.name) {
-			    plain.name = this.name;
-            }
-
             return plain;
 		}
 
@@ -3693,13 +3696,9 @@ module.exports = (() => {
 		 */
 		static fromJSObj(obj) {
 		    assert.argumentIsRequired(obj, 'obj', Object);
-			assert.argumentIsRequired(obj.name, 'obj.name', String);
+			assert.argumentIsRequired(obj.id, 'obj.id', String);
 
 			const watchlist = new Watchlist(obj.id);
-
-			if (is.string(obj.name)) {
-				watchlist.name = obj.name;
-			}
 
 			if (is.array(obj.entries)) {
 				obj.entries.map((e) => watchlist.addEntry(e));
@@ -3886,7 +3885,7 @@ module.exports = (() => {
 		}
 
 		/**
-         * Gets the users collection of {@link Watchlist} items, keyed by watchlist name.
+         * Gets the users collection of {@link Watchlist} items, keyed by watchlist id.
          *
          * @public
 		 * @readonly
@@ -3933,7 +3932,7 @@ module.exports = (() => {
 		 * @param {String} id
 		 * @returns {Watchlist}
 		 */
-		deleteWatchlist(id) {
+		removeWatchlist(id) {
 			assert.argumentIsRequired(id, 'id', String);
 
 			if (this._watchlists.hasOwnProperty(id)) {
