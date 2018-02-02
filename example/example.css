@@ -51,6 +51,15 @@ h4 {
     top: -4px;
 }
 
+.header .input-group {
+    position: relative;
+    top: 6px;
+}
+
+.header .input-group input {
+    top: 1px;
+}
+
 .header .header-action-buttons .btn-group {
     margin-top: 8px;
 }

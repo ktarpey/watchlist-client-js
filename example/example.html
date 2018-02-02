@@ -343,6 +343,15 @@
 
             <div class="pull-right" data-bind="visible: connected() === true && loaded() === true  && mode() === 'View Watchlist'">
                 <div class="header-action-buttons form-inline">
+                    <div class="input-group">
+                        <input class="form-control" data-bind="" type="text" placeholder="Add Symbol">
+                        <span class="input-group-addon glyphicon glyphicon-plus" data-bind="click: writeUser"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pull-right" data-bind="visible: connected() === true && loaded() === true  && mode() === 'View Watchlist'">
+                <div class="header-action-buttons form-inline">
                     <div class="btn-group">
                         <button type="button" class="btn btn-primary form-control" data-bind="text: watchlistId"></button>
                         <button type="button" class="btn btn-primary dropdown-toggle form-control" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -352,6 +361,16 @@
                         <ul class="dropdown-menu dropdown-menu-right" data-bind="foreach: watchlists">
                             <li><a href="#" data-bind="click: function() { $parent.setWatchlist($data); }, text: $data.id"></a></li>
                         </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pull-right" data-bind="visible: connected() === true && loaded() === true  && mode() === 'View Watchlist'">
+                <div class="header-action-buttons form-inline">
+                    <div class="input-group">
+                        <span class="input-group-addon glyphicon glyphicon-minus" data-bind="click: writeUser"></span>
+                        <input class="form-control" data-bind="" type="text" placeholder="Watchlist">
+                        <span class="input-group-addon glyphicon glyphicon-plus" data-bind="click: writeUser"></span>
                     </div>
                 </div>
             </div>
