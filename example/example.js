@@ -3826,7 +3826,7 @@ module.exports = (() => {
 			this._watchlists = {};
 
 			this._lastAction = WatchlistAction.Init;
-			this._lastUpdate = 0;
+			this._lastUpdate = Timestamp.now();
 		}
 
 		/**
