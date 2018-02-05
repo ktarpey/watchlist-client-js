@@ -15,10 +15,8 @@ var assert = require('@barchart/common-js/lang/assert'),
 
 var EndpointBuilder = require('@barchart/common-client-js/http/builders/EndpointBuilder'),
     Gateway = require('@barchart/common-client-js/http/Gateway'),
-    PathParameterType = require('@barchart/common-client-js/http/definitions/PathParameterType'),
     RequestInterceptor = require('@barchart/common-client-js/http/interceptors/RequestInterceptor'),
     ResponseInterceptor = require('@barchart/common-client-js/http/interceptors/ResponseInterceptor'),
-    QueryParameterType = require('@barchart/common-client-js/http/definitions/QueryParameterType'),
     VerbType = require('@barchart/common-client-js/http/definitions/VerbType');
 
 var WatchlistUser = require('@barchart/watchlist-api-common/WatchlistUser');
@@ -85,12 +83,18 @@ module.exports = function () {
 								});
 							});
 
-							var readServerMetadataEndpoint = EndpointBuilder.for('read-metadata').withVerb(VerbType.GET).withProtocol(serviceAddress.protocol).withHost(serviceAddress.host).withPort(serviceAddress.port).withPathParameter('v1', PathParameterType.STATIC).withPathParameter('server', PathParameterType.STATIC).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
+							var readServerMetadataEndpoint = EndpointBuilder.for('read-metadata').withVerb(VerbType.GET).withProtocol(serviceAddress.protocol).withHost(serviceAddress.host).withPort(serviceAddress.port).withPathBuilder(function (pb) {
+								return pb.withLiteralParameter('v1').withLiteralParameter('server');
+							}).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
 
 							return Gateway.invoke(readServerMetadataEndpoint).then(function (metadata) {
-								_this2._readUserEndpoint = EndpointBuilder.for('read-user').withVerb(VerbType.GET).withProtocol(serviceAddress.protocol).withHost(serviceAddress.host).withPort(serviceAddress.port).withPathParameter('v1', PathParameterType.STATIC).withPathParameter('user', PathParameterType.STATIC).withRequestInterceptor(requestInterceptorForJwt).withResponseInterceptor(responseInterceptorForDeserialization).endpoint;
+								_this2._readUserEndpoint = EndpointBuilder.for('read-user').withVerb(VerbType.GET).withProtocol(serviceAddress.protocol).withHost(serviceAddress.host).withPort(serviceAddress.port).withPathBuilder(function (pb) {
+									return pb.withLiteralParameter('v1').withLiteralParameter('user');
+								}).withRequestInterceptor(requestInterceptorForJwt).withResponseInterceptor(responseInterceptorForDeserialization).endpoint;
 
-								_this2._writeUserEndpoint = EndpointBuilder.for('write-user').withVerb(VerbType.PUT).withProtocol(serviceAddress.protocol).withHost(serviceAddress.host).withPort(serviceAddress.port).withPathParameter('v1', PathParameterType.STATIC).withPathParameter('user', PathParameterType.STATIC).withEntireBody().withRequestInterceptor(requestInterceptorForJwt).withRequestInterceptor(requestInterceptorForSerialization).endpoint;
+								_this2._writeUserEndpoint = EndpointBuilder.for('write-user').withVerb(VerbType.PUT).withProtocol(serviceAddress.protocol).withHost(serviceAddress.host).withPort(serviceAddress.port).withPathBuilder(function (pb) {
+									return pb.withLiteralParameter('v1').withLiteralParameter('user');
+								}).withEntireBody().withRequestInterceptor(requestInterceptorForJwt).withRequestInterceptor(requestInterceptorForSerialization).endpoint;
 
 								_this2._started = true;
 
@@ -197,7 +201,7 @@ module.exports = function () {
 	return WatchlistGateway;
 }();
 
-},{"./WatchlistJwtProvider":2,"./WatchlistServiceAddress":3,"@barchart/common-client-js/http/Gateway":5,"@barchart/common-client-js/http/builders/EndpointBuilder":6,"@barchart/common-client-js/http/definitions/PathParameterType":14,"@barchart/common-client-js/http/definitions/QueryParameterType":18,"@barchart/common-client-js/http/definitions/VerbType":19,"@barchart/common-client-js/http/interceptors/RequestInterceptor":22,"@barchart/common-client-js/http/interceptors/ResponseInterceptor":23,"@barchart/common-js/lang/Disposable":24,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30,"@barchart/watchlist-api-common/WatchlistUser":36}],2:[function(require,module,exports){
+},{"./WatchlistJwtProvider":2,"./WatchlistServiceAddress":3,"@barchart/common-client-js/http/Gateway":5,"@barchart/common-client-js/http/builders/EndpointBuilder":6,"@barchart/common-client-js/http/definitions/VerbType":14,"@barchart/common-client-js/http/interceptors/RequestInterceptor":17,"@barchart/common-client-js/http/interceptors/ResponseInterceptor":18,"@barchart/common-js/lang/Disposable":19,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25,"@barchart/watchlist-api-common/WatchlistUser":31}],2:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -215,10 +219,8 @@ var assert = require('@barchart/common-js/lang/assert'),
 
 var EndpointBuilder = require('@barchart/common-client-js/http/builders/EndpointBuilder'),
     Gateway = require('@barchart/common-client-js/http/Gateway'),
-    PathParameterType = require('@barchart/common-client-js/http/definitions/PathParameterType'),
     RequestInterceptor = require('@barchart/common-client-js/http/interceptors/RequestInterceptor'),
     ResponseInterceptor = require('@barchart/common-client-js/http/interceptors/ResponseInterceptor'),
-    QueryParameterType = require('@barchart/common-client-js/http/definitions/QueryParameterType'),
     VerbType = require('@barchart/common-client-js/http/definitions/VerbType');
 
 var WatchlistServiceAddress = require('./WatchlistServiceAddress');
@@ -326,10 +328,14 @@ module.exports = function () {
 				}
 
 				if (this._currentTokenPromise === null) {
-					var readJwtTokenForDevelopmentEndpoint = EndpointBuilder.for('read-jwt-token-for-development').withVerb(VerbType.GET).withProtocol(this._serviceAddress.protocol).withHost(this._serviceAddress.host).withPort(this._serviceAddress.port).withPathParameter('v1', PathParameterType.STATIC).withPathParameter('token', PathParameterType.STATIC).withQueryParameter('userId', 'userId', QueryParameterType.VARIABLE, false).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
+					var readJwtTokenForDevelopmentEndpoint = EndpointBuilder.for('read-jwt-token-for-development').withVerb(VerbType.GET).withProtocol(this._serviceAddress.protocol).withHost(this._serviceAddress.host).withPort(this._serviceAddress.port).withPathBuilder(function (pb) {
+						return pb.withLiteralParameter('v1').withLiteralParameter('token');
+					}).withQueryBuilder(function (qb) {
+						return qb.withLiteralParameter('userId', _this3._userId);
+					}).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
 
 					var refreshToken = function refreshToken() {
-						return Gateway.invoke(readJwtTokenForDevelopmentEndpoint, { userId: _this3._userId });
+						return Gateway.invoke(readJwtTokenForDevelopmentEndpoint, {});
 					};
 
 					this._currentTokenPromise = refreshToken();
@@ -354,7 +360,7 @@ module.exports = function () {
 	return WatchlistJwtProvider;
 }();
 
-},{"./WatchlistServiceAddress":3,"@barchart/common-client-js/http/Gateway":5,"@barchart/common-client-js/http/builders/EndpointBuilder":6,"@barchart/common-client-js/http/definitions/PathParameterType":14,"@barchart/common-client-js/http/definitions/QueryParameterType":18,"@barchart/common-client-js/http/definitions/VerbType":19,"@barchart/common-client-js/http/interceptors/RequestInterceptor":22,"@barchart/common-client-js/http/interceptors/ResponseInterceptor":23,"@barchart/common-js/lang/Disposable":24,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30,"@barchart/common-js/timing/Scheduler":33}],3:[function(require,module,exports){
+},{"./WatchlistServiceAddress":3,"@barchart/common-client-js/http/Gateway":5,"@barchart/common-client-js/http/builders/EndpointBuilder":6,"@barchart/common-client-js/http/definitions/VerbType":14,"@barchart/common-client-js/http/interceptors/RequestInterceptor":17,"@barchart/common-client-js/http/interceptors/ResponseInterceptor":18,"@barchart/common-js/lang/Disposable":19,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25,"@barchart/common-js/timing/Scheduler":28}],3:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -472,7 +478,7 @@ module.exports = function () {
 	return WatchlistServiceAddress;
 }();
 
-},{"@barchart/common-client-js/http/definitions/ProtocolType":15,"@barchart/common-client-js/http/definitions/VerbType":19,"@barchart/common-js/lang/Enum":25,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30}],4:[function(require,module,exports){
+},{"@barchart/common-client-js/http/definitions/ProtocolType":13,"@barchart/common-client-js/http/definitions/VerbType":14,"@barchart/common-js/lang/Enum":20,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],4:[function(require,module,exports){
 'use strict';
 
 var WatchlistGateway = require('./gateway/WatchlistGateway'),
@@ -486,7 +492,7 @@ module.exports = function () {
 		WatchlistGateway: WatchlistGateway,
 		WatchlistJwtProvider: WatchlistJwtProvider,
 		WatchlistServiceAddress: WatchlistServiceAddress,
-		version: '1.0.6'
+		version: '1.0.7'
 	};
 }();
 
@@ -506,8 +512,7 @@ var assert = require('@barchart/common-js/lang/assert'),
 
 var BodyType = require('./definitions/BodyType'),
     Endpoint = require('./definitions/Endpoint'),
-    PathParameterType = require('./definitions/PathParameterType'),
-    QueryParameterType = require('./definitions/QueryParameterType'),
+    Parameter = require('./definitions/Parameter'),
     VerbType = require('./definitions/VerbType');
 
 module.exports = function () {
@@ -546,76 +551,123 @@ module.exports = function () {
 				return Promise.resolve({}).then(function () {
 					assert.argumentIsRequired(endpoint, 'endpoint', Endpoint, 'Endpoint');
 
-					var options = {
-						url: buildUrl(endpoint, payload),
-						method: verbs.get(endpoint.verb)
-					};
+					return Promise.resolve({}).then(function (options) {
+						return Promise.resolve([]).then(function (url) {
+							url.push(endpoint.protocol.prefix);
+							url.push(endpoint.host);
 
-					var queryParameters = endpoint.query.parameters;
-
-					if (queryParameters.length !== 0) {
-						if (!is.object(payload)) {
-							throw new Error('Enable to construct web service request, payload is required.');
-						}
-
-						options.params = queryParameters.reduce(function (parameters, parameter) {
-							var key = parameter.key;
-							var value = parameter.value;
-
-							if (parameter.type === QueryParameterType.VARIABLE) {
-								if (attributes.has(payload, value)) {
-									value = attributes.read(payload, value);
-								} else {
-									throw new Error('Unable construct web service request, payload is missing variable [ ' + name + ' ].');
-								}
+							if (endpoint.port !== endpoint.protocol.defaultPort) {
+								url.push(':');
+								url.push(endpoint.port);
 							}
 
-							attributes.write(parameters, key, value);
+							url.push('/');
 
-							return parameters;
-						}, {});
-					}
+							return promise.pipeline(endpoint.path.parameters.map(function (parameter) {
+								return function (previous) {
+									return parameter.extractor(payload).then(function (value) {
+										previous.push(value);
 
-					var body = endpoint.body;
+										return previous;
+									});
+								};
+							}), []).then(function (paths) {
+								url.push(paths.join('/'));
 
-					var bodyValue = void 0;
+								return url.join('');
+							});
+						}).then(function (url) {
+							options.method = verbs.get(endpoint.verb);
+							options.url = url;
 
-					if (body.type === BodyType.ENTIRE) {
-						bodyValue = payload;
-					} else if (body.type === BodyType.VARIABLE) {
-						if (attributes.has(payload, body.name)) {
-							bodyValue = attributes.read(payload, body.name);
-						} else {
-							throw new Error('Unable construct web service request, payload is missing variable [ ' + body + ' ].');
+							return options;
+						});
+					}).then(function (options) {
+						var headerParameters = endpoint.headers.parameters;
+
+						if (headerParameters.length === 0) {
+							return Promise.resolve(options);
 						}
-					} else {
-						bodyValue = null;
-					}
 
-					if (bodyValue !== null) {
-						options.data = bodyValue;
-					}
+						return Promise.resolve({}).then(function (headers) {
+							return promise.pipeline(headerParameters.map(function (parameter) {
+								return function (previous) {
+									return parameter.extractor(payload).then(function (value) {
+										if (value !== null) {
+											previous[parameter.key] = value;
+										} else if (!parameter.optional) {
+											throw new Error('Unable to extract header parameter [ ' + parameter.key + ' ]');
+										}
 
-					var requestPromise = Promise.resolve().then(function () {
-						var requestPromise = void 0;
+										return previous;
+									});
+								};
+							}), headers);
+						}).then(function (headers) {
+							options.headers = headers;
 
+							return options;
+						});
+					}).then(function (options) {
+						var queryParameters = endpoint.query.parameters;
+
+						if (queryParameters.length === 0) {
+							return Promise.resolve(options);
+						}
+
+						return Promise.resolve({}).then(function (query) {
+							return promise.pipeline(queryParameters.map(function (parameter) {
+								return function (previous) {
+									return parameter.extractor(payload).then(function (value) {
+										if (value !== null) {
+											previous[parameter.key] = value;
+										} else if (!parameter.optional) {
+											throw new Error('Unable to extract query parameter [ ' + parameter.key + ' ]');
+										}
+
+										return previous;
+									});
+								};
+							}), query);
+						}).then(function (query) {
+							options.params = query;
+
+							return options;
+						});
+					}).then(function (options) {
+						var body = endpoint.body;
+
+						if (body.type === BodyType.ENTIRE) {
+							options.data = payload;
+						} else if (body.type === BodyType.VARIABLE) {
+							if (attributes.has(payload, body.name)) {
+								options.data = attributes.read(payload, body.name);
+							} else {
+								throw new Error('Unable construct web service request, payload is missing variable [ ' + body + ' ].');
+							}
+						}
+
+						return options;
+					}).then(function (options) {
 						if (endpoint.requestInterceptor) {
-							requestPromise = endpoint.requestInterceptor.process(options);
+							return endpoint.requestInterceptor.process(options);
 						} else {
-							requestPromise = Promise.resolve(options);
+							return Promise.resolve(options);
 						}
-
-						return requestPromise;
-					});
-
-					return requestPromise.then(function (requestOptions) {
+					}).then(function (options) {
 						return promise.build(function (resolve, reject) {
 							axios.request(options).then(function (response) {
+								var responsePromise = void 0;
+
 								if (endpoint.responseInterceptor) {
-									resolve(endpoint.responseInterceptor.process(response));
+									responsePromise = endpoint.responseInterceptor.process(response);
 								} else {
-									resolve(response);
+									responsePromise = resolve(response);
 								}
+
+								return responsePromise.then(function (response) {
+									return resolve(response);
+								});
 							});
 						});
 					});
@@ -625,38 +677,6 @@ module.exports = function () {
 
 		return Gateway;
 	}();
-
-	function buildUrl(endpoint, payload) {
-		var components = [];
-
-		components.push(endpoint.protocol.prefix);
-		components.push(endpoint.host);
-
-		var port = void 0;
-
-		if (endpoint.port !== endpoint.protocol.defaultPort) {
-			components.push(':');
-			components.push(endpoint.port);
-		}
-
-		endpoint.path.parameters.forEach(function (parameter) {
-			components.push('/');
-
-			var component = parameter.name;
-
-			if (parameter.type === PathParameterType.VARIABLE) {
-				if (attributes.has(payload, name)) {
-					component = attributes.read(payload, name);
-				} else {
-					throw new Error('Unable construct web service request, payload is missing variable [ ' + name + ' ].');
-				}
-			}
-
-			components.push(component);
-		});
-
-		return components.join('');
-	}
 
 	var verbs = new Map();
 
@@ -668,7 +688,7 @@ module.exports = function () {
 	return Gateway;
 }();
 
-},{"./definitions/BodyType":10,"./definitions/Endpoint":11,"./definitions/PathParameterType":14,"./definitions/QueryParameterType":18,"./definitions/VerbType":19,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/attributes":29,"@barchart/common-js/lang/is":30,"@barchart/common-js/lang/promise":32,"axios":37}],6:[function(require,module,exports){
+},{"./definitions/BodyType":9,"./definitions/Endpoint":10,"./definitions/Parameter":11,"./definitions/VerbType":14,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/attributes":24,"@barchart/common-js/lang/is":25,"@barchart/common-js/lang/promise":27,"axios":32}],6:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -677,15 +697,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var assert = require('@barchart/common-js/lang/assert');
 
-var PathBuilder = require('./PathBuilder'),
-    QueryBuilder = require('./QueryBuilder');
+var ParametersBuilder = require('./ParametersBuilder');
 
 var Body = require('./../definitions/Body'),
     BodyType = require('./../definitions/BodyType'),
     Endpoint = require('./../definitions/Endpoint'),
-    PathParameterType = require('./../definitions/PathParameterType'),
+    Parameters = require('./../definitions/Parameters'),
     ProtocolType = require('./../definitions/ProtocolType'),
-    QueryParameterType = require('./../definitions/QueryParameterType'),
     VerbType = require('./../definitions/VerbType');
 
 var CompositeResponseInterceptor = require('./../interceptors/CompositeResponseInterceptor'),
@@ -734,7 +752,7 @@ module.exports = function () {
 			value: function withVerb(verb) {
 				assert.argumentIsRequired(verb, 'verb', VerbType, 'VerbType');
 
-				this._endpoint = new Endpoint(this.endpoint.name, verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
+				this._endpoint = new Endpoint(this.endpoint.name, verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
 
 				return this;
 			}
@@ -752,7 +770,7 @@ module.exports = function () {
 			value: function withProtocol(protocol) {
 				assert.argumentIsRequired(protocol, 'protocol', ProtocolType, 'ProtocolType');
 
-				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
+				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
 
 				return this;
 			}
@@ -770,7 +788,7 @@ module.exports = function () {
 			value: function withHost(host) {
 				assert.argumentIsRequired(host, 'host', String);
 
-				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
+				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
 
 				return this;
 			}
@@ -788,18 +806,40 @@ module.exports = function () {
 			value: function withPort(port) {
 				assert.argumentIsRequired(port, 'port', Number);
 
-				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, port, this.endpoint.path, this.endpoint.query, this.endpoint.body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
+				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
 
 				return this;
 			}
 
 			/**
-    * Adds an {@link Path} specification to the endpoint, using a callback
-    * that provides the consumer with a {@link PathBuilder}, then returns
-    * the current instance.
+    * Adds a {@link Parameters} collection, describing the request headers, using a callback.
     *
     * @public
-    * @param {Function} callback - Synchronously called, providing a {@link PathBuilder} tied to the current instance.
+    * @param {EndpointBuilder~parametersBuilderCallback} callback
+    * @returns {EndpointBuilder}
+    */
+
+		}, {
+			key: 'withHeadersBuilder',
+			value: function withHeadersBuilder(callback) {
+				assert.argumentIsRequired(callback, 'callback', Function);
+
+				var builder = new ParametersBuilder();
+
+				callback(builder);
+
+				var headers = builder.parameters;
+
+				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, path, this.endpoint.query, headers, this.endpoint.body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
+
+				return this;
+			}
+
+			/**
+    * Adds a {@link Parameters} collection, describing the request path, using a callback.
+    *
+    * @public
+    * @param {EndpointBuilder~parametersBuilderCallback} callback
     * @returns {EndpointBuilder}
     */
 
@@ -808,50 +848,22 @@ module.exports = function () {
 			value: function withPathBuilder(callback) {
 				assert.argumentIsRequired(callback, 'callback', Function);
 
-				var pathBuilder = new PathBuilder();
+				var builder = new ParametersBuilder();
 
-				callback(pathBuilder);
+				callback(builder);
 
-				var path = pathBuilder.path;
+				var path = builder.parameters;
 
-				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, path, this.endpoint.query, this.endpoint.body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
+				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
 
 				return this;
 			}
 
 			/**
-    * Adds a {@link PathParameter} to the current {@link Path}.
+    * Adds a {@link Parameters} collection, describing the request querystring, using a callback.
     *
     * @public
-    * @param {String} name
-    * @param {PathParameterType} type
-    * @returns {EndpointBuilder}
-    */
-
-		}, {
-			key: 'withPathParameter',
-			value: function withPathParameter(name, type) {
-				assert.argumentIsRequired(name, 'name', String);
-				assert.argumentIsRequired(type, 'type', PathParameterType, 'PathParameterType');
-
-				var path = this.endpoint.path;
-
-				return this.withPathBuilder(function (pb) {
-					path.parameters.forEach(function (p) {
-						pb.withParameter(p.name, p.type);
-					});
-
-					pb.withParameter(name, type);
-				});
-			}
-
-			/**
-    * Adds an {@link Query} specification to the endpoint, using a callback
-    * that provides the consumer with a {@link QueryBuilder}, then returns
-    * the current instance.
-    *
-    * @public
-    * @param {Function} callback - Synchronously called, providing a {@link QueryBuilder} tied to the current instance.
+    * @param {EndpointBuilder~parametersBuilderCallback} callback
     * @returns {EndpointBuilder}
     */
 
@@ -860,34 +872,34 @@ module.exports = function () {
 			value: function withQueryBuilder(callback) {
 				assert.argumentIsRequired(callback, 'callback', Function);
 
-				var queryBuilder = new QueryBuilder();
+				var builder = new ParametersBuilder();
 
-				callback(queryBuilder);
+				callback(builder);
 
-				var query = queryBuilder.query;
+				var query = builder.parameters;
 
-				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, query, this.endpoint.body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
+				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, query, this.endpoint.headers, this.endpoint.body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
 
 				return this;
 			}
 
 			/**
-    * Adds a body to the request, where the body is selected from the payload using
-    * a variable reference.
+    * Adds a body to the request, selecting the value from a variable
+    * on the request payload.
     *
     * @public
-    * @param {String} name - The name of the variable whose value contains the body.
+    * @param {String} variable - The name of the variable whose value contains the body.
     * @returns {EndpointBuilder}
     */
 
 		}, {
 			key: 'withVariableBody',
-			value: function withVariableBody(name) {
-				assert.argumentIsRequired(key, 'name', String);
+			value: function withVariableBody(variable) {
+				assert.argumentIsRequired(variable, 'variable', String);
 
-				var body = new Body(name, BodyType.VARIABLE);
+				var body = new Body(variable, BodyType.VARIABLE);
 
-				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
+				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
 
 				return this;
 			}
@@ -904,42 +916,13 @@ module.exports = function () {
 			value: function withEntireBody() {
 				var body = new Body(name, BodyType.ENTIRE);
 
-				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
+				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
 
 				return this;
 			}
 
 			/**
-    * Adds a {@link QueryParameter} to the current {@link Query}.
-    *
-    * @public
-    * @param {String} key
-    * @param {String} value
-    * @param {QueryParameterType} type
-    * @returns {EndpointBuilder}
-    */
-
-		}, {
-			key: 'withQueryParameter',
-			value: function withQueryParameter(key, value, type, optional) {
-				assert.argumentIsRequired(key, 'key', String);
-				assert.argumentIsRequired(value, 'value', String);
-				assert.argumentIsRequired(type, 'type', QueryParameterType, 'QueryParameterType');
-				assert.argumentIsOptional(optional, 'optional', Boolean);
-
-				var query = this.endpoint.query;
-
-				return this.withQueryBuilder(function (qb) {
-					query.parameters.forEach(function (p) {
-						qb.withParameter(p.key, p.value, p.type);
-					});
-
-					qb.withParameter(key, value, type, optional);
-				});
-			}
-
-			/**
-    * Adds a {@link RequestInterceptor} to the endpoint.
+    * Adds a {@link RequestInterceptor}.
     *
     * @public
     * @param {RequestInterceptor} requestInterceptor
@@ -960,13 +943,13 @@ module.exports = function () {
 					updatedRequestInterceptor = requestInterceptor;
 				}
 
-				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.body, updatedRequestInterceptor, this.endpoint.responseInterceptor);
+				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, updatedRequestInterceptor, this.endpoint.responseInterceptor);
 
 				return this;
 			}
 
 			/**
-    * Adds a {@link ResponseInterceptor} to the endpoint.
+    * Adds a {@link ResponseInterceptor}.
     *
     * @public
     * @param {ResponseInterceptor} responseInterceptor
@@ -987,7 +970,7 @@ module.exports = function () {
 					updatedResponseInterceptor = responseInterceptor;
 				}
 
-				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.body, this.endpoint.requestInterceptor, updatedResponseInterceptor);
+				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, this.endpoint.headers, this.endpoint.body, this.endpoint.requestInterceptor, updatedResponseInterceptor);
 
 				return this;
 			}
@@ -1021,170 +1004,163 @@ module.exports = function () {
 		return EndpointBuilder;
 	}();
 
+	/**
+  * A function that, when passed the request's payload, returns a parameter's value.
+  *
+  * @callback EndpointBuilder~parametersBuilderCallback
+  * @param {ParametersBuilder} parameter
+  */
+
 	return EndpointBuilder;
 }();
 
-},{"./../definitions/Body":9,"./../definitions/BodyType":10,"./../definitions/Endpoint":11,"./../definitions/PathParameterType":14,"./../definitions/ProtocolType":15,"./../definitions/QueryParameterType":18,"./../definitions/VerbType":19,"./../interceptors/CompositeRequestInterceptor":20,"./../interceptors/CompositeResponseInterceptor":21,"./../interceptors/RequestInterceptor":22,"./../interceptors/ResponseInterceptor":23,"./PathBuilder":7,"./QueryBuilder":8,"@barchart/common-js/lang/assert":28}],7:[function(require,module,exports){
+},{"./../definitions/Body":8,"./../definitions/BodyType":9,"./../definitions/Endpoint":10,"./../definitions/Parameters":12,"./../definitions/ProtocolType":13,"./../definitions/VerbType":14,"./../interceptors/CompositeRequestInterceptor":15,"./../interceptors/CompositeResponseInterceptor":16,"./../interceptors/RequestInterceptor":17,"./../interceptors/ResponseInterceptor":18,"./ParametersBuilder":7,"@barchart/common-js/lang/assert":23}],7:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var assert = require('@barchart/common-js/lang/assert');
+var assert = require('@barchart/common-js/lang/assert'),
+    attributes = require('@barchart/common-js/lang/attributes'),
+    is = require('@barchart/common-js/lang/is');
 
-var Path = require('./../definitions/Path'),
-    PathParameter = require('./../definitions/PathParameter'),
-    PathParameterType = require('./../definitions/PathParameterType');
+var Parameter = require('./../definitions/Parameter'),
+    Parameters = require('./../definitions/Parameters');
 
 module.exports = function () {
 	'use strict';
 
 	/**
-  * Fluent interface for building a {@link Path}.
+  * Fluent interface for building a {@link Parameters} collection.
   *
   * @public
   */
 
-	var PathBuilder = function () {
-		function PathBuilder() {
-			_classCallCheck(this, PathBuilder);
+	var ParametersBuilder = function () {
+		function ParametersBuilder() {
+			_classCallCheck(this, ParametersBuilder);
 
-			this._path = new Path();
+			this._parameters = new Parameters();
 		}
 
 		/**
-   * The {@link Path}, given all the information provided thus far.
+   * The {@link Parameters} collection, given all the information provided thus far.
    *
    * @public
-   * @returns {Path}
+   * @returns {Parameters}
    */
 
 
-		_createClass(PathBuilder, [{
-			key: 'withParameter',
+		_createClass(ParametersBuilder, [{
+			key: 'withDelegateParameter',
 
 
 			/**
-    * Adds a new {@link PathParameter} to the path.
+    * Adds a new parameter that extracts its value from a delegate.
     *
-    * @public
-    * @param {String} name
-    * @param {PathParameterType} type
-    * @returns {PathBuilder}
+    * @param {String} key
+    * @param {Function} delegate
+    * @param (Boolean=} optional
+    * @returns {ParametersBuilder}
     */
-			value: function withParameter(name, type) {
-				assert.argumentIsRequired(name, 'name', String);
-				assert.argumentIsRequired(type, 'type', PathParameterType, 'PathParameterType');
+			value: function withDelegateParameter(key, delegate, optional) {
+				addParameter.call(this, new Parameter(key, buildDelegateExtractor(delegate), optional));
 
-				var pathParameter = new PathParameter(name, type);
-				var pathParameters = this.path.parameters.concat([pathParameter]);
+				return this;
+			}
 
-				this._path = new Path(pathParameters);
+			/**
+    * Adds a new parameter with a literal value.
+    *
+    * @param {String} key
+    * @param {Function} delegate
+    * @param (Boolean=} optional
+    * @returns {ParametersBuilder}
+    */
+
+		}, {
+			key: 'withLiteralParameter',
+			value: function withLiteralParameter(key, value, optional) {
+				addParameter.call(this, new Parameter(key, buildLiteralExtractor(value || key), optional));
+
+				return this;
+			}
+
+			/**
+    * Adds a new parameter that reads its value from the a variable
+    * on the request payload.
+    *
+    * @param {String} key
+    * @param {Function} delegate
+    * @param (Boolean=} optional
+    * @returns {ParametersBuilder}
+    */
+
+		}, {
+			key: 'withVariableParameter',
+			value: function withVariableParameter(key, variable, optional) {
+				addParameter.call(this, new Parameter(key, buildVariableExtractor(variable), optional));
 
 				return this;
 			}
 		}, {
 			key: 'toString',
 			value: function toString() {
-				return '[PathBuilder]';
+				return '[ParametersBuilder]';
 			}
 		}, {
-			key: 'path',
+			key: 'parameters',
 			get: function get() {
-				return this._path;
+				return this._parameters;
 			}
 		}]);
 
-		return PathBuilder;
+		return ParametersBuilder;
 	}();
 
-	return PathBuilder;
+	function addParameter(parameter) {
+		var items = this._parameters.parameters.slice(0);
+
+		items.push(parameter);
+
+		this._parameters = new Parameters(items);
+	}
+
+	function buildDelegateExtractor(fn) {
+		assert.argumentIsRequired(fn, 'fn', Function);
+
+		return function (payload) {
+			return Promise.resolve().then(function () {
+				return fn(payload);
+			});
+		};
+	}
+
+	function buildLiteralExtractor(value) {
+		assert.argumentIsRequired(value, 'value', String);
+
+		return function (payload) {
+			return Promise.resolve(value);
+		};
+	}
+
+	function buildVariableExtractor(variable) {
+		assert.argumentIsRequired(variable, 'variable', String);
+
+		return buildDelegateExtractor(function (payload) {
+			if (is.object(payload) && attributes.has(payload, variable)) {
+				return attributes.read(payload, variable);
+			} else {
+				return null;
+			}
+		});
+	}
+
+	return ParametersBuilder;
 }();
 
-},{"./../definitions/Path":12,"./../definitions/PathParameter":13,"./../definitions/PathParameterType":14,"@barchart/common-js/lang/assert":28}],8:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('@barchart/common-js/lang/assert');
-
-var Query = require('./../definitions/Query'),
-    QueryParameter = require('./../definitions/QueryParameter'),
-    QueryParameterType = require('./../definitions/QueryParameterType');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * Fluent interface for building a {@link Query}.
-  *
-  * @public
-  */
-
-	var QueryBuilder = function () {
-		function QueryBuilder() {
-			_classCallCheck(this, QueryBuilder);
-
-			this._query = new Query();
-		}
-
-		/**
-   * The {@link Query}, given all the information provided thus far.
-   *
-   * @public
-   * @returns {Query}
-   */
-
-
-		_createClass(QueryBuilder, [{
-			key: 'withParameter',
-
-
-			/**
-    * Adds a new {@link QueryParameter} to the query.
-    *
-    * @public
-    * @param {String=} key
-    * @param {String=} value
-    * @param {QueryParameterType=} type
-    * @param {Boolean=} optional
-    * @returns {QueryBuilder}
-    */
-			value: function withParameter(key, value, type, optional) {
-				assert.argumentIsRequired(key, 'key', String);
-				assert.argumentIsRequired(value, 'value', String);
-				assert.argumentIsRequired(type, 'type', QueryParameterType, 'QueryParameterType');
-				assert.argumentIsOptional(optional, 'optional', Boolean);
-
-				var queryParameter = new QueryParameter(key, value, type, optional);
-				var queryParameters = this.query.parameters.concat([queryParameter]);
-
-				this._query = new Query(queryParameters);
-
-				return this;
-			}
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[QueryBuilder]';
-			}
-		}, {
-			key: 'query',
-			get: function get() {
-				return this._query;
-			}
-		}]);
-
-		return QueryBuilder;
-	}();
-
-	return QueryBuilder;
-}();
-
-},{"./../definitions/Query":16,"./../definitions/QueryParameter":17,"./../definitions/QueryParameterType":18,"@barchart/common-js/lang/assert":28}],9:[function(require,module,exports){
+},{"./../definitions/Parameter":11,"./../definitions/Parameters":12,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/attributes":24,"@barchart/common-js/lang/is":25}],8:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1273,7 +1249,7 @@ module.exports = function () {
 	return Body;
 }();
 
-},{"./BodyType":10,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30}],10:[function(require,module,exports){
+},{"./BodyType":9,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],9:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1365,7 +1341,7 @@ module.exports = function () {
 	return BodyType;
 }();
 
-},{"@barchart/common-js/lang/Enum":25}],11:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":20}],10:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1376,9 +1352,9 @@ var assert = require('@barchart/common-js/lang/assert'),
     is = require('@barchart/common-js/lang/is');
 
 var Body = require('./Body'),
-    Path = require('./Path'),
+    Parameter = require('./Parameter'),
+    Parameters = require('./Parameters'),
     ProtocolType = require('./ProtocolType'),
-    Query = require('./Query'),
     VerbType = require('./VerbType');
 
 var RequestInterceptor = require('./../interceptors/RequestInterceptor'),
@@ -1396,15 +1372,16 @@ module.exports = function () {
   * @param {ProtocolType=} protocol
   * @param {String=} host
   * @param {Number=} port
-  * @param {Path=} path
-  * @param {Query=} query
+  * @param {Parameters=} path
+  * @param {Parameters=} query
+  * @param {Parameters=} headers
   * @param {Body=} body
   * @param {RequestInterceptor} requestInterceptor
   * @param {ResponseInterceptor} responseInterceptor
   */
 
 	var Endpoint = function () {
-		function Endpoint(name, verb, protocol, host, port, path, query, body, requestInterceptor, responseInterceptor) {
+		function Endpoint(name, verb, protocol, host, port, path, query, headers, body, requestInterceptor, responseInterceptor) {
 			_classCallCheck(this, Endpoint);
 
 			this._name = name || null;
@@ -1412,8 +1389,9 @@ module.exports = function () {
 			this._protocol = protocol || null;
 			this._host = host || null;
 			this._port = port || this.verb.defaultPort;
-			this._path = path || new Path();
-			this._query = query || new Query();
+			this._path = path || new Parameters();
+			this._query = query || new Parameters();
+			this._headers = headers || new Parameters();
 			this._body = body || new Body();
 			this._requestInterceptor = requestInterceptor || RequestInterceptor.EMPTY;
 			this._responseInterceptor = responseInterceptor || ResponseInterceptor.EMPTY;
@@ -1449,17 +1427,29 @@ module.exports = function () {
 					throw new Error('Endpoint port range is invalid.');
 				}
 
-				if (!(this.path instanceof Path)) {
-					throw new Error('Endpoint path must be an instance of Path.');
+				if (!(this.path instanceof Parameters)) {
+					throw new Error('The path must be a Parameters collection.');
 				}
 
 				this.path.validate();
 
-				if (!(this.query instanceof Query)) {
-					throw new Error('Endpoint query must be an instance of Query.');
+				if (!(this.query instanceof Parameters)) {
+					throw new Error('The query must be a Parameters collection.');
 				}
 
 				this.query.validate();
+
+				if (!(this.headers instanceof Parameters)) {
+					throw new Error('The headers must be a Parameters collection.');
+				}
+
+				this.headers.validate();
+
+				if (!(this.body instanceof Body)) {
+					throw new Error('The body must be a Body instance.');
+				}
+
+				this.body.validate();
 
 				if (this.requestInterceptor && !(this.requestInterceptor instanceof RequestInterceptor)) {
 					throw new Error('Endpoint request interceptor must be an instance of RequestInterceptor.');
@@ -1536,7 +1526,7 @@ module.exports = function () {
     * The path definition of the endpoint.
     *
     * @public
-    * @returns {Path}
+    * @returns {Parameters}
     */
 
 		}, {
@@ -1549,13 +1539,26 @@ module.exports = function () {
     * The query definition of the endpoint.
     *
     * @public
-    * @returns {Query}
+    * @returns {Parameters}
     */
 
 		}, {
 			key: 'query',
 			get: function get() {
 				return this._query;
+			}
+
+			/**
+    * The header definition of the endpoint.
+    *
+    * @public
+    * @returns {Parameters}
+    */
+
+		}, {
+			key: 'headers',
+			get: function get() {
+				return this._headers;
 			}
 
 			/**
@@ -1604,7 +1607,7 @@ module.exports = function () {
 	return Endpoint;
 }();
 
-},{"./../interceptors/RequestInterceptor":22,"./../interceptors/ResponseInterceptor":23,"./Body":9,"./Path":12,"./ProtocolType":15,"./Query":16,"./VerbType":19,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30}],12:[function(require,module,exports){
+},{"./../interceptors/RequestInterceptor":17,"./../interceptors/ResponseInterceptor":18,"./Body":8,"./Parameter":11,"./Parameters":12,"./ProtocolType":13,"./VerbType":14,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],11:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1614,35 +1617,145 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var assert = require('@barchart/common-js/lang/assert'),
     is = require('@barchart/common-js/lang/is');
 
-var PathParameter = require('./PathParameter');
+module.exports = function () {
+	'use strict';
+
+	/**
+  * Encapsulates definition of a parameter -- that is, its name and
+  * its value. Parameters are used in request paths, querystrings, and
+  * as headers.
+  *
+  * @public
+  * @param {String=} key
+  * @param {Parameter~parameterValueCallback} value
+  * @param {Boolean=} optional
+  */
+
+	var Parameter = function () {
+		function Parameter(key, extractor, optional) {
+			_classCallCheck(this, Parameter);
+
+			this._key = key || null;
+			this._extractor = extractor || null;
+			this._optional = is.boolean(optional) && optional;
+		}
+
+		/**
+   * The name of the parameter.
+   *
+   * @public
+   * @returns {String}
+   */
+
+
+		_createClass(Parameter, [{
+			key: 'validate',
+
+
+			/**
+    * Throws an {@link Error} if the instance is invalid.
+    *
+    * @public
+    */
+			value: function validate() {
+				if (!is.string(this.key) || this.key.length === 0) {
+					throw new Error('Parameter key must be a non-zero length string');
+				}
+
+				if (!is.fn(this.value)) {
+					throw new Error('Parameter extractor must be a function.');
+				}
+			}
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[Parameter]';
+			}
+		}, {
+			key: 'key',
+			get: function get() {
+				return this._key;
+			}
+
+			/**
+    * A function for extracting the parameter's value.
+    *
+    * @public
+    * @returns {Parameter~parameterValueCallback}
+    */
+
+		}, {
+			key: 'extractor',
+			get: function get() {
+				return this._extractor;
+			}
+
+			/**
+    * Indicates if the parameter is required.
+    *
+    * @public
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'optional',
+			get: function get() {
+				return this._optional;
+			}
+		}]);
+
+		return Parameter;
+	}();
+
+	/**
+  * A function that, when passed the request's payload, returns a parameter's value.
+  *
+  * @callback Parameter~parameterValueCallback
+  * @param {Object} payload
+  * @returns {Promise.<String>}
+  */
+
+	return Parameter;
+}();
+
+},{"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],12:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var assert = require('@barchart/common-js/lang/assert'),
+    is = require('@barchart/common-js/lang/is');
+
+var Parameter = require('./Parameter');
 
 module.exports = function () {
 	'use strict';
 
 	/**
-  * The definition of path construction for a web service {@link Endpoint}.
+  * An ordered collection of {@link Parameter} items.
   *
   * @public
-  * @param {PathParameter[]|undefined} parameters
+  * @param {Parameter[]|undefined} parameters
   */
 
-	var Path = function () {
-		function Path(parameters) {
-			_classCallCheck(this, Path);
+	var Parameters = function () {
+		function Parameters(parameters) {
+			_classCallCheck(this, Parameters);
 
 			this._parameters = parameters || [];
 		}
 
 		/**
-   * The ordered list of {link @PathParameter} items which is used to
-   * construct the full path used to invoke the endpoint.
+   * The list of {@link Parameter} items.
    *
    * @public
-   * @returns {PathParameter[]}
+   * @returns {Parameter[]}
    */
 
 
-		_createClass(Path, [{
+		_createClass(Parameters, [{
 			key: 'validate',
 
 
@@ -1656,20 +1769,20 @@ module.exports = function () {
 					throw new Error('Parameters must be an array.');
 				}
 
-				if (this._parameters.some(function (qp) {
-					return !(qp instanceof PathParameter);
+				if (this._parameters.some(function (p) {
+					return !(p instanceof Parameter);
 				})) {
-					throw new Error('All parameters must be instances of PathParameter.');
+					throw new Error('All parameter items must be instances of Parameters.');
 				}
 
-				this._parameters.forEach(function (pp) {
-					return pp.validate();
+				this._parameters.forEach(function (p) {
+					return p.validate();
 				});
 			}
 		}, {
 			key: 'toString',
 			value: function toString() {
-				return '[Path]';
+				return '[Parameters]';
 			}
 		}, {
 			key: 'parameters',
@@ -1678,183 +1791,13 @@ module.exports = function () {
 			}
 		}]);
 
-		return Path;
+		return Parameters;
 	}();
 
-	return Path;
+	return Parameters;
 }();
 
-},{"./PathParameter":13,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30}],13:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('@barchart/common-js/lang/assert'),
-    is = require('@barchart/common-js/lang/is');
-
-var PathParameterType = require('./PathParameterType');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * The definition of a single folder in a {@link Path}.
-  *
-  * @public
-  * @param {String=} name
-  * @param {PathParameterType=} type
-  */
-
-	var PathParameter = function () {
-		function PathParameter(name, type) {
-			_classCallCheck(this, PathParameter);
-
-			this._name = name || null;
-			this._type = type || null;
-		}
-
-		/**
-   * The name of the folder, or the name of the variable which contains the folder's name, where
-   * the interpretation is governed by {@link PathParameter#type}.
-   *
-   * @public
-   * @returns {String}
-   */
-
-
-		_createClass(PathParameter, [{
-			key: 'validate',
-
-
-			/**
-    * Throws an {@link Error} if the instance is invalid.
-    *
-    * @public
-    */
-			value: function validate() {
-				if (!is.string(this._name)) {
-					throw new Error('Parameter name must be a string');
-				}
-
-				if (this._name.length === 0) {
-					throw new Error('Parameter name cannot be blank.');
-				}
-
-				if (!(this._type instanceof PathParameterType)) {
-					throw new Error('Parameter type must be an instance of PathParameterType.');
-				}
-			}
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[PathParameter]';
-			}
-		}, {
-			key: 'name',
-			get: function get() {
-				return this._name;
-			}
-
-			/**
-    * The type of the parameter.
-    *
-    * @public
-    * @returns {PathParameterType}
-    */
-
-		}, {
-			key: 'type',
-			get: function get() {
-				return this._type;
-			}
-		}]);
-
-		return PathParameter;
-	}();
-
-	return PathParameter;
-}();
-
-},{"./PathParameterType":14,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30}],14:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Enum = require('@barchart/common-js/lang/Enum');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * Defines the mechanism used to select a path parameter
-  * value from a request payload.
-  *
-  * @public
-  * @extends {Enum}
-  * @param {String} code
-  * @param {String} description
-  */
-
-	var PathParameterType = function (_Enum) {
-		_inherits(PathParameterType, _Enum);
-
-		function PathParameterType(code, description) {
-			_classCallCheck(this, PathParameterType);
-
-			return _possibleConstructorReturn(this, (PathParameterType.__proto__ || Object.getPrototypeOf(PathParameterType)).call(this, code, description));
-		}
-
-		/**
-   * Uses the {@link PathParameter#name} as the folder name.
-   *
-   * @static
-   * @returns {PathParameterType}
-   */
-
-
-		_createClass(PathParameterType, [{
-			key: 'toString',
-			value: function toString() {
-				return '[PathParameterType (description=' + this.description + ')]';
-			}
-		}], [{
-			key: 'STATIC',
-			get: function get() {
-				return pathParameterTypeStatic;
-			}
-
-			/**
-    * Uses the {@link PathPathParameter#name} as a variable to lookup the folder name.
-    *
-    * @static
-    * @returns {PathParameterType}
-    */
-
-		}, {
-			key: 'VARIABLE',
-			get: function get() {
-				return pathParameterTypeVariable;
-			}
-		}]);
-
-		return PathParameterType;
-	}(Enum);
-
-	var pathParameterTypeStatic = new PathParameterType('STATIC', 'static');
-	var pathParameterTypeVariable = new PathParameterType('VARIABLE', 'variable');
-
-	return PathParameterType;
-}();
-
-},{"@barchart/common-js/lang/Enum":25}],15:[function(require,module,exports){
+},{"./Parameter":11,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],13:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1968,287 +1911,7 @@ module.exports = function () {
 	return ProtocolType;
 }();
 
-},{"@barchart/common-js/lang/Enum":25,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30}],16:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('@barchart/common-js/lang/assert'),
-    is = require('@barchart/common-js/lang/is');
-
-var QueryParameter = require('./QueryParameter');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * The definition of querystring construction for a web service {@link Endpoint}.
-  *
-  * @public
-  * @param {QueryParameter[]|undefined} parameters
-  */
-
-	var Query = function () {
-		function Query(parameters) {
-			_classCallCheck(this, Query);
-
-			this._parameters = parameters || [];
-		}
-
-		/**
-   * The list of {link @PathParameter} items which is used to
-   * construct the querystring used to invoke the endpoint.
-   *
-   * @public
-   * @returns {PathParameter[]}
-   */
-
-
-		_createClass(Query, [{
-			key: 'validate',
-
-
-			/**
-    * Throws an {@link Error} if the instance is invalid.
-    *
-    * @public
-    */
-			value: function validate() {
-				if (!is.array(this._parameters)) {
-					throw new Error('Parameters must be an array.');
-				}
-
-				if (this._parameters.some(function (qp) {
-					return !(qp instanceof QueryParameter);
-				})) {
-					throw new Error('All parameters must be instances of QueryParameter.');
-				}
-
-				this._parameters.forEach(function (qp) {
-					return qp.validate();
-				});
-			}
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[Query]';
-			}
-		}, {
-			key: 'parameters',
-			get: function get() {
-				return this._parameters;
-			}
-		}]);
-
-		return Query;
-	}();
-
-	return Query;
-}();
-
-},{"./QueryParameter":17,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30}],17:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('@barchart/common-js/lang/assert'),
-    is = require('@barchart/common-js/lang/is');
-
-var QueryParameterType = require('./QueryParameterType');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * The definition of a single folder in a {@link Query}.
-  *
-  * @public
-  * @param {String=} key
-  * @param {String=} value
-  * @param {QueryParameterType=} type
-  * @param {Boolean=} optional
-  */
-
-	var QueryParameter = function () {
-		function QueryParameter(key, value, type, optional) {
-			_classCallCheck(this, QueryParameter);
-
-			this._key = key || null;
-			this._value = value || null;
-			this._type = type || null;
-			this._optional = is.boolean(optional) && optional;
-		}
-
-		/**
-   * The name of the querystring parameter.
-   *
-   * @public
-   * @returns {String}
-   */
-
-
-		_createClass(QueryParameter, [{
-			key: 'validate',
-
-
-			/**
-    * Throws an {@link Error} if the instance is invalid.
-    *
-    * @public
-    */
-			value: function validate() {
-				if (!is.string(this._key)) {
-					throw new Error('Parameter key must be a string');
-				}
-
-				if (this._value.length === 0) {
-					throw new Error('Parameter value cannot be blank.');
-				}
-
-				if (!(this._type instanceof QueryParameterType)) {
-					throw new Error('Parameter type must be an instance of QueryParameterType.');
-				}
-			}
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[QueryParameter]';
-			}
-		}, {
-			key: 'key',
-			get: function get() {
-				return this._key;
-			}
-
-			/**
-    * A value for the parameter, or the name of the variable which contains the parameter's
-    * value, where the interpretation is governed by {@link QueryParameter#type}.
-    *
-    * @public
-    * @returns {String}
-    */
-
-		}, {
-			key: 'value',
-			get: function get() {
-				return this._value;
-			}
-
-			/**
-    * The type of the parameter.
-    *
-    * @public
-    * @returns {QueryParameterType}
-    */
-
-		}, {
-			key: 'type',
-			get: function get() {
-				return this._type;
-			}
-
-			/**
-    * Indicates if the parameter is required.
-    *
-    * @public
-    * @returns {Boolean}
-    */
-
-		}, {
-			key: 'optional',
-			get: function get() {
-				return this._optional;
-			}
-		}]);
-
-		return QueryParameter;
-	}();
-
-	return QueryParameter;
-}();
-
-},{"./QueryParameterType":18,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30}],18:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Enum = require('@barchart/common-js/lang/Enum');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * Defines the mechanism used to select a querystring parameter
-  * value from a request payload.
-  *
-  * @public
-  * @extends {Enum}
-  * @param {String} code
-  * @param {String} description
-  */
-
-	var QueryParameterType = function (_Enum) {
-		_inherits(QueryParameterType, _Enum);
-
-		function QueryParameterType(code, description) {
-			_classCallCheck(this, QueryParameterType);
-
-			return _possibleConstructorReturn(this, (QueryParameterType.__proto__ || Object.getPrototypeOf(QueryParameterType)).call(this, code, description));
-		}
-
-		/**
-   * Uses the {@link Path#name} as the folder name.
-   *
-   * @static
-   * @returns {QueryParameterType}
-   */
-
-
-		_createClass(QueryParameterType, [{
-			key: 'toString',
-			value: function toString() {
-				return '[QueryParameterType (description=' + this.description + ')]';
-			}
-		}], [{
-			key: 'STATIC',
-			get: function get() {
-				return pathParameterTypeStatic;
-			}
-
-			/**
-    * Uses the {@link Path#name} as a variable to lookup the folder name.
-    *
-    * @static
-    * @returns {QueryParameterType}
-    */
-
-		}, {
-			key: 'VARIABLE',
-			get: function get() {
-				return pathParameterTypeVariable;
-			}
-		}]);
-
-		return QueryParameterType;
-	}(Enum);
-
-	var pathParameterTypeStatic = new QueryParameterType('STATIC', 'static');
-	var pathParameterTypeVariable = new QueryParameterType('VARIABLE', 'variable');
-
-	return QueryParameterType;
-}();
-
-},{"@barchart/common-js/lang/Enum":25}],19:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":20,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],14:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2351,7 +2014,7 @@ module.exports = function () {
 	return VerbType;
 }();
 
-},{"@barchart/common-js/lang/Enum":25}],20:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":20}],15:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2417,7 +2080,7 @@ module.exports = function () {
 	return CompositeRequestInterceptor;
 }();
 
-},{"./RequestInterceptor":22,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30}],21:[function(require,module,exports){
+},{"./RequestInterceptor":17,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],16:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2483,7 +2146,7 @@ module.exports = function () {
 	return CompositeResponseInterceptor;
 }();
 
-},{"./ResponseInterceptor":23,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30}],22:[function(require,module,exports){
+},{"./ResponseInterceptor":18,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],17:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2608,7 +2271,7 @@ module.exports = function () {
 	return RequestInterceptor;
 }();
 
-},{"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30}],23:[function(require,module,exports){
+},{"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],18:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2754,7 +2417,7 @@ module.exports = function () {
 	return ResponseInterceptor;
 }();
 
-},{"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30}],24:[function(require,module,exports){
+},{"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],19:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2903,7 +2566,7 @@ module.exports = function () {
 	return Disposable;
 }();
 
-},{"./assert":28}],25:[function(require,module,exports){
+},{"./assert":23}],20:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3045,7 +2708,7 @@ module.exports = function () {
 	return Enum;
 }();
 
-},{"./assert":28}],26:[function(require,module,exports){
+},{"./assert":23}],21:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3168,7 +2831,7 @@ module.exports = function () {
 	return Timestamp;
 }();
 
-},{"./assert":28,"./is":30,"moment-timezone":65}],27:[function(require,module,exports){
+},{"./assert":23,"./is":25,"moment-timezone":60}],22:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -3506,7 +3169,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":28,"./is":30}],28:[function(require,module,exports){
+},{"./assert":23,"./is":25}],23:[function(require,module,exports){
 'use strict';
 
 var is = require('./is');
@@ -3654,7 +3317,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./is":30}],29:[function(require,module,exports){
+},{"./is":25}],24:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -3826,7 +3489,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":28,"./is":30}],30:[function(require,module,exports){
+},{"./assert":23,"./is":25}],25:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -4049,7 +3712,7 @@ module.exports = function () {
 	};
 }();
 
-},{}],31:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 var array = require('./array'),
@@ -4194,7 +3857,7 @@ module.exports = function () {
 	return object;
 }();
 
-},{"./array":27,"./is":30}],32:[function(require,module,exports){
+},{"./array":22,"./is":25}],27:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert');
@@ -4386,7 +4049,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":28}],33:[function(require,module,exports){
+},{"./assert":23}],28:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4633,7 +4296,7 @@ module.exports = function () {
 	return Scheduler;
 }();
 
-},{"./../lang/Disposable":24,"./../lang/assert":28,"./../lang/is":30,"./../lang/object":31,"./../lang/promise":32}],34:[function(require,module,exports){
+},{"./../lang/Disposable":19,"./../lang/assert":23,"./../lang/is":25,"./../lang/object":26,"./../lang/promise":27}],29:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
     is = require('@barchart/common-js/lang/is');
 
@@ -4755,7 +4418,7 @@ module.exports = (() => {
 
 	return Watchlist;
 })();
-},{"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30}],35:[function(require,module,exports){
+},{"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],30:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -4831,7 +4494,7 @@ module.exports = (() => {
 	return WatchlistAction;
 })();
 
-},{"@barchart/common-js/lang/Enum":25,"@barchart/common-js/lang/assert":28}],36:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":20,"@barchart/common-js/lang/assert":23}],31:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
     Timestamp = require('@barchart/common-js/lang/Timestamp');
 
@@ -5055,9 +4718,9 @@ module.exports = (() => {
 
 	return WatchlistUser;
 })();
-},{"./Watchlist":34,"./WatchlistAction":35,"@barchart/common-js/lang/Timestamp":26,"@barchart/common-js/lang/assert":28}],37:[function(require,module,exports){
+},{"./Watchlist":29,"./WatchlistAction":30,"@barchart/common-js/lang/Timestamp":21,"@barchart/common-js/lang/assert":23}],32:[function(require,module,exports){
 module.exports = require('./lib/axios');
-},{"./lib/axios":39}],38:[function(require,module,exports){
+},{"./lib/axios":34}],33:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -5241,7 +4904,7 @@ module.exports = function xhrAdapter(config) {
 };
 
 }).call(this,require('_process'))
-},{"../core/createError":45,"./../core/settle":48,"./../helpers/btoa":52,"./../helpers/buildURL":53,"./../helpers/cookies":55,"./../helpers/isURLSameOrigin":57,"./../helpers/parseHeaders":59,"./../utils":61,"_process":62}],39:[function(require,module,exports){
+},{"../core/createError":40,"./../core/settle":43,"./../helpers/btoa":47,"./../helpers/buildURL":48,"./../helpers/cookies":50,"./../helpers/isURLSameOrigin":52,"./../helpers/parseHeaders":54,"./../utils":56,"_process":57}],34:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -5295,7 +4958,7 @@ module.exports = axios;
 // Allow use of default import syntax in TypeScript
 module.exports.default = axios;
 
-},{"./cancel/Cancel":40,"./cancel/CancelToken":41,"./cancel/isCancel":42,"./core/Axios":43,"./defaults":50,"./helpers/bind":51,"./helpers/spread":60,"./utils":61}],40:[function(require,module,exports){
+},{"./cancel/Cancel":35,"./cancel/CancelToken":36,"./cancel/isCancel":37,"./core/Axios":38,"./defaults":45,"./helpers/bind":46,"./helpers/spread":55,"./utils":56}],35:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5316,7 +4979,7 @@ Cancel.prototype.__CANCEL__ = true;
 
 module.exports = Cancel;
 
-},{}],41:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 var Cancel = require('./Cancel');
@@ -5375,14 +5038,14 @@ CancelToken.source = function source() {
 
 module.exports = CancelToken;
 
-},{"./Cancel":40}],42:[function(require,module,exports){
+},{"./Cancel":35}],37:[function(require,module,exports){
 'use strict';
 
 module.exports = function isCancel(value) {
   return !!(value && value.__CANCEL__);
 };
 
-},{}],43:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 var defaults = require('./../defaults');
@@ -5463,7 +5126,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = Axios;
 
-},{"./../defaults":50,"./../utils":61,"./InterceptorManager":44,"./dispatchRequest":46}],44:[function(require,module,exports){
+},{"./../defaults":45,"./../utils":56,"./InterceptorManager":39,"./dispatchRequest":41}],39:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -5517,7 +5180,7 @@ InterceptorManager.prototype.forEach = function forEach(fn) {
 
 module.exports = InterceptorManager;
 
-},{"./../utils":61}],45:[function(require,module,exports){
+},{"./../utils":56}],40:[function(require,module,exports){
 'use strict';
 
 var enhanceError = require('./enhanceError');
@@ -5537,7 +5200,7 @@ module.exports = function createError(message, config, code, request, response) 
   return enhanceError(error, config, code, request, response);
 };
 
-},{"./enhanceError":47}],46:[function(require,module,exports){
+},{"./enhanceError":42}],41:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -5625,7 +5288,7 @@ module.exports = function dispatchRequest(config) {
   });
 };
 
-},{"../cancel/isCancel":42,"../defaults":50,"./../helpers/combineURLs":54,"./../helpers/isAbsoluteURL":56,"./../utils":61,"./transformData":49}],47:[function(require,module,exports){
+},{"../cancel/isCancel":37,"../defaults":45,"./../helpers/combineURLs":49,"./../helpers/isAbsoluteURL":51,"./../utils":56,"./transformData":44}],42:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5648,7 +5311,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
   return error;
 };
 
-},{}],48:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 
 var createError = require('./createError');
@@ -5676,7 +5339,7 @@ module.exports = function settle(resolve, reject, response) {
   }
 };
 
-},{"./createError":45}],49:[function(require,module,exports){
+},{"./createError":40}],44:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -5698,7 +5361,7 @@ module.exports = function transformData(data, headers, fns) {
   return data;
 };
 
-},{"./../utils":61}],50:[function(require,module,exports){
+},{"./../utils":56}],45:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -5794,7 +5457,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 }).call(this,require('_process'))
-},{"./adapters/http":38,"./adapters/xhr":38,"./helpers/normalizeHeaderName":58,"./utils":61,"_process":62}],51:[function(require,module,exports){
+},{"./adapters/http":33,"./adapters/xhr":33,"./helpers/normalizeHeaderName":53,"./utils":56,"_process":57}],46:[function(require,module,exports){
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -5807,7 +5470,7 @@ module.exports = function bind(fn, thisArg) {
   };
 };
 
-},{}],52:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 'use strict';
 
 // btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
@@ -5845,7 +5508,7 @@ function btoa(input) {
 
 module.exports = btoa;
 
-},{}],53:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -5915,7 +5578,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
   return url;
 };
 
-},{"./../utils":61}],54:[function(require,module,exports){
+},{"./../utils":56}],49:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5931,7 +5594,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
     : baseURL;
 };
 
-},{}],55:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -5986,7 +5649,7 @@ module.exports = (
   })()
 );
 
-},{"./../utils":61}],56:[function(require,module,exports){
+},{"./../utils":56}],51:[function(require,module,exports){
 'use strict';
 
 /**
@@ -6002,7 +5665,7 @@ module.exports = function isAbsoluteURL(url) {
   return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
 };
 
-},{}],57:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -6072,7 +5735,7 @@ module.exports = (
   })()
 );
 
-},{"./../utils":61}],58:[function(require,module,exports){
+},{"./../utils":56}],53:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -6086,7 +5749,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
   });
 };
 
-},{"../utils":61}],59:[function(require,module,exports){
+},{"../utils":56}],54:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -6141,7 +5804,7 @@ module.exports = function parseHeaders(headers) {
   return parsed;
 };
 
-},{"./../utils":61}],60:[function(require,module,exports){
+},{"./../utils":56}],55:[function(require,module,exports){
 'use strict';
 
 /**
@@ -6170,7 +5833,7 @@ module.exports = function spread(callback) {
   };
 };
 
-},{}],61:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 'use strict';
 
 var bind = require('./helpers/bind');
@@ -6475,7 +6138,7 @@ module.exports = {
   trim: trim
 };
 
-},{"./helpers/bind":51,"is-buffer":63}],62:[function(require,module,exports){
+},{"./helpers/bind":46,"is-buffer":58}],57:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -6661,7 +6324,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],63:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -6684,7 +6347,7 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],64:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports={
 	"version": "2016j",
 	"zones": [
@@ -7284,11 +6947,11 @@ module.exports={
 		"Pacific/Pohnpei|Pacific/Ponape"
 	]
 }
-},{}],65:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 var moment = module.exports = require("./moment-timezone");
 moment.tz.load(require('./data/packed/latest.json'));
 
-},{"./data/packed/latest.json":64,"./moment-timezone":66}],66:[function(require,module,exports){
+},{"./data/packed/latest.json":59,"./moment-timezone":61}],61:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.11
 //! Copyright (c) JS Foundation and other contributors
@@ -7891,7 +7554,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 	return moment;
 }));
 
-},{"moment":67}],67:[function(require,module,exports){
+},{"moment":62}],62:[function(require,module,exports){
 //! moment.js
 //! version : 2.20.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
