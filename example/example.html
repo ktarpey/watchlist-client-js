@@ -21,14 +21,15 @@
     <script type="text/javascript">
 		'use strict';
 
-        var serviceAddress = Barchart.Watchlist.WatchlistServiceAddress.DEVELOPMENT;
-
 		var PageModel = function() {
 			var that = this;
 
 			that.gateway = null;
 
-			that.host = ko.observable(serviceAddress.host);
+			that.protocol = ko.observable('https');
+			that.host = ko.observable('54eorn43h5.execute-api.us-east-1.amazonaws.com/dev');
+			that.port = ko.observable(443);
+
 			that.user = ko.observable('14172034');
 
 			that.watchlistUser = ko.observable(null);
@@ -53,22 +54,10 @@
 			that.clientVersion = ko.observable();
 			that.serverVersion = ko.observable();
 
+			that.mode = ko.observable('View Console');
 			that.activeTemplate = ko.observable('disconnected-template');
 
 			that.symbol = ko.observable('');
-
-			that.mode = ko.observable('View Console');
-
-			that.address = ko.computed(function() {
-				const user = that.user();
-				const host = that.host();
-
-				if (user && host) {
-					return new Barchart.Watchlist.WatchlistServiceAddress('https', that.host(), 443)
-                } else {
-					return null;
-                }
-			});
 
 			that.canConnect = ko.computed(function() {
 				return !that.connecting() && !that.connected();
@@ -88,41 +77,44 @@
 			that.connect = function() {
 				that.disconnect();
 
-                var address = that.address();
-
-				if (!address) {
+				if (!that.host()) {
 					return;
 				}
 
 				that.connecting(true);
 
-				that.gateway = new Barchart.Watchlist.WatchlistGateway();
+				Barchart.Jwt.JwtProvider.forDevelopment(that.host(), that.user())
+                    .then((jwtGateway) => {
+	                    that.gateway = new Barchart.Watchlist.WatchlistGateway();
 
-				var action = 'watchlistGateway.start()';
+	                    var action = 'watchlistGateway.start()';
 
-                that.gateway.start(address, Barchart.Watchlist.WatchlistJwtProvider.forDevelopment(address, that.user()))
-                    .then((metadata) => {
-                        writeConsoleText(action);
-                        writeConsoleObject(metadata);
+	                    that.gateway.start(that.protocol(), that.host(), that.port(), jwtGateway.toRequestInterceptor())
+                            .then((metadata) => {
+                                writeConsoleText(action);
+                                writeConsoleObject(metadata);
 
-                        that.connecting(false);
-                        that.connected(true);
+                                that.connecting(false);
+                                that.connected(true);
 
-                        that.clientVersion(Barchart.Watchlist.version);
-                        that.serverVersion(metadata.semver);
+                                that.clientVersion(Barchart.Watchlist.version);
+                                that.serverVersion(metadata.server.semver);
 
-                        that.setConsoleMode();
+                                that.setConsoleMode();
 
-                        return true;
-                    }).catch((e) => {
-                        writeConsoleText(action);
-                        writeConsoleObject(e);
+                                return true;
+                            }).catch((e) => {
+	                    	    console.log(e);
 
-                        return false;
-                    }).then((read) => {
-                        if (read) {
-                            return that.readUser(false);
-                        }
+                                writeConsoleText(action);
+                                writeConsoleObject(e);
+
+                                return false;
+                            }).then((read) => {
+                                if (read) {
+                                    return that.readUser(false);
+                                }
+                            });
                     });
 			};
 			that.disconnect = function() {
@@ -186,8 +178,6 @@
                     }).catch((e) => {
                         writeConsoleText(action);
                         writeConsoleText(e);
-
-                        debugger;
 
                         that.watchlistUser(null);
                         that.watchlists([ ]);
@@ -493,12 +483,10 @@
 
 
     <script type="text/html" id="footer-template">
-        <!-- ko if: address() !== null -->
         <h4 class="pull-left" data-bind="visible: connected">
-            <span><span data-bind="text: address().host"></span>:<span data-bind="text: address().port"></span></span>
+            <span><span data-bind="text: host"></span>:<span data-bind="text: port"></span></span>
         </h4>
         <h4 class="pull-right">Client Version: <span data-bind="text: clientVersion"></span>; API Version: <span data-bind="text: serverVersion"></span></h4>
-        <!-- /ko -->
     </script>
 </head>
 <body>
