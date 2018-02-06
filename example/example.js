@@ -1,6 +1,19 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}(g.Barchart || (g.Barchart = {})).Watchlist = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
+var JwtGateway = require('@barchart/jwt-tgam-js/lib/JwtGateway');
+
+module.exports = function () {
+	'use strict';
+
+	window.Barchart = window.Barchart || {};
+	window.Barchart.Jwt = window.Barchart.Jwt || {};
+	window.Barchart.Jwt.JwtProvider = JwtGateway;
+}();
+
+},{"@barchart/jwt-tgam-js/lib/JwtGateway":28}],2:[function(require,module,exports){
+'use strict';
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -11,18 +24,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var assert = require('@barchart/common-js/lang/assert'),
     Disposable = require('@barchart/common-js/lang/Disposable'),
+    Enum = require('@barchart/common-js/lang/Enum'),
     is = require('@barchart/common-js/lang/is');
 
 var EndpointBuilder = require('@barchart/common-client-js/http/builders/EndpointBuilder'),
     Gateway = require('@barchart/common-client-js/http/Gateway'),
+    ProtocolType = require('@barchart/common-client-js/http/definitions/ProtocolType'),
     RequestInterceptor = require('@barchart/common-client-js/http/interceptors/RequestInterceptor'),
     ResponseInterceptor = require('@barchart/common-client-js/http/interceptors/ResponseInterceptor'),
     VerbType = require('@barchart/common-client-js/http/definitions/VerbType');
 
 var WatchlistUser = require('@barchart/watchlist-api-common/WatchlistUser');
-
-var WatchlistJwtProvider = require('./WatchlistJwtProvider'),
-    WatchlistServiceAddress = require('./WatchlistServiceAddress');
 
 module.exports = function () {
 	'use strict';
@@ -55,46 +67,49 @@ module.exports = function () {
    * containing the server's metadata.
    *
    * @public
-   * @param {WatchlistServiceAddress} serviceAddress - Instructions for contacting the remote service.
-   * @param {WatchlistJwtProvider} jwtProvider - A function which returns the appropriate JWT token itself (or a promise for it).
-   * @returns {Promise.<WatchlistServerMetadata>}
+   * @param {String} protocol - The protocol to use (either HTTP or HTTPS).
+   * @param {String} host - The host name of the Watchlist web service.
+   * @param {Number} port - The TCP port number of the Watchlist web service.
+   * @param {RequestInterceptor=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
+   * @returns {Promise.<WatchlistServiceMetadata>}
    */
 
 
 		_createClass(WatchlistGateway, [{
 			key: 'start',
-			value: function start(serviceAddress, jwtProvider) {
+			value: function start(protocol, host, port, requestInterceptor) {
 				var _this2 = this;
 
 				return Promise.resolve().then(function () {
 					if (_this2._startPromise === null) {
+						assert.argumentIsRequired(protocol, 'protocol', String);
+						assert.argumentIsRequired(host, 'host', String);
+						assert.argumentIsRequired(port, 'port', Number);
+						assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
+
+						var protocolType = Enum.fromCode(ProtocolType, protocol.toUpperCase());
+
+						var requestInterceptorToUse = void 0;
+
+						if (requestInterceptor) {
+							requestInterceptorToUse = requestInterceptor;
+						} else {
+							requestInterceptorToUse = RequestInterceptor.EMPTY;
+						}
+
 						_this2._startPromise = Promise.resolve().then(function () {
-							assert.argumentIsRequired(serviceAddress, 'serviceAddress', WatchlistServiceAddress, 'WatchlistServiceAddress');
-							assert.argumentIsRequired(jwtProvider, 'jwtProvider', WatchlistJwtProvider, 'WatchlistJwtProvider');
+							var readServiceMetadataEndpoint = EndpointBuilder.for('read-service-metadata').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
+								return pb.withLiteralParameter('v1').withLiteralParameter('service');
+							}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
 
-							var requestInterceptorForJwt = RequestInterceptor.fromDelegate(function (request) {
-								return Promise.resolve().then(function () {
-									return jwtProvider.getJwtToken();
-								}).then(function (token) {
-									request.headers = request.headers || {};
-									request.headers.Authorization = 'Bearer ' + token;
-
-									return request;
-								});
-							});
-
-							var readServerMetadataEndpoint = EndpointBuilder.for('read-metadata').withVerb(VerbType.GET).withProtocol(serviceAddress.protocol).withHost(serviceAddress.host).withPort(serviceAddress.port).withPathBuilder(function (pb) {
-								return pb.withLiteralParameter('v1').withLiteralParameter('server');
-							}).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
-
-							return Gateway.invoke(readServerMetadataEndpoint).then(function (metadata) {
-								_this2._readUserEndpoint = EndpointBuilder.for('read-user').withVerb(VerbType.GET).withProtocol(serviceAddress.protocol).withHost(serviceAddress.host).withPort(serviceAddress.port).withPathBuilder(function (pb) {
+							return Gateway.invoke(readServiceMetadataEndpoint).then(function (metadata) {
+								_this2._readUserEndpoint = EndpointBuilder.for('read-user').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 									return pb.withLiteralParameter('v1').withLiteralParameter('user');
-								}).withRequestInterceptor(requestInterceptorForJwt).withResponseInterceptor(responseInterceptorForDeserialization).endpoint;
+								}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForDeserialization).endpoint;
 
-								_this2._writeUserEndpoint = EndpointBuilder.for('write-user').withVerb(VerbType.PUT).withProtocol(serviceAddress.protocol).withHost(serviceAddress.host).withPort(serviceAddress.port).withPathBuilder(function (pb) {
+								_this2._writeUserEndpoint = EndpointBuilder.for('write-user').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 									return pb.withLiteralParameter('v1').withLiteralParameter('user');
-								}).withEntireBody().withRequestInterceptor(requestInterceptorForJwt).withRequestInterceptor(requestInterceptorForSerialization).endpoint;
+								}).withEntireBody().withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(requestInterceptorForSerialization).endpoint;
 
 								_this2._started = true;
 
@@ -193,310 +208,31 @@ module.exports = function () {
   * Watchlist server metadata.
   *
   * @public
-  * @typedef WatchlistServerMetadata
+  * @typedef WatchlistServiceMetadata
   * @type {Object}
-  * @property {String} semver - The server version.
+  * @property {String} service.semver - The server version.
+  * @property {String} user.id - The current user's identifier.
+  * @property {String} user.permissions - The current user's permission level.
   */
 
 	return WatchlistGateway;
 }();
 
-},{"./WatchlistJwtProvider":2,"./WatchlistServiceAddress":3,"@barchart/common-client-js/http/Gateway":5,"@barchart/common-client-js/http/builders/EndpointBuilder":6,"@barchart/common-client-js/http/definitions/VerbType":14,"@barchart/common-client-js/http/interceptors/RequestInterceptor":17,"@barchart/common-client-js/http/interceptors/ResponseInterceptor":18,"@barchart/common-js/lang/Disposable":19,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25,"@barchart/watchlist-api-common/WatchlistUser":31}],2:[function(require,module,exports){
+},{"@barchart/common-client-js/http/Gateway":4,"@barchart/common-client-js/http/builders/EndpointBuilder":5,"@barchart/common-client-js/http/definitions/ProtocolType":12,"@barchart/common-client-js/http/definitions/VerbType":13,"@barchart/common-client-js/http/interceptors/RequestInterceptor":16,"@barchart/common-client-js/http/interceptors/ResponseInterceptor":17,"@barchart/common-js/lang/Disposable":18,"@barchart/common-js/lang/Enum":19,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24,"@barchart/watchlist-api-common/WatchlistUser":31}],3:[function(require,module,exports){
 'use strict';
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var assert = require('@barchart/common-js/lang/assert'),
-    Disposable = require('@barchart/common-js/lang/Disposable'),
-    is = require('@barchart/common-js/lang/is'),
-    Scheduler = require('@barchart/common-js/timing/Scheduler');
-
-var EndpointBuilder = require('@barchart/common-client-js/http/builders/EndpointBuilder'),
-    Gateway = require('@barchart/common-client-js/http/Gateway'),
-    RequestInterceptor = require('@barchart/common-client-js/http/interceptors/RequestInterceptor'),
-    ResponseInterceptor = require('@barchart/common-client-js/http/interceptors/ResponseInterceptor'),
-    VerbType = require('@barchart/common-client-js/http/definitions/VerbType');
-
-var WatchlistServiceAddress = require('./WatchlistServiceAddress');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * A contract for generating JWT tokens.
-  *
-  * @public
-  * @interface
-  * @extends {Disposable}
-  */
-
-	var WatchlistJwtProvider = function (_Disposable) {
-		_inherits(WatchlistJwtProvider, _Disposable);
-
-		function WatchlistJwtProvider() {
-			_classCallCheck(this, WatchlistJwtProvider);
-
-			return _possibleConstructorReturn(this, (WatchlistJwtProvider.__proto__ || Object.getPrototypeOf(WatchlistJwtProvider)).call(this));
-		}
-
-		/**
-   * Returns a JWT token (or a promise for a JWT token).
-   *
-   * @public
-   * @returns {String|Promise<String>|null}
-   */
-
-
-		_createClass(WatchlistJwtProvider, [{
-			key: 'getJwtToken',
-			value: function getJwtToken() {
-				return this._getJwtToken();
-			}
-
-			/**
-    * @protected
-    * @ignore
-    * @returns {String|Promise<String>|null}
-    */
-
-		}, {
-			key: '_getJwtToken',
-			value: function _getJwtToken() {
-				return null;
-			}
-
-			/**
-    * Returns a {@link WatchlistJwtProvider} for use with the development environment.
-    *
-    * @param {WatchlistServiceAddress} serviceAddress
-    * @param {String} userId
-    */
-
-		}, {
-			key: '_onDispose',
-			value: function _onDispose() {
-				return;
-			}
-		}, {
-			key: 'toString',
-			value: function toString() {
-				return '[WatchlistJwtProvider]';
-			}
-		}], [{
-			key: 'forDevelopment',
-			value: function forDevelopment(serviceAddress, userId) {
-				return new WatchlistJwtProviderForDevelopment(serviceAddress, userId);
-			}
-		}]);
-
-		return WatchlistJwtProvider;
-	}(Disposable);
-
-	var WatchlistJwtProviderForDevelopment = function (_WatchlistJwtProvider) {
-		_inherits(WatchlistJwtProviderForDevelopment, _WatchlistJwtProvider);
-
-		function WatchlistJwtProviderForDevelopment(serviceAddress, userId) {
-			_classCallCheck(this, WatchlistJwtProviderForDevelopment);
-
-			var _this2 = _possibleConstructorReturn(this, (WatchlistJwtProviderForDevelopment.__proto__ || Object.getPrototypeOf(WatchlistJwtProviderForDevelopment)).call(this));
-
-			assert.argumentIsRequired(serviceAddress, 'serviceAddress', WatchlistServiceAddress, 'WatchlistServiceAddress');
-			assert.argumentIsRequired(userId, 'userId', String);
-
-			_this2._serviceAddress = serviceAddress;
-			_this2._userId = userId;
-
-			_this2._currentTokenPromise = null;
-
-			_this2._scheduler = new Scheduler();
-			return _this2;
-		}
-
-		_createClass(WatchlistJwtProviderForDevelopment, [{
-			key: '_getJwtToken',
-			value: function _getJwtToken() {
-				var _this3 = this;
-
-				if (this.getIsDisposed()) {
-					return Promise.reject('The JWT provider has been disposed.');
-				}
-
-				if (this._currentTokenPromise === null) {
-					var readJwtTokenForDevelopmentEndpoint = EndpointBuilder.for('read-jwt-token-for-development').withVerb(VerbType.GET).withProtocol(this._serviceAddress.protocol).withHost(this._serviceAddress.host).withPort(this._serviceAddress.port).withPathBuilder(function (pb) {
-						return pb.withLiteralParameter('v1').withLiteralParameter('token');
-					}).withQueryBuilder(function (qb) {
-						return qb.withLiteralParameter('userId', _this3._userId);
-					}).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
-
-					var refreshToken = function refreshToken() {
-						return Gateway.invoke(readJwtTokenForDevelopmentEndpoint, {});
-					};
-
-					this._currentTokenPromise = refreshToken();
-
-					this._scheduler.repeat(function () {
-						return _this3._currentTokenPromise = refreshToken();
-					}, 300000, 'Refresh JWT token');
-				}
-
-				return this._currentTokenPromise;
-			}
-		}, {
-			key: '_onDispose',
-			value: function _onDispose() {
-				this._scheduler.dispose();
-			}
-		}]);
-
-		return WatchlistJwtProviderForDevelopment;
-	}(WatchlistJwtProvider);
-
-	return WatchlistJwtProvider;
-}();
-
-},{"./WatchlistServiceAddress":3,"@barchart/common-client-js/http/Gateway":5,"@barchart/common-client-js/http/builders/EndpointBuilder":6,"@barchart/common-client-js/http/definitions/VerbType":14,"@barchart/common-client-js/http/interceptors/RequestInterceptor":17,"@barchart/common-client-js/http/interceptors/ResponseInterceptor":18,"@barchart/common-js/lang/Disposable":19,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25,"@barchart/common-js/timing/Scheduler":28}],3:[function(require,module,exports){
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var assert = require('@barchart/common-js/lang/assert'),
-    Enum = require('@barchart/common-js/lang/Enum'),
-    is = require('@barchart/common-js/lang/is');
-
-var ProtocolType = require('@barchart/common-client-js/http/definitions/ProtocolType'),
-    VerbType = require('@barchart/common-client-js/http/definitions/VerbType');
-
-module.exports = function () {
-	'use strict';
-
-	/**
-  * Instructions for accessing the remote Watchlist API.
-  *
-  * @public
-  * @param {String} protocol
-  * @param {String} host
-  * @param {Number} port
-  */
-
-	var WatchlistServiceAddress = function () {
-		function WatchlistServiceAddress(protocol, host, port) {
-			_classCallCheck(this, WatchlistServiceAddress);
-
-			assert.argumentIsRequired(protocol, 'protocol', String);
-			assert.argumentIsRequired(host, 'host', String);
-			assert.argumentIsRequired(port, 'port', Number);
-
-			assert.argumentIsValid(protocol, 'protocol', function (p) {
-				return Enum.fromCode(ProtocolType, p.toUpperCase()) !== null;
-			}, 'The "protocol" is unsupported.');
-			assert.argumentIsValid(host, 'host', function (h) {
-				return h.length !== 0;
-			}, 'The "host" cannot be a zero-length string.');
-			assert.argumentIsValid(port, 'port', function (p) {
-				return is.integer(p) && !(p < 0 || p > 65535);
-			}, 'The "port" is invalid.');
-
-			this._protocol = Enum.fromCode(ProtocolType, protocol.toUpperCase());
-			this._host = host;
-			this._port = port;
-		}
-
-		/**
-   * The {@link ProtocolType}.
-   *
-   * @public
-   * @returns {ProtocolType}
-   */
-
-
-		_createClass(WatchlistServiceAddress, [{
-			key: 'toString',
-			value: function toString() {
-				return '[WatchlistServiceAddress]';
-			}
-		}, {
-			key: 'protocol',
-			get: function get() {
-				return this._protocol;
-			}
-
-			/**
-    * The remote host.
-    *
-    * @public
-    * @returns {String}
-    */
-
-		}, {
-			key: 'host',
-			get: function get() {
-				return this._host;
-			}
-
-			/**
-    * The TCP port.
-    *
-    * @public
-    * @returns {Number}
-    */
-
-		}, {
-			key: 'port',
-			get: function get() {
-				return this._port;
-			}
-
-			/**
-    * The address of the development environment.
-    * 
-    * @public
-    * @static
-    * @returns {WatchlistServiceAddress}
-    * @constructor
-    */
-
-		}], [{
-			key: 'DEVELOPMENT',
-			get: function get() {
-				return development;
-			}
-		}]);
-
-		return WatchlistServiceAddress;
-	}();
-
-	var development = new WatchlistServiceAddress('https', '54eorn43h5.execute-api.us-east-1.amazonaws.com/dev', 443);
-
-	return WatchlistServiceAddress;
-}();
-
-},{"@barchart/common-client-js/http/definitions/ProtocolType":13,"@barchart/common-client-js/http/definitions/VerbType":14,"@barchart/common-js/lang/Enum":20,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],4:[function(require,module,exports){
-'use strict';
-
-var WatchlistGateway = require('./gateway/WatchlistGateway'),
-    WatchlistJwtProvider = require('./gateway/WatchlistJwtProvider'),
-    WatchlistServiceAddress = require('./gateway/WatchlistServiceAddress');
+var WatchlistGateway = require('./gateway/WatchlistGateway');
 
 module.exports = function () {
 	'use strict';
 
 	return {
 		WatchlistGateway: WatchlistGateway,
-		WatchlistJwtProvider: WatchlistJwtProvider,
-		WatchlistServiceAddress: WatchlistServiceAddress,
-		version: '1.0.7'
+		version: '1.0.8'
 	};
 }();
 
-},{"./gateway/WatchlistGateway":1,"./gateway/WatchlistJwtProvider":2,"./gateway/WatchlistServiceAddress":3}],5:[function(require,module,exports){
+},{"./gateway/WatchlistGateway":2}],4:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -668,6 +404,8 @@ module.exports = function () {
 								return responsePromise.then(function (response) {
 									return resolve(response);
 								});
+							}).catch(function (e) {
+								reject(e);
 							});
 						});
 					});
@@ -688,7 +426,7 @@ module.exports = function () {
 	return Gateway;
 }();
 
-},{"./definitions/BodyType":9,"./definitions/Endpoint":10,"./definitions/Parameter":11,"./definitions/VerbType":14,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/attributes":24,"@barchart/common-js/lang/is":25,"@barchart/common-js/lang/promise":27,"axios":32}],6:[function(require,module,exports){
+},{"./definitions/BodyType":8,"./definitions/Endpoint":9,"./definitions/Parameter":10,"./definitions/VerbType":13,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/attributes":23,"@barchart/common-js/lang/is":24,"@barchart/common-js/lang/promise":26,"axios":32}],5:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -830,7 +568,7 @@ module.exports = function () {
 
 				var headers = builder.parameters;
 
-				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, path, this.endpoint.query, headers, this.endpoint.body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
+				this._endpoint = new Endpoint(this.endpoint.name, this.endpoint.verb, this.endpoint.protocol, this.endpoint.host, this.endpoint.port, this.endpoint.path, this.endpoint.query, headers, this.endpoint.body, this.endpoint.requestInterceptor, this.endpoint.responseInterceptor);
 
 				return this;
 			}
@@ -1014,7 +752,7 @@ module.exports = function () {
 	return EndpointBuilder;
 }();
 
-},{"./../definitions/Body":8,"./../definitions/BodyType":9,"./../definitions/Endpoint":10,"./../definitions/Parameters":12,"./../definitions/ProtocolType":13,"./../definitions/VerbType":14,"./../interceptors/CompositeRequestInterceptor":15,"./../interceptors/CompositeResponseInterceptor":16,"./../interceptors/RequestInterceptor":17,"./../interceptors/ResponseInterceptor":18,"./ParametersBuilder":7,"@barchart/common-js/lang/assert":23}],7:[function(require,module,exports){
+},{"./../definitions/Body":7,"./../definitions/BodyType":8,"./../definitions/Endpoint":9,"./../definitions/Parameters":11,"./../definitions/ProtocolType":12,"./../definitions/VerbType":13,"./../interceptors/CompositeRequestInterceptor":14,"./../interceptors/CompositeResponseInterceptor":15,"./../interceptors/RequestInterceptor":16,"./../interceptors/ResponseInterceptor":17,"./ParametersBuilder":6,"@barchart/common-js/lang/assert":22}],6:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1160,7 +898,7 @@ module.exports = function () {
 	return ParametersBuilder;
 }();
 
-},{"./../definitions/Parameter":11,"./../definitions/Parameters":12,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/attributes":24,"@barchart/common-js/lang/is":25}],8:[function(require,module,exports){
+},{"./../definitions/Parameter":10,"./../definitions/Parameters":11,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/attributes":23,"@barchart/common-js/lang/is":24}],7:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1249,7 +987,7 @@ module.exports = function () {
 	return Body;
 }();
 
-},{"./BodyType":9,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],9:[function(require,module,exports){
+},{"./BodyType":8,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],8:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1341,7 +1079,7 @@ module.exports = function () {
 	return BodyType;
 }();
 
-},{"@barchart/common-js/lang/Enum":20}],10:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":19}],9:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1386,9 +1124,9 @@ module.exports = function () {
 
 			this._name = name || null;
 			this._verb = verb || VerbType.GET;
-			this._protocol = protocol || null;
+			this._protocol = protocol || ProtocolType.HTTPS;
 			this._host = host || null;
-			this._port = port || this.verb.defaultPort;
+			this._port = port || this._protocol.defaultPort;
 			this._path = path || new Parameters();
 			this._query = query || new Parameters();
 			this._headers = headers || new Parameters();
@@ -1607,7 +1345,7 @@ module.exports = function () {
 	return Endpoint;
 }();
 
-},{"./../interceptors/RequestInterceptor":17,"./../interceptors/ResponseInterceptor":18,"./Body":8,"./Parameter":11,"./Parameters":12,"./ProtocolType":13,"./VerbType":14,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],11:[function(require,module,exports){
+},{"./../interceptors/RequestInterceptor":16,"./../interceptors/ResponseInterceptor":17,"./Body":7,"./Parameter":10,"./Parameters":11,"./ProtocolType":12,"./VerbType":13,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],10:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1718,7 +1456,7 @@ module.exports = function () {
 	return Parameter;
 }();
 
-},{"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],12:[function(require,module,exports){
+},{"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],11:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1797,7 +1535,7 @@ module.exports = function () {
 	return Parameters;
 }();
 
-},{"./Parameter":11,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],13:[function(require,module,exports){
+},{"./Parameter":10,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],12:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1911,7 +1649,7 @@ module.exports = function () {
 	return ProtocolType;
 }();
 
-},{"@barchart/common-js/lang/Enum":20,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],14:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":19,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],13:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2014,7 +1752,7 @@ module.exports = function () {
 	return VerbType;
 }();
 
-},{"@barchart/common-js/lang/Enum":20}],15:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":19}],14:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2080,7 +1818,7 @@ module.exports = function () {
 	return CompositeRequestInterceptor;
 }();
 
-},{"./RequestInterceptor":17,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],16:[function(require,module,exports){
+},{"./RequestInterceptor":16,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],15:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2146,7 +1884,7 @@ module.exports = function () {
 	return CompositeResponseInterceptor;
 }();
 
-},{"./ResponseInterceptor":18,"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],17:[function(require,module,exports){
+},{"./ResponseInterceptor":17,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],16:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2271,7 +2009,7 @@ module.exports = function () {
 	return RequestInterceptor;
 }();
 
-},{"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],18:[function(require,module,exports){
+},{"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],17:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2417,7 +2155,7 @@ module.exports = function () {
 	return ResponseInterceptor;
 }();
 
-},{"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],19:[function(require,module,exports){
+},{"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],18:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2566,7 +2304,7 @@ module.exports = function () {
 	return Disposable;
 }();
 
-},{"./assert":23}],20:[function(require,module,exports){
+},{"./assert":22}],19:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2708,7 +2446,7 @@ module.exports = function () {
 	return Enum;
 }();
 
-},{"./assert":23}],21:[function(require,module,exports){
+},{"./assert":22}],20:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2831,7 +2569,7 @@ module.exports = function () {
 	return Timestamp;
 }();
 
-},{"./assert":23,"./is":25,"moment-timezone":60}],22:[function(require,module,exports){
+},{"./assert":22,"./is":24,"moment-timezone":60}],21:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -3169,7 +2907,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":23,"./is":25}],23:[function(require,module,exports){
+},{"./assert":22,"./is":24}],22:[function(require,module,exports){
 'use strict';
 
 var is = require('./is');
@@ -3317,7 +3055,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./is":25}],24:[function(require,module,exports){
+},{"./is":24}],23:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -3489,7 +3227,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":23,"./is":25}],25:[function(require,module,exports){
+},{"./assert":22,"./is":24}],24:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -3712,7 +3450,7 @@ module.exports = function () {
 	};
 }();
 
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 var array = require('./array'),
@@ -3857,7 +3595,7 @@ module.exports = function () {
 	return object;
 }();
 
-},{"./array":22,"./is":25}],27:[function(require,module,exports){
+},{"./array":21,"./is":24}],26:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert');
@@ -4049,7 +3787,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":23}],28:[function(require,module,exports){
+},{"./assert":22}],27:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4296,7 +4034,246 @@ module.exports = function () {
 	return Scheduler;
 }();
 
-},{"./../lang/Disposable":19,"./../lang/assert":23,"./../lang/is":25,"./../lang/object":26,"./../lang/promise":27}],29:[function(require,module,exports){
+},{"./../lang/Disposable":18,"./../lang/assert":22,"./../lang/is":24,"./../lang/object":25,"./../lang/promise":26}],28:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var assert = require('@barchart/common-js/lang/assert'),
+    Disposable = require('@barchart/common-js/lang/Disposable'),
+    Enum = require('@barchart/common-js/lang/Enum'),
+    is = require('@barchart/common-js/lang/is'),
+    Scheduler = require('@barchart/common-js/timing/Scheduler');
+
+var EndpointBuilder = require('@barchart/common-client-js/http/builders/EndpointBuilder'),
+    Gateway = require('@barchart/common-client-js/http/Gateway'),
+    ProtocolType = require('@barchart/common-client-js/http/definitions/ProtocolType'),
+    RequestInterceptor = require('@barchart/common-client-js/http/interceptors/RequestInterceptor'),
+    ResponseInterceptor = require('@barchart/common-client-js/http/interceptors/ResponseInterceptor'),
+    VerbType = require('@barchart/common-client-js/http/definitions/VerbType');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * Web service gateway for invoking the Watchlist API.
+  *
+  * @public
+  * @extends {Disposable}
+  */
+
+	var JwtGateway = function (_Disposable) {
+		_inherits(JwtGateway, _Disposable);
+
+		function JwtGateway(endpoint) {
+			_classCallCheck(this, JwtGateway);
+
+			var _this = _possibleConstructorReturn(this, (JwtGateway.__proto__ || Object.getPrototypeOf(JwtGateway)).call(this));
+
+			_this._started = false;
+			_this._startPromise = null;
+
+			_this._endpoint = endpoint;
+			return _this;
+		}
+
+		/**
+   * Initializes the connection to the remote server and returns a promise
+   * containing the server's metadata.
+   *
+   * @public
+   * @returns {Promise.<Boolean>}
+   */
+
+
+		_createClass(JwtGateway, [{
+			key: 'start',
+			value: function start() {
+				var _this2 = this;
+
+				return Promise.resolve().then(function () {
+					if (_this2._startPromise === null) {
+						_this2._startPromise = Promise.resolve().then(function () {
+							_this2._started = true;
+
+							return _this2._started;
+						});
+					}
+
+					return _this2._startPromise;
+				});
+			}
+
+			/**
+    * Retrieves a JWT token from the remote server.
+    *
+    * @public
+    * @returns {Promise.<String>}
+    */
+
+		}, {
+			key: 'readToken',
+			value: function readToken() {
+				var _this3 = this;
+
+				return Promise.resolve().then(function () {
+					checkStart.call(_this3);
+
+					return Gateway.invoke(_this3._endpoint);
+				});
+			}
+
+			/**
+    * Returns a {@link RequestInterceptor} suitable for use with other API calls.
+    *
+    * @public
+    * @param {Number=} refreshInterval - Interval, in milliseconds, for refreshing cached token. If zero, no caching is used.
+    * @returns {RequestInterceptor}
+    */
+
+		}, {
+			key: 'toRequestInterceptor',
+			value: function toRequestInterceptor(refreshInterval) {
+				var _this4 = this;
+
+				assert.argumentIsOptional(refreshInterval, 'refreshInterval', Number);
+
+				var scheduler = new Scheduler();
+
+				var refreshToken = function refreshToken() {
+					return scheduler.backoff(function () {
+						return _this4.readToken();
+					}, 100, 'Read JWT token', 3);
+				};
+
+				var cachePromise = null;
+
+				if (refreshInterval > 0) {
+					cachePromise = refreshToken();
+
+					scheduler.repeat(function () {
+						return cachePromise = refreshToken();
+					});
+				}
+
+				var delegate = function delegate(options) {
+					var tokenPromise = void 0;
+
+					if (cachePromise !== null) {
+						tokenPromise = cachePromise;
+					} else {
+						tokenPromise = refreshToken();
+					}
+
+					return tokenPromise.then(function (token) {
+						options.headers = options.headers || {};
+						options.headers.Authorization = 'Bearer ' + token;
+
+						return options;
+					});
+				};
+
+				return RequestInterceptor.fromDelegate(delegate);
+			}
+
+			/**
+    * Creates and starts a new {@link JwtGateway} for use in the development environment.
+    *
+    * @public
+    * @static
+    * @param {String} host
+    * @param {String} userId
+    * @returns {Promise.<JwtGateway>}
+    */
+
+		}, {
+			key: '_onDispose',
+			value: function _onDispose() {
+				return;
+			}
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[JwtGateway]';
+			}
+		}], [{
+			key: 'forDevelopment',
+			value: function forDevelopment(host, userId) {
+				return start(new JwtGateway(_forDevelopment(host, userId)));
+			}
+
+			/**
+    * Creates and starts a new {@link JwtGateway} for use in the staging environment.
+    *
+    * @public
+    * @static
+    * @returns {Promise.<JwtGateway>}
+    */
+
+		}, {
+			key: 'forStaging',
+			value: function forStaging() {
+				return start(new JwtGateway(_forProduction('gamservices.stg2.theglobeandmail.com/usermanagement/public/v3/user/sso')));
+			}
+
+			/**
+    * Creates and starts a new {@link JwtGateway} for use in the production environment.
+    *
+    * @public
+    * @static
+    * @returns {Promise.<JwtGateway>}
+    */
+
+		}, {
+			key: 'forProduction',
+			value: function forProduction() {
+				return start(new JwtGateway(_forProduction('gamservices.stg2.theglobeandmail.com/usermanagement/public/v3/user/sso')));
+			}
+		}]);
+
+		return JwtGateway;
+	}(Disposable);
+
+	function start(gateway) {
+		return gateway.start().then(function () {
+			return gateway;
+		});
+	}
+
+	function checkStart() {
+		if (this.getIsDisposed()) {
+			throw new Error('Unable to use gateway, the gateway has been disposed.');
+		}
+
+		if (!this._started) {
+			throw new Error('Unable to use gateway, the gateway has not started.');
+		}
+	}
+
+	function _forDevelopment(host, userId) {
+		return EndpointBuilder.for('read-jwt-token-for-development').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(host).withPathBuilder(function (pb) {
+			return pb.withLiteralParameter('v1').withLiteralParameter('token');
+		}).withQueryBuilder(function (qb) {
+			return qb.withLiteralParameter('userId', userId);
+		}).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
+	}
+
+	function _forProduction(host) {
+		return EndpointBuilder.for('read-jwt-token-for-production').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHeadersBuilder(function (hb) {
+			return hb.withLiteralParameter('X-GAM-CLIENT-APP-ID', '1348').withLiteralParameter('X-GAM-CLIENT-APP-SECRET', '1bcc5c85-e833-4936-9313-abe5dfdcef76');
+		}).withHost(host).withResponseInterceptor(ResponseInterceptor.DATA).endpoint;
+	}
+
+	return JwtGateway;
+}();
+
+},{"@barchart/common-client-js/http/Gateway":4,"@barchart/common-client-js/http/builders/EndpointBuilder":5,"@barchart/common-client-js/http/definitions/ProtocolType":12,"@barchart/common-client-js/http/definitions/VerbType":13,"@barchart/common-client-js/http/interceptors/RequestInterceptor":16,"@barchart/common-client-js/http/interceptors/ResponseInterceptor":17,"@barchart/common-js/lang/Disposable":18,"@barchart/common-js/lang/Enum":19,"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24,"@barchart/common-js/timing/Scheduler":27}],29:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
     is = require('@barchart/common-js/lang/is');
 
@@ -4418,7 +4395,7 @@ module.exports = (() => {
 
 	return Watchlist;
 })();
-},{"@barchart/common-js/lang/assert":23,"@barchart/common-js/lang/is":25}],30:[function(require,module,exports){
+},{"@barchart/common-js/lang/assert":22,"@barchart/common-js/lang/is":24}],30:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -4494,7 +4471,7 @@ module.exports = (() => {
 	return WatchlistAction;
 })();
 
-},{"@barchart/common-js/lang/Enum":20,"@barchart/common-js/lang/assert":23}],31:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":19,"@barchart/common-js/lang/assert":22}],31:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
     Timestamp = require('@barchart/common-js/lang/Timestamp');
 
@@ -4718,7 +4695,7 @@ module.exports = (() => {
 
 	return WatchlistUser;
 })();
-},{"./Watchlist":29,"./WatchlistAction":30,"@barchart/common-js/lang/Timestamp":21,"@barchart/common-js/lang/assert":23}],32:[function(require,module,exports){
+},{"./Watchlist":29,"./WatchlistAction":30,"@barchart/common-js/lang/Timestamp":20,"@barchart/common-js/lang/assert":22}],32:[function(require,module,exports){
 module.exports = require('./lib/axios');
 },{"./lib/axios":34}],33:[function(require,module,exports){
 (function (process){
@@ -12091,5 +12068,5 @@ return hooks;
 
 })));
 
-},{}]},{},[4])(4)
+},{}]},{},[1,3])(3)
 });
