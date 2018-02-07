@@ -122,16 +122,6 @@
 					return;
                 }
 
-                if (that.currentTokenPromise) {
-	                that.currentTokenPromise = null;
-                }
-
-                if (that.currentTokenInterval) {
-	                window.clearInterval(that.currentTokenInterval);
-
-	                that.currentTokenInterval = null;
-                }
-
                 if (that.gateway) {
 	                that.gateway.dispose();
 	                that.gateway = null;
