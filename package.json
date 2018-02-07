@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/barchart/barchart-common-client-js.git"
+    "url": "git+ssh://git@github.com/barchart/barchart/watchlist-client-js.git"
   },
   "keywords": [
     "Barchart",
@@ -62,9 +62,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/barchart-common-client-js/issues"
+    "url": "https://github.com/barchart/watchlist-client-js/issues"
   },
-  "homepage": "https://github.com/barchart-common-client-js#readme",
+  "homepage": "https://github.com/barchart/watchlist-client-js#readme",
   "directories": {
     "test": "test"
   }
