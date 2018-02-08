@@ -228,7 +228,7 @@ module.exports = function () {
 
 	return {
 		WatchlistGateway: WatchlistGateway,
-		version: '1.0.11'
+		version: '1.0.12'
 	};
 }();
 
@@ -4291,7 +4291,9 @@ module.exports = (() => {
 		    assert.argumentIsRequired(id, 'id', String);
 
 			this._id = id;
+
 			this._email = false;
+			this._view = null;
 
 			this._entries = [];
 		}
@@ -4327,6 +4329,28 @@ module.exports = (() => {
 			assert.argumentIsRequired(email, 'email', Boolean);
 
 			this._email = email;
+		}
+
+		/**
+		 * Gets the name of the default view.
+		 *
+		 * @public
+		 * @returns {String}
+		 */
+		get view() {
+			return this._view;
+		}
+
+		/**
+		 * Sets the name of the default view.
+		 *
+		 * @public
+		 * @param {String} view
+		 */
+		set view(view) {
+			assert.argumentIsRequired(view, 'view', String);
+
+			this._view = view;
 		}
 
 		/**
@@ -4375,6 +4399,7 @@ module.exports = (() => {
 			const plain = {
                 id: this.id,
 				email: this.email,
+				view: this.view,
                 entries: this.entries.map((e) => e)
             };
 
@@ -4396,6 +4421,10 @@ module.exports = (() => {
 
 			if (is.boolean(obj.email) && obj.email) {
 				watchlist.email = true;
+			}
+
+			if (is.string(obj.view) && obj.view.length !== 0) {
+				watchlist.view = obj.view;
 			}
 
 			if (is.array(obj.entries)) {
