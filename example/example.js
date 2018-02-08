@@ -1,4 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}(g.Barchart || (g.Barchart = {})).Watchlist = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}(g.Barchart || (g.Barchart = {})).Watchlist = f()}})(function(){var define,module,exports;return (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
 'use strict';
 
 var JwtGateway = require('@barchart/jwt-tgam-js/lib/JwtGateway');
@@ -228,7 +228,7 @@ module.exports = function () {
 
 	return {
 		WatchlistGateway: WatchlistGateway,
-		version: '1.0.9'
+		version: '1.0.10'
 	};
 }();
 
@@ -4257,9 +4257,7 @@ module.exports = function () {
 	}
 
 	function _forDevelopment(host, userId) {
-		return EndpointBuilder.for('read-jwt-token-for-development').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHeadersBuilder(function (hb) {
-			return hb.withLiteralParameter('X-GAM-CLIENT-APP-ID', '1348').withLiteralParameter('X-GAM-CLIENT-APP-SECRET', '1bcc5c85-e833-4936-9313-abe5dfdcef76');
-		}).withHost(host).withPathBuilder(function (pb) {
+		return EndpointBuilder.for('read-jwt-token-for-development').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(host).withPathBuilder(function (pb) {
 			return pb.withLiteralParameter('v1').withLiteralParameter('token');
 		}).withQueryBuilder(function (qb) {
 			return qb.withLiteralParameter('userId', userId);
@@ -4293,6 +4291,7 @@ module.exports = (() => {
 		    assert.argumentIsRequired(id, 'id', String);
 
 			this._id = id;
+			this._email = false;
 
 			this._entries = [];
 		}
@@ -4309,11 +4308,33 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Indicates if an email communication regarding this watchlist is enabled.
+		 *
+		 * @public
+		 * @returns {Boolean}
+		 */
+		get email() {
+			return this._email;
+		}
+
+		/**
+		 * Sets the email communication flag for this watchlist.
+		 *
+		 * @public
+		 * @param {Boolean} email
+		 */
+		set email(email) {
+			assert.argumentIsRequired(email, 'email', Boolean);
+
+			this._email = email;
+		}
+
+		/**
 		 * Gets the watchlist's entries.
 		 *
 		 * @public
 		 * @readonly
-		 * @returns {Array<WatchlistEntry>}
+		 * @returns {Array.<WatchlistEntry>}
 		 */
 		get entries() {
 			return this._entries;
@@ -4353,6 +4374,7 @@ module.exports = (() => {
 		toJSObj() {
 			const plain = {
                 id: this.id,
+				email: this.email,
                 entries: this.entries.map((e) => e)
             };
 
@@ -4371,6 +4393,10 @@ module.exports = (() => {
 			assert.argumentIsRequired(obj.id, 'obj.id', String);
 
 			const watchlist = new Watchlist(obj.id);
+
+			if (is.boolean(obj.email) && obj.email) {
+				watchlist.email = true;
+			}
 
 			if (is.array(obj.entries)) {
 				obj.entries.map((e) => watchlist.addEntry(e));
@@ -4513,6 +4539,17 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Returns true if any of the user's watchlist is flagged for email communication.
+		 *
+		 * @public
+		 * @readonly
+		 * @type {Boolean}
+		 */
+		get email() {
+			return Object.keys(this.watchlists).some(key => this.watchlists[key].email);
+		}
+
+		/**
          * Gets the last {@link WatchlistAction} performed on the instance.
          *
          * @public
@@ -4622,7 +4659,8 @@ module.exports = (() => {
 		 */
 		toJSObj() {
 			const plain = {
-				id: this._id,
+				id: this.id,
+				email: this.email,
 				lastAction: this.lastAction,
 				lastUpdate: this.lastUpdate
 			};
