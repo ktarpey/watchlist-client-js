@@ -24,7 +24,7 @@
     "@barchart/common-client-js": "1.1.13",
     "@barchart/common-js": "3.2.19",
     "@barchart/jwt-tgam-js": "1.0.10",
-    "@barchart/watchlist-api-common": "1.1.17"
+    "@barchart/watchlist-api-common": "1.1.18"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
