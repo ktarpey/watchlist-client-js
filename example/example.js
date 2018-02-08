@@ -228,7 +228,7 @@ module.exports = function () {
 
 	return {
 		WatchlistGateway: WatchlistGateway,
-		version: '1.0.8'
+		version: '1.0.9'
 	};
 }();
 
@@ -4257,7 +4257,9 @@ module.exports = function () {
 	}
 
 	function _forDevelopment(host, userId) {
-		return EndpointBuilder.for('read-jwt-token-for-development').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHost(host).withPathBuilder(function (pb) {
+		return EndpointBuilder.for('read-jwt-token-for-development').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHeadersBuilder(function (hb) {
+			return hb.withLiteralParameter('X-GAM-CLIENT-APP-ID', '1348').withLiteralParameter('X-GAM-CLIENT-APP-SECRET', '1bcc5c85-e833-4936-9313-abe5dfdcef76');
+		}).withHost(host).withPathBuilder(function (pb) {
 			return pb.withLiteralParameter('v1').withLiteralParameter('token');
 		}).withQueryBuilder(function (qb) {
 			return qb.withLiteralParameter('userId', userId);
