@@ -53,7 +53,7 @@ module.exports = function () {
 	var WatchlistGateway = function (_Disposable) {
 		_inherits(WatchlistGateway, _Disposable);
 
-		function WatchlistGateway(protocol, host, port, requestInterceptor) {
+		function WatchlistGateway(protocol, host, port, requestInterceptor, description) {
 			_classCallCheck(this, WatchlistGateway);
 
 			var _this = _possibleConstructorReturn(this, (WatchlistGateway.__proto__ || Object.getPrototypeOf(WatchlistGateway)).call(this));
@@ -280,7 +280,7 @@ module.exports = function () {
 
 	return {
 		WatchlistGateway: WatchlistGateway,
-		version: '1.0.12'
+		version: '1.0.13'
 	};
 }();
 
