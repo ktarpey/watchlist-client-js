@@ -26,10 +26,6 @@
 
 			that.gateway = null;
 
-			that.protocol = ko.observable('https');
-			that.host = ko.observable('54eorn43h5.execute-api.us-east-1.amazonaws.com/dev');
-			that.port = ko.observable(443);
-
 			that.user = ko.observable('14172034');
 
 			that.watchlistUser = ko.observable(null);
@@ -77,19 +73,15 @@
 			that.connect = function() {
 				that.disconnect();
 
-				if (!that.host()) {
-					return;
-				}
-
 				that.connecting(true);
 
-				Barchart.Jwt.JwtProvider.forDevelopment(that.host(), that.user())
-                    .then((jwtGateway) => {
-	                    that.gateway = new Barchart.Watchlist.WatchlistGateway();
+				Barchart.Watchlist.WatchlistGateway.forDevelopment(Barchart.Jwt.JwtProvider.forDevelopmentClient(that.user()))
+                    .then((gateway) => {
+					    that.gateway = gateway;
 
-	                    var action = 'watchlistGateway.start()';
+	                    var action = 'watchlistGateway.readServiceMetadataEndpoint()';
 
-	                    that.gateway.start(that.protocol(), that.host(), that.port(), jwtGateway.toRequestInterceptor())
+	                    that.gateway.readServiceMetadata()
                             .then((metadata) => {
                                 writeConsoleText(action);
                                 writeConsoleObject(metadata);
@@ -358,10 +350,6 @@
         <div class="container-center-outer">
             <div class="container-center-inner">
                 <form class="form-horizontal login">
-                    <div class="form-group" data-bind="css: { 'has-error': host().length === 0 }, event: { keypress: handleLoginKeypress }">
-                        <label class="pull-left">Host</label>
-                        <input class="form-control" data-bind="textInput: host" type="text" placeholder="Server">
-                    </div>
                     <div class="form-group" data-bind="css: { 'has-error': user().length === 0 }, event: { keypress: handleLoginKeypress }">
                         <label class="pull-left">User</label>
                         <input class="form-control" data-bind="textInput: user" type="text" placeholder="User">
@@ -474,7 +462,6 @@
 
     <script type="text/html" id="footer-template">
         <h4 class="pull-left" data-bind="visible: connected">
-            <span><span data-bind="text: host"></span>:<span data-bind="text: port"></span></span>
         </h4>
         <h4 class="pull-right">Client Version: <span data-bind="text: clientVersion"></span>; API Version: <span data-bind="text: serverVersion"></span></h4>
     </script>
