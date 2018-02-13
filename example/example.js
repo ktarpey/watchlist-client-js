@@ -220,7 +220,7 @@ module.exports = function () {
 				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
 					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
 
-					return start(new WatchlistGateway('https', '54eorn43h5.execute-api.us-east-1.amazonaws.com/dev', 443, requestInterceptor));
+					return start(new WatchlistGateway('https', '6o6d1jqrwa.execute-api.us-east-1.amazonaws.com/prod', 443, requestInterceptor));
 				});
 			}
 		}]);
@@ -280,7 +280,7 @@ module.exports = function () {
 
 	return {
 		WatchlistGateway: WatchlistGateway,
-		version: '1.0.14'
+		version: '1.0.15'
 	};
 }();
 
