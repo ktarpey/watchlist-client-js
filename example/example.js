@@ -281,7 +281,7 @@ module.exports = function () {
 
 	return {
 		WatchlistGateway: WatchlistGateway,
-		version: '1.0.18'
+		version: '1.0.19'
 	};
 }();
 
