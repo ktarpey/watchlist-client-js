@@ -106,7 +106,10 @@
                                 return false;
                             }).then((read) => {
                                 if (read) {
-                                    return that.readUser(false);
+                                    return that.readUser(false)
+                                        .then((user) => {
+                                    	    that.setWatchlistMode();
+                                        });
                                 }
                             });
                     });
