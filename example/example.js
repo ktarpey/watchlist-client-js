@@ -74,15 +74,15 @@ module.exports = function () {
 
 			_this._readServiceMetadataEndpoint = EndpointBuilder.for('read-service-metadata', 'check watchlist service status').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				return pb.withLiteralParameter('version', 'v1').withLiteralParameter('service', 'service');
-			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(ResponseInterceptor.DATA).withErrorInterceptor(ErrorInterceptor.LAMBDA_AUTHORIZATION_FAILURE).endpoint;
+			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(ResponseInterceptor.DATA).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
-			_this._readUserEndpoint = EndpointBuilder.for('read-user', 'query user watchlist').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
+			_this._readUserEndpoint = EndpointBuilder.for('read-user', 'read your watchlists').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				return pb.withLiteralParameter('version', 'v1').withLiteralParameter('user', 'user');
-			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForDeserialization).withErrorInterceptor(ErrorInterceptor.LAMBDA_AUTHORIZATION_FAILURE).endpoint;
+			}).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 
-			_this._writeUserEndpoint = EndpointBuilder.for('write-user', 'save user watchlist').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
+			_this._writeUserEndpoint = EndpointBuilder.for('write-user', 'save your watchlists').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(function (pb) {
 				return pb.withLiteralParameter('version', 'v1').withLiteralParameter('user', 'user');
-			}).withBody('watchlist data').withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(requestInterceptorForSerialization).withErrorInterceptor(ErrorInterceptor.LAMBDA_AUTHORIZATION_FAILURE).endpoint;
+			}).withBody('watchlist data').withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(requestInterceptorForSerialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
 			return _this;
 		}
 
@@ -281,7 +281,7 @@ module.exports = function () {
 
 	return {
 		WatchlistGateway: WatchlistGateway,
-		version: '1.0.16'
+		version: '1.0.17'
 	};
 }();
 
@@ -419,7 +419,7 @@ module.exports = function () {
 		}, {
 			key: 'getHttpStatusCode',
 			value: function getHttpStatusCode(reason) {
-				assert.argumentIsRequired(reason, 'reason', FailureType, 'FailureType');
+				assert.argumentIsRequired(reason, 'reason', FailureReason, 'FailureReason');
 
 				var returnVal = null;
 
@@ -643,7 +643,7 @@ module.exports = function () {
 		}, {
 			key: 'REQUEST_CONSTRUCTION_FAILURE',
 			get: function get() {
-				return failureTypeRequestConstructionFailure;
+				return requestConstructionFailure;
 			}
 
 			/**
@@ -656,7 +656,7 @@ module.exports = function () {
 		}, {
 			key: 'REQUEST_PARAMETER_MISSING_FAILURE',
 			get: function get() {
-				return failureTypeRequestParameterMissingFailure;
+				return requestParameterMissing;
 			}
 
 			/**
@@ -669,7 +669,7 @@ module.exports = function () {
 		}, {
 			key: 'REQUEST_IDENTITY_FAILURE',
 			get: function get() {
-				return failureTypeRequestIdentifyFailure;
+				return requestIdentifyFailure;
 			}
 
 			/**
@@ -682,17 +682,45 @@ module.exports = function () {
 		}, {
 			key: 'REQUEST_AUTHORIZATION_FAILURE',
 			get: function get() {
-				return failureTypeRequestAuthorizationFailure;
+				return requestAuthorizationFailure;
+			}
+
+			/**
+    * The request data cannot be parsed or interpreted.
+    *
+    * @static
+    * @returns {FailureType}
+    */
+
+		}, {
+			key: 'REQUEST_INPUT_MALFORMED',
+			get: function get() {
+				return requestInputMalformed;
+			}
+
+			/**
+    * The request failed for unspecified reasons.
+    *
+    * @static
+    * @returns {FailureType}
+    */
+
+		}, {
+			key: 'REQUEST_GENERAL_FAILURE',
+			get: function get() {
+				return requestGeneralFailure;
 			}
 		}]);
 
 		return FailureType;
 	}(Enum);
 
-	var failureTypeRequestConstructionFailure = new FailureType('REQUEST_CONSTRUCTION_FAILURE', 'An attempt to {L|root.endpoint.description} failed because some required information is missing.');
-	var failureTypeRequestParameterMissingFailure = new FailureType('REQUEST_PARAMETER_MISSING', 'The "{L|name}" field is required.');
-	var failureTypeRequestIdentifyFailure = new FailureType('REQUEST_IDENTITY_FAILURE', 'An attempt to {L|root.endpoint.description} failed because your identity could not be determined.');
-	var failureTypeRequestAuthorizationFailure = new FailureType('REQUEST_AUTHORIZATION_FAILURE', 'An attempt to {L|root.endpoint.description} failed due to authentication failure.');
+	var requestConstructionFailure = new FailureType('REQUEST_CONSTRUCTION_FAILURE', 'An attempt to {L|root.endpoint.description} failed because some required information is missing.');
+	var requestParameterMissing = new FailureType('REQUEST_PARAMETER_MISSING', 'The "{L|name}" field is required.');
+	var requestIdentifyFailure = new FailureType('REQUEST_IDENTITY_FAILURE', 'An attempt to {L|root.endpoint.description} failed because your identity could not be determined.');
+	var requestAuthorizationFailure = new FailureType('REQUEST_AUTHORIZATION_FAILURE', 'An attempt to {L|root.endpoint.description} failed due to authentication failure.');
+	var requestInputMalformed = new FailureType('REQUEST_INPUT_MALFORMED', 'An attempt to {L|root.endpoint.description} failed, the data structure is invalid.');
+	var requestGeneralFailure = new FailureType('REQUEST_GENERAL_FAILURE', 'An attempt to {L|root.endpoint.description} failed for unspecified reason(s).');
 
 	return FailureType;
 }();
@@ -2427,7 +2455,7 @@ module.exports = function () {
 			}
 
 			/**
-    * A no-op error interceptor (which will return the raw response).
+    * A no-op error interceptor which rejects using raw response data.
     *
     * @public
     * @static
@@ -2461,8 +2489,8 @@ module.exports = function () {
 			}
 
 			/**
-    * An error interceptor to handle unauthorized and forbidden responses
-    * from a typical Lambda (custom authorizer).
+    * An error interceptor that handles most server-side issues and rejects
+    * using formatted {@link FailureReasons} when an error is detected.
     *
     * @public
     * @static
@@ -2470,9 +2498,9 @@ module.exports = function () {
     */
 
 		}, {
-			key: 'LAMBDA_AUTHORIZATION_FAILURE',
+			key: 'GENERAL',
 			get: function get() {
-				return errorInterceptorLambdaAuthorization;
+				return errorInterceptorGeneral;
 			}
 		}]);
 
@@ -2510,14 +2538,20 @@ module.exports = function () {
 
 	var errorInterceptorEmpty = new ErrorInterceptor();
 
-	var errorInterceptorLambdaAuthorization = new DelegateErrorInterceptor(function (error, endpoint) {
-		if (is.undefined(error.response) && error.message === 'Network Error') {
-			var failure = FailureReason.forRequest({ endpoint: endpoint }).addItem(FailureType.REQUEST_AUTHORIZATION_FAILURE).format();
+	var errorInterceptorGeneral = new DelegateErrorInterceptor(function (error, endpoint) {
+		var response = error.response;
 
-			return Promise.reject(failure);
+		var rejectPromise = void 0;
+
+		if (is.object(response) && is.object(response.headers) && response.headers['content-type'] === 'application/json' && is.object(response.data)) {
+			rejectPromise = Promise.reject(response.data);
+		} else if (is.undefined(response) && error.message === 'Network Error') {
+			rejectPromise = Promise.reject(FailureReason.forRequest({ endpoint: endpoint }).addItem(FailureType.REQUEST_AUTHORIZATION_FAILURE).format());
 		} else {
-			return Promise.reject(error);
+			rejectPromise = Promise.reject(FailureReason.forRequest({ endpoint: endpoint }).addItem(FailureType.REQUEST_GENERAL_FAILURE).format());
 		}
+
+		return rejectPromise;
 	});
 
 	return ErrorInterceptor;
