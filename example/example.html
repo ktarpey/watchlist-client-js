@@ -62,7 +62,11 @@
 				return that.connected();
 			});
 
-			var writeConsoleText = function(text) {
+			var writeConsoleText = function(text, clear) {
+				if (clear) {
+					that.console.removeAll();
+				}
+
 				that.console.push(text);
 			};
 
@@ -96,9 +100,7 @@
 
                                 return true;
                             }).catch((e) => {
-	                    	    console.log(e);
-
-                                writeConsoleText(action);
+                                writeConsoleText(action, true);
                                 writeConsoleObject(e);
 
                                 return false;
@@ -158,12 +160,14 @@
 	                    that.watchlists(Object.values(watchlists));
 	                    that.watchlist(watchlist);
                     }).catch((e) => {
-                        writeConsoleText(action);
-                        writeConsoleText(e);
+                        writeConsoleText(action, true);
+                        writeConsoleObject(e);
 
                         that.watchlistUser(null);
                         that.watchlists([ ]);
                         that.watchlist(null);
+
+					    that.setConsoleMode();
                     });
 			};
 			that.writeUser = function() {
@@ -177,13 +181,17 @@
 
 				var action = 'watchlistGateway.writeUser()';
 
+				that.watchlistUser()._id = "123456";
+
 				return that.gateway.writeUser(that.watchlistUser())
                     .then(function(response) {
                         writeConsoleText(action);
                         writeConsoleObject(response);
                     }).catch((e) => {
-                        writeConsoleText(action);
-                        writeConsoleText(e);
+                        writeConsoleText(action, true);
+					    writeConsoleObject(e);
+
+					    that.setConsoleMode();
                     });
 			};
 
