@@ -281,7 +281,7 @@ module.exports = function () {
 
 	return {
 		WatchlistGateway: WatchlistGateway,
-		version: '1.0.17'
+		version: '1.0.18'
 	};
 }();
 
@@ -654,7 +654,7 @@ module.exports = function () {
     */
 
 		}, {
-			key: 'REQUEST_PARAMETER_MISSING_FAILURE',
+			key: 'REQUEST_PARAMETER_MISSING',
 			get: function get() {
 				return requestParameterMissing;
 			}
@@ -811,7 +811,7 @@ module.exports = function () {
 									failure = FailureReason.forRequest({ endpoint: endpoint }).addItem(FailureType.REQUEST_CONSTRUCTION_FAILURE, null, true);
 								}
 
-								failure.addItem(FailureType.REQUEST_PARAMETER_MISSING_FAILURE, { name: parameter.description });
+								failure.addItem(FailureType.REQUEST_PARAMETER_MISSING, { name: parameter.description });
 							}
 
 							return failure;
