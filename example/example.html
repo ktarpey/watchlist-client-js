@@ -181,8 +181,6 @@
 
 				var action = 'watchlistGateway.writeUser()';
 
-				that.watchlistUser()._id = "123456";
-
 				return that.gateway.writeUser(that.watchlistUser())
                     .then(function(response) {
                         writeConsoleText(action);
