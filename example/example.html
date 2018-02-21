@@ -103,6 +103,8 @@
                                 writeConsoleText(action, true);
                                 writeConsoleObject(e);
 
+		                        that.setConsoleMode();
+
                                 return false;
                             }).then((read) => {
                                 if (read) {
@@ -197,10 +199,6 @@
 			};
 
 			that.setConsoleMode = function() {
-				if (!that.connected()) {
-					return;
-                }
-
                 that.mode('View Console');
 
                 that.activeTemplate('watchlist-console-template');
