@@ -79,7 +79,7 @@
 
 				that.connecting(true);
 
-				Barchart.Watchlist.WatchlistGateway.forDevelopment(Barchart.Jwt.JwtProvider.forDevelopmentClient(that.user()))
+				Barchart.Watchlist.WatchlistGateway.forDevelopment(Barchart.Jwt.JwtProvider.forDevelopmentClient(Barchart.Watchlist.JwtEndpoint.forDevelopment(that.user())))
                     .then((gateway) => {
 					    that.gateway = gateway;
 

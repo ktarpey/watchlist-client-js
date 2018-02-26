@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "@barchart/common-js": "3.2.33",
-    "@barchart/tgam-jwt-js": "1.0.30",
+    "@barchart/tgam-jwt-js": "1.0.31",
     "@barchart/watchlist-api-common": "1.1.25"
   },
   "devDependencies": {
