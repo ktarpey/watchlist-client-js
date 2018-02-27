@@ -416,7 +416,7 @@ module.exports = function () {
 	return {
 		JwtEndpoint: JwtEndpoint,
 		WatchlistGateway: WatchlistGateway,
-		version: '1.0.20'
+		version: '1.0.21'
 	};
 }();
 
@@ -547,7 +547,7 @@ module.exports = function () {
     * Returns an HTTP status code that would be suitable for use with the
     * failure reason.
     *
-    * @param {FailureType} reason
+    * @param {FailureReason} reason
     * @returns {Number}
     */
 
@@ -853,7 +853,7 @@ module.exports = function () {
 	var requestConstructionFailure = new FailureType('REQUEST_CONSTRUCTION_FAILURE', 'An attempt to {L|root.endpoint.description} failed because some required information is missing.');
 	var requestParameterMissing = new FailureType('REQUEST_PARAMETER_MISSING', 'The "{L|name}" field is required.');
 	var requestIdentifyFailure = new FailureType('REQUEST_IDENTITY_FAILURE', 'An attempt to {L|root.endpoint.description} failed because your identity could not be determined.');
-	var requestAuthorizationFailure = new FailureType('REQUEST_AUTHORIZATION_FAILURE', 'An attempt to {L|root.endpoint.description} failed due to authentication failure.');
+	var requestAuthorizationFailure = new FailureType('REQUEST_AUTHORIZATION_FAILURE', 'An attempt to {L|root.endpoint.description} failed. You are not authorized to perform this action.');
 	var requestInputMalformed = new FailureType('REQUEST_INPUT_MALFORMED', 'An attempt to {L|root.endpoint.description} failed, the data structure is invalid.');
 	var requestGeneralFailure = new FailureType('REQUEST_GENERAL_FAILURE', 'An attempt to {L|root.endpoint.description} failed for unspecified reason(s).');
 
