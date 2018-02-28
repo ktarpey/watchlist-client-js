@@ -111,6 +111,7 @@ module.exports = function () {
   * @param {String} protocol - The protocol to use (either HTTP or HTTPS).
   * @param {String} host - The host name of the Watchlist web service.
   * @param {Number} port - The TCP port number of the Watchlist web service.
+  * @param {String} environment - A description of the environment we're connecting to.
   * @param {RequestInterceptor=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
   * @extends {Disposable}
   */
@@ -118,13 +119,15 @@ module.exports = function () {
 	var WatchlistGateway = function (_Disposable) {
 		_inherits(WatchlistGateway, _Disposable);
 
-		function WatchlistGateway(protocol, host, port, requestInterceptor) {
+		function WatchlistGateway(protocol, host, port, environment, requestInterceptor) {
 			_classCallCheck(this, WatchlistGateway);
 
 			var _this = _possibleConstructorReturn(this, (WatchlistGateway.__proto__ || Object.getPrototypeOf(WatchlistGateway)).call(this));
 
 			_this._started = false;
 			_this._startPromise = null;
+
+			_this._environment = environment;
 
 			var protocolType = Enum.fromCode(ProtocolType, protocol.toUpperCase());
 
@@ -151,16 +154,24 @@ module.exports = function () {
 		}
 
 		/**
-   * Initializes the connection to the remote server and returns a promise
-   * containing the current instance.
+   * Returns a description of the environment (e.g. development or production).
    *
    * @public
-   * @returns {Promise.<WatchlistGateway>}
+   * @return {*}
    */
 
 
 		_createClass(WatchlistGateway, [{
 			key: 'start',
+
+
+			/**
+    * Initializes the connection to the remote server and returns a promise
+    * containing the current instance.
+    *
+    * @public
+    * @returns {Promise.<WatchlistGateway>}
+    */
 			value: function start() {
 				var _this2 = this;
 
@@ -260,13 +271,18 @@ module.exports = function () {
 			value: function toString() {
 				return '[WatchlistGateway]';
 			}
+		}, {
+			key: 'environment',
+			get: function get() {
+				return this._environment;
+			}
 		}], [{
 			key: 'forDevelopment',
 			value: function forDevelopment(requestInterceptor) {
 				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
 					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
 
-					return start(new WatchlistGateway('https', Configuration.developmentHost, 443, requestInterceptor));
+					return start(new WatchlistGateway('https', Configuration.developmentHost, 443, 'development', requestInterceptor));
 				});
 			}
 
@@ -285,7 +301,7 @@ module.exports = function () {
 				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
 					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
 
-					return start(new WatchlistGateway('https', Configuration.productionHost, 443, requestInterceptor));
+					return start(new WatchlistGateway('https', Configuration.productionHost, 443, 'production', requestInterceptor));
 				});
 			}
 		}]);
@@ -362,7 +378,7 @@ module.exports = function () {
 	'use strict';
 
 	/**
-  * Static utilities for JWT token generation (used for devlopment purposes only).
+  * Static utilities for JWT token generation (used for development purposes only).
   *
   * @public
   */
@@ -416,7 +432,7 @@ module.exports = function () {
 	return {
 		JwtEndpoint: JwtEndpoint,
 		WatchlistGateway: WatchlistGateway,
-		version: '1.0.22'
+		version: '1.0.23'
 	};
 }();
 
@@ -2799,14 +2815,14 @@ module.exports = function () {
     */
 
 		}, {
-			key: 'forPlainResponse',
-			value: function forPlainResponse() {
-				return requestInterceptorPlain;
-			}
-		}, {
 			key: 'EMPTY',
 			get: function get() {
 				return requestInterceptorEmpty;
+			}
+		}, {
+			key: 'PLAIN_TEXT_RESPONSE',
+			get: function get() {
+				return requestInterceptorPlain;
 			}
 		}]);
 
