@@ -11,7 +11,7 @@ module.exports = function () {
 	window.Barchart.Jwt.JwtProvider = JwtGateway;
 }();
 
-},{"@barchart/tgam-jwt-js/lib/JwtGateway":34}],2:[function(require,module,exports){
+},{"@barchart/tgam-jwt-js/lib/JwtGateway":46}],2:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -50,6 +50,20 @@ module.exports = function () {
 			key: 'developmentHost',
 			get: function get() {
 				return '54eorn43h5.execute-api.us-east-1.amazonaws.com/dev';
+			}
+
+			/**
+    * The host of the staging system.
+    *
+    * @public
+    * @static
+    * @returns {String}
+    */
+
+		}, {
+			key: 'stagingHost',
+			get: function get() {
+				return 'xd4wbdxze7.execute-api.us-east-1.amazonaws.com/stage';
 			}
 
 			/**
@@ -287,6 +301,25 @@ module.exports = function () {
 			}
 
 			/**
+    * Creates and starts a new {@link WatchlistGateway} for use in the staging environment.
+    *
+    * @public
+    * @static
+    * @param {RequestInterceptor=|Promise.<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
+    * @returns {Promise.<WatchlistGateway>}
+    */
+
+		}, {
+			key: 'forStaging',
+			value: function forStaging(requestInterceptor) {
+				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
+					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
+
+					return start(new WatchlistGateway('https', Configuration.stagingHost, 443, 'production', requestInterceptor));
+				});
+			}
+
+			/**
     * Creates and starts a new {@link WatchlistGateway} for use in the production environment.
     *
     * @public
@@ -351,7 +384,7 @@ module.exports = function () {
 	return WatchlistGateway;
 }();
 
-},{"./../common/Configuration":2,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":24,"@barchart/common-js/lang/Enum":25,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30,"@barchart/watchlist-api-common/WatchlistUser":37}],4:[function(require,module,exports){
+},{"./../common/Configuration":2,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":30,"@barchart/common-js/lang/Enum":31,"@barchart/common-js/lang/assert":35,"@barchart/common-js/lang/is":38,"@barchart/watchlist-api-common/WatchlistUser":49}],4:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -420,7 +453,7 @@ module.exports = function () {
 	return JwtEndpoint;
 }();
 
-},{"./../../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Enum":25,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30}],5:[function(require,module,exports){
+},{"./../../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Enum":31,"@barchart/common-js/lang/assert":35,"@barchart/common-js/lang/is":38}],5:[function(require,module,exports){
 'use strict';
 
 var JwtEndpoint = require('./gateway/jwt/JwtEndpoint'),
@@ -432,7 +465,7 @@ module.exports = function () {
 	return {
 		JwtEndpoint: JwtEndpoint,
 		WatchlistGateway: WatchlistGateway,
-		version: '1.0.23'
+		version: '1.0.24'
 	};
 }();
 
@@ -444,10 +477,12 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var assert = require('./../../lang/assert'),
+    attributes = require('./../../lang/attributes'),
     is = require('./../../lang/is');
 
 var FailureReasonItem = require('./FailureReasonItem'),
     FailureType = require('./FailureType'),
+    Schema = require('./../../serialization/json/Schema'),
     Tree = require('./../../collections/Tree');
 
 module.exports = function () {
@@ -584,6 +619,39 @@ module.exports = function () {
 
 				return returnVal;
 			}
+
+			/**
+    * Validates that a candidate conforms to a schema
+    * 
+    * @param {Schema} schema
+    * @param {Object} candidate
+    */
+
+		}, {
+			key: 'validateSchema',
+			value: function validateSchema(schema, candidate) {
+				var _this2 = this;
+
+				return Promise.resolve().then(function () {
+					var failure = void 0;
+
+					schema.schema.fields.map(function (field) {
+						if (!attributes.has(candidate, field.name) || !field.dataType.validator.call(_this2, attributes.read(candidate, field.name))) {
+							if (!failure) {
+								failure = FailureReason.forRequest({ endpoint: { description: 'serialize data into ' + schema } }).addItem(FailureType.REQUEST_INPUT_MALFORMED, {}, true);
+							}
+
+							failure.addItem(FailureType.REQUEST_PARAMETER_MALFORMED, { name: field.name });
+						}
+					});
+
+					if (failure) {
+						return Promise.reject(failure.format());
+					} else {
+						return Promise.resolve(null);
+					}
+				});
+			}
 		}]);
 
 		return FailureReason;
@@ -592,7 +660,7 @@ module.exports = function () {
 	return FailureReason;
 }();
 
-},{"./../../collections/Tree":23,"./../../lang/assert":28,"./../../lang/is":30,"./FailureReasonItem":7,"./FailureType":8}],7:[function(require,module,exports){
+},{"./../../collections/Tree":24,"./../../lang/assert":35,"./../../lang/attributes":36,"./../../lang/is":38,"./../../serialization/json/Schema":44,"./FailureReasonItem":7,"./FailureType":8}],7:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -699,7 +767,7 @@ module.exports = function () {
 	return FailureReasonItem;
 }();
 
-},{"./../../lang/assert":28,"./../../lang/attributes":29,"./FailureType":8}],8:[function(require,module,exports){
+},{"./../../lang/assert":35,"./../../lang/attributes":36,"./FailureType":8}],8:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -890,7 +958,7 @@ module.exports = function () {
 	return FailureType;
 }();
 
-},{"./../../lang/Enum":25,"./../../lang/assert":28}],9:[function(require,module,exports){
+},{"./../../lang/Enum":31,"./../../lang/assert":35}],9:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1116,7 +1184,7 @@ module.exports = function () {
 	return Gateway;
 }();
 
-},{"./../../lang/array":27,"./../../lang/assert":28,"./../../lang/attributes":29,"./../../lang/promise":32,"./../failures/FailureReason":6,"./../failures/FailureType":8,"./definitions/Endpoint":12,"./definitions/VerbType":16,"axios":38}],10:[function(require,module,exports){
+},{"./../../lang/array":34,"./../../lang/assert":35,"./../../lang/attributes":36,"./../../lang/promise":40,"./../failures/FailureReason":6,"./../failures/FailureType":8,"./definitions/Endpoint":12,"./definitions/VerbType":16,"axios":50}],10:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1477,7 +1545,7 @@ module.exports = function () {
 	return EndpointBuilder;
 }();
 
-},{"./../../../lang/assert":28,"./../definitions/Endpoint":12,"./../definitions/Parameters":14,"./../definitions/ProtocolType":15,"./../definitions/VerbType":16,"./../interceptors/CompositeErrorInterceptor":17,"./../interceptors/CompositeRequestInterceptor":18,"./../interceptors/CompositeResponseInterceptor":19,"./../interceptors/ErrorInterceptor":20,"./../interceptors/RequestInterceptor":21,"./../interceptors/ResponseInterceptor":22,"./ParametersBuilder":11}],11:[function(require,module,exports){
+},{"./../../../lang/assert":35,"./../definitions/Endpoint":12,"./../definitions/Parameters":14,"./../definitions/ProtocolType":15,"./../definitions/VerbType":16,"./../interceptors/CompositeErrorInterceptor":17,"./../interceptors/CompositeRequestInterceptor":18,"./../interceptors/CompositeResponseInterceptor":19,"./../interceptors/ErrorInterceptor":20,"./../interceptors/RequestInterceptor":21,"./../interceptors/ResponseInterceptor":22,"./ParametersBuilder":11}],11:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1645,7 +1713,7 @@ module.exports = function () {
 	return ParametersBuilder;
 }();
 
-},{"./../../../lang/assert":28,"./../../../lang/attributes":29,"./../../../lang/is":30,"./../definitions/Parameter":13,"./../definitions/Parameters":14}],12:[function(require,module,exports){
+},{"./../../../lang/assert":35,"./../../../lang/attributes":36,"./../../../lang/is":38,"./../definitions/Parameter":13,"./../definitions/Parameters":14}],12:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1944,7 +2012,7 @@ module.exports = function () {
 	return Endpoint;
 }();
 
-},{"./../../../lang/is":30,"./../interceptors/ErrorInterceptor":20,"./../interceptors/RequestInterceptor":21,"./../interceptors/ResponseInterceptor":22,"./Parameter":13,"./Parameters":14,"./ProtocolType":15,"./VerbType":16}],13:[function(require,module,exports){
+},{"./../../../lang/is":38,"./../interceptors/ErrorInterceptor":20,"./../interceptors/RequestInterceptor":21,"./../interceptors/ResponseInterceptor":22,"./Parameter":13,"./Parameters":14,"./ProtocolType":15,"./VerbType":16}],13:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2069,7 +2137,7 @@ module.exports = function () {
 	return Parameter;
 }();
 
-},{"./../../../lang/is":30}],14:[function(require,module,exports){
+},{"./../../../lang/is":38}],14:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2148,7 +2216,7 @@ module.exports = function () {
 	return Parameters;
 }();
 
-},{"./../../../lang/assert":28,"./../../../lang/is":30,"./Parameter":13}],15:[function(require,module,exports){
+},{"./../../../lang/assert":35,"./../../../lang/is":38,"./Parameter":13}],15:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2262,7 +2330,7 @@ module.exports = function () {
 	return ProtocolType;
 }();
 
-},{"./../../../lang/Enum":25,"./../../../lang/assert":28,"./../../../lang/is":30}],16:[function(require,module,exports){
+},{"./../../../lang/Enum":31,"./../../../lang/assert":35,"./../../../lang/is":38}],16:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2365,7 +2433,7 @@ module.exports = function () {
 	return VerbType;
 }();
 
-},{"./../../../lang/Enum":25}],17:[function(require,module,exports){
+},{"./../../../lang/Enum":31}],17:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2430,7 +2498,7 @@ module.exports = function () {
 	return CompositeErrorInterceptor;
 }();
 
-},{"./../../../lang/assert":28,"./ErrorInterceptor":20}],18:[function(require,module,exports){
+},{"./../../../lang/assert":35,"./ErrorInterceptor":20}],18:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2495,7 +2563,7 @@ module.exports = function () {
 	return CompositeRequestInterceptor;
 }();
 
-},{"./../../../lang/assert":28,"./RequestInterceptor":21}],19:[function(require,module,exports){
+},{"./../../../lang/assert":35,"./RequestInterceptor":21}],19:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2560,7 +2628,7 @@ module.exports = function () {
 	return CompositeResponseInterceptor;
 }();
 
-},{"./../../../lang/assert":28,"./ResponseInterceptor":22}],20:[function(require,module,exports){
+},{"./../../../lang/assert":35,"./ResponseInterceptor":22}],20:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2722,7 +2790,7 @@ module.exports = function () {
 	return ErrorInterceptor;
 }();
 
-},{"./../../../lang/assert":28,"./../../../lang/is":30,"./../../failures/FailureReason":6,"./../../failures/FailureType":8}],21:[function(require,module,exports){
+},{"./../../../lang/assert":35,"./../../../lang/is":38,"./../../failures/FailureReason":6,"./../../failures/FailureType":8}],21:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2871,7 +2939,7 @@ module.exports = function () {
 	return RequestInterceptor;
 }();
 
-},{"./../../../lang/assert":28,"./../../../lang/is":30}],22:[function(require,module,exports){
+},{"./../../../lang/assert":35,"./../../../lang/is":38}],22:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3018,7 +3086,109 @@ module.exports = function () {
 	return ResponseInterceptor;
 }();
 
-},{"./../../../lang/assert":28,"./../../../lang/is":30}],23:[function(require,module,exports){
+},{"./../../../lang/assert":35,"./../../../lang/is":38}],23:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * A singly linked list. Each instance represents a node in the list,
+  * holding both an item, a reference to the next node.
+  *
+  * @public
+  * @param {*} value - The value of current node.
+  */
+
+	var LinkedList = function () {
+		function LinkedList(value) {
+			_classCallCheck(this, LinkedList);
+
+			this._value = value;
+
+			this._next = null;
+		}
+
+		/**
+   * Returns the value associated with the current node.
+   *
+   * @public
+   * @returns {*}
+   */
+
+
+		_createClass(LinkedList, [{
+			key: 'getValue',
+			value: function getValue() {
+				return this._value;
+			}
+
+			/**
+    * Returns the next node, if it exists; otherwise a null value is returned.
+    *
+    * @public
+    * @returns {Tree|null}
+    */
+
+		}, {
+			key: 'getNext',
+			value: function getNext() {
+				return this._next;
+			}
+
+			/**
+    * Returns true, if the node is the last one in the list.
+    *
+    * @public
+    * @returns {boolean}
+    */
+
+		}, {
+			key: 'getIsTail',
+			value: function getIsTail() {
+				return this._next === null;
+			}
+
+			/**
+    * Adds (or inserts) a value after the current node and returns
+    * the newly added node.
+    *
+    * @public
+    * @param {*} value
+    * @returns {LinkedList}
+    */
+
+		}, {
+			key: 'insert',
+			value: function insert(value) {
+				var next = new LinkedList(value);
+
+				if (this._next) {
+					next._next = this._next;
+				}
+
+				this._next = next;
+
+				return next;
+			}
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[LinkedList]';
+			}
+		}]);
+
+		return LinkedList;
+	}();
+
+	return LinkedList;
+}();
+
+},{}],24:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3327,7 +3497,1454 @@ module.exports = function () {
 	return Tree;
 }();
 
-},{"./../lang/is":30}],24:[function(require,module,exports){
+},{"./../lang/is":38}],25:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var assert = require('./../../lang/assert'),
+    comparators = require('./comparators');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * A builder for compound comparator functions (e.g. sort by last name,
+  * then by first name, then by social security number) that uses a fluent
+  * interface.
+  *
+  * @public
+  * @param {Function} comparator - The initial comparator.
+  * @param {Boolean=} invert - Indicates if the comparator should sort in descending order.
+  */
+
+	var ComparatorBuilder = function () {
+		function ComparatorBuilder(comparator, invert, previous) {
+			_classCallCheck(this, ComparatorBuilder);
+
+			assert.argumentIsRequired(comparator, 'comparator', Function);
+			assert.argumentIsOptional(invert, 'invert', Boolean);
+
+			this._comparator = comparator;
+			this._invert = invert || false;
+			this._previous = previous || null;
+		}
+
+		/**
+   * Adds a new comparator to the list of comparators to use.
+   *
+   * @public
+   * @param {Function} comparator - The next comparator function.
+   * @param {Boolean=} invert - Indicates if the comparator should sort in descending order.
+   * @returns {ComparatorBuilder}
+   */
+
+
+		_createClass(ComparatorBuilder, [{
+			key: 'thenBy',
+			value: function thenBy(comparator, invert) {
+				assert.argumentIsRequired(comparator, 'comparator', Function);
+				assert.argumentIsOptional(invert, 'invert', Boolean);
+
+				return new ComparatorBuilder(comparator, invert, this);
+			}
+
+			/**
+    * Flips the order of the comparator (e.g. ascending to descending).
+    *
+    * @public
+    * @returns {ComparatorBuilder}
+    */
+
+		}, {
+			key: 'invert',
+			value: function invert() {
+				var previous = void 0;
+
+				if (this._previous) {
+					previous = this._previous.invert();
+				} else {
+					previous = null;
+				}
+
+				return new ComparatorBuilder(this._comparator, !this._invert, previous);
+			}
+
+			/**
+    * Returns the comparator function.
+    *
+    * @public
+    * @returns {Function}
+    */
+
+		}, {
+			key: 'toComparator',
+			value: function toComparator() {
+				var _this = this;
+
+				var previousComparator = void 0;
+
+				if (this._previous) {
+					previousComparator = this._previous.toComparator();
+				} else {
+					previousComparator = comparators.empty;
+				}
+
+				return function (a, b) {
+					var result = previousComparator(a, b);
+
+					if (result === 0) {
+						var sortA = void 0;
+						var sortB = void 0;
+
+						if (_this._invert) {
+							sortA = b;
+							sortB = a;
+						} else {
+							sortA = a;
+							sortB = b;
+						}
+
+						result = _this._comparator(sortA, sortB);
+					}
+
+					return result;
+				};
+			}
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[ComparatorBuilder]';
+			}
+
+			/**
+    * Creates a {@link ComparatorBuilder}, given an initial comparator function.
+    *
+    * @public
+    * @param {Function} comparator - The initial comparator.
+    * @param {Boolean=} invert - Indicates if the comparator should sort in descending order.
+    * @returns {ComparatorBuilder}
+    */
+
+		}], [{
+			key: 'startWith',
+			value: function startWith(comparator, invert) {
+				return new ComparatorBuilder(comparator, invert);
+			}
+		}]);
+
+		return ComparatorBuilder;
+	}();
+
+	return ComparatorBuilder;
+}();
+
+},{"./../../lang/assert":35,"./comparators":26}],26:[function(require,module,exports){
+'use strict';
+
+var assert = require('./../../lang/assert');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * Functions that can be used as comparators.
+  *
+  * @public
+  * @module collections/sorting/comparators
+  */
+
+	return {
+		/**
+   * Compares two dates (in ascending order).
+   *
+   * @static
+   * @param {Date} a
+   * @param {Date} b
+   * @returns {Number}
+   */
+		compareDates: function compareDates(a, b) {
+			assert.argumentIsRequired(a, 'a', Date);
+			assert.argumentIsRequired(b, 'b', Date);
+
+			return a - b;
+		},
+
+		/**
+   * Compares two numbers (in ascending order).
+   *
+   * @static
+   * @param {Number} a
+   * @param {Number} b
+   * @returns {Number}
+   */
+		compareNumbers: function compareNumbers(a, b) {
+			assert.argumentIsRequired(a, 'a', Number);
+			assert.argumentIsRequired(b, 'b', Number);
+
+			return a - b;
+		},
+
+		/**
+   * Compares two strings (in ascending order), using {@link String#localeCompare}.
+   *
+   * @static
+   * @param {Number} a
+   * @param {Number} b
+   * @returns {Number}
+   */
+		compareStrings: function compareStrings(a, b) {
+			assert.argumentIsRequired(a, 'a', String);
+			assert.argumentIsRequired(b, 'b', String);
+
+			return a.localeCompare(b);
+		},
+
+		/**
+   * Compares two objects, always returning zero.
+   *
+   * @static
+   * @param {*} a
+   * @param {*} b
+   * @returns {Number}
+   */
+		empty: function empty(a, b) {
+			return 0;
+		}
+	};
+}();
+
+},{"./../../lang/assert":35}],27:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var assert = require('./assert'),
+    Enum = require('./Enum'),
+    is = require('./is');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * An enumeration for currency types.
+  *
+  * @public
+  * @param {String} code - Currency code (e.g. "USD")
+  * @param {String} description - The description (e.g. "US Dollar")
+  * @param {Number} precision - The number of decimal places possible for by a real world transaction.
+  * @extends {Enum}
+  */
+
+	var Currency = function (_Enum) {
+		_inherits(Currency, _Enum);
+
+		function Currency(code, description, precision) {
+			_classCallCheck(this, Currency);
+
+			var _this = _possibleConstructorReturn(this, (Currency.__proto__ || Object.getPrototypeOf(Currency)).call(this, code, description));
+
+			assert.argumentIsRequired(precision, 'precision', Number);
+			assert.argumentIsValid(precision, 'precision', is.integer, 'is an integer');
+
+			_this._precision = precision;
+			return _this;
+		}
+
+		/**
+   * The maximum number of decimal places supported by a real world transaction.
+   *
+   * @public
+   * @returns {Number}
+   */
+
+
+		_createClass(Currency, [{
+			key: 'toString',
+			value: function toString() {
+				return '[Currency (code=' + this.code + ')]';
+			}
+		}, {
+			key: 'precision',
+			get: function get() {
+				return this._precision;
+			}
+
+			/**
+    * Given a code, returns the enumeration item.
+    *
+    * @public
+    * @param {String} code
+    * @returns {Currency|null}
+    */
+
+		}], [{
+			key: 'parse',
+			value: function parse(code) {
+				return Enum.fromCode(Currency, code);
+			}
+
+			/**
+    * The Canadian Dollar.
+    *
+    * @public
+    * @returns {Currency}
+    */
+
+		}, {
+			key: 'CAD',
+			get: function get() {
+				return cad;
+			}
+
+			/**
+    * The Euro.
+    *
+    * @public
+    * @returns {Currency}
+    */
+
+		}, {
+			key: 'EUR',
+			get: function get() {
+				return eur;
+			}
+
+			/**
+    * The US Dollar.
+    *
+    * @public
+    * @returns {Currency}
+    */
+
+		}, {
+			key: 'USD',
+			get: function get() {
+				return usd;
+			}
+		}]);
+
+		return Currency;
+	}(Enum);
+
+	var cad = new Currency('CAD', 'Canadian Dollar', 2);
+	var eur = new Currency('EUR', 'Euro', 2);
+	var usd = new Currency('USD', 'US Dollar', 2);
+
+	return Currency;
+}();
+
+},{"./Enum":31,"./assert":35,"./is":38}],28:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var assert = require('./assert'),
+    ComparatorBuilder = require('./../collections/sorting/ComparatorBuilder'),
+    comparators = require('./../collections/sorting/comparators'),
+    is = require('./is');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * A data structure that represents a day (year, month, and day)
+  * without consideration for time or timezone.
+  *
+  * @public
+  * @param {Number} year
+  * @param {Number} month
+  * @param {Number} day
+  */
+
+	var Day = function () {
+		function Day(year, month, day) {
+			_classCallCheck(this, Day);
+
+			if (!Day.validate(year, month, day)) {
+				throw new Error('Unable to instantiate Day, input is invalid [' + year + '], [' + month + '], [' + day + ']');
+			}
+
+			this._year = year;
+			this._month = month;
+			this._day = day;
+		}
+
+		/**
+   * Calculates a new {@link Day} in the future (or past).
+   *
+   * @public
+   * @param {Number} days - The number of days to add (negative numbers can be used for subtraction).
+   * @param {Boolean=} inverse - If true, the sign of the "days" value will be flipped.
+   * @returns {Day}
+   */
+
+
+		_createClass(Day, [{
+			key: 'addDays',
+			value: function addDays(days, inverse) {
+				assert.argumentIsRequired(days, 'days', Number);
+				assert.argumentIsOptional(inverse, inverse, Boolean);
+				assert.argumentIsValid(days, 'days', is.large, 'is an integer');
+
+				var totalDaysToShift = void 0;
+
+				if (is.boolean(inverse) && inverse) {
+					totalDaysToShift = days * -1;
+				} else {
+					totalDaysToShift = days;
+				}
+
+				var positive = is.positive(totalDaysToShift);
+
+				var shiftedDay = this._day;
+				var shiftedMonth = this._month;
+				var shiftedYear = this._year;
+
+				while (totalDaysToShift !== 0) {
+					var monthDaysAvailable = void 0;
+					var monthDaysToShift = void 0;
+
+					if (positive) {
+						monthDaysAvailable = Day.getDaysInMonth(shiftedYear, shiftedMonth) - shiftedDay;
+						monthDaysToShift = Math.min(totalDaysToShift, monthDaysAvailable);
+					} else {
+						monthDaysAvailable = 1 - shiftedDay;
+						monthDaysToShift = Math.max(totalDaysToShift, monthDaysAvailable);
+					}
+
+					totalDaysToShift = totalDaysToShift - monthDaysToShift;
+
+					if (totalDaysToShift === 0) {
+						shiftedDay = shiftedDay + monthDaysToShift;
+					} else if (positive) {
+						shiftedMonth++;
+
+						if (shiftedMonth > 12) {
+							shiftedYear++;
+							shiftedMonth = 1;
+						}
+
+						shiftedDay = 0;
+					} else {
+						shiftedMonth--;
+
+						if (shiftedMonth < 1) {
+							shiftedYear--;
+							shiftedMonth = 12;
+						}
+
+						shiftedDay = Day.getDaysInMonth(shiftedYear, shiftedMonth) + 1;
+					}
+				}
+
+				return new Day(shiftedYear, shiftedMonth, shiftedDay);
+			}
+
+			/**
+    * Calculates a new {@link Day} in the past (or future).
+    *
+    * @public
+    * @param {Number} days - The number of days to subtract (negative numbers can be used for addition).
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'subtractDays',
+			value: function subtractDays(days) {
+				return this.addDays(days, true);
+			}
+
+			/**
+    * Calculates a new {@link Day} in the future (or past). If the new date is at the end of
+    * the month and the new month has fewer days than the current month, days will be subtracted
+    * as necessary (e.g. adding one month to March 31 will return April 30).
+    *
+    * @public
+    * @param {Number} months - The number of months to add (negative numbers can be used for subtraction).
+    * @param {Boolean=} inverse - If true, the sign of the "days" value will be flipped.
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'addMonths',
+			value: function addMonths(months, inverse) {
+				assert.argumentIsRequired(months, 'months', Number);
+				assert.argumentIsOptional(inverse, inverse, Boolean);
+				assert.argumentIsValid(months, 'months', is.large, 'is an integer');
+
+				var totalMonthsToShift = void 0;
+
+				if (is.boolean(inverse) && inverse) {
+					totalMonthsToShift = months * -1;
+				} else {
+					totalMonthsToShift = months;
+				}
+
+				var monthsToShift = totalMonthsToShift % 12;
+				var yearsToShift = (totalMonthsToShift - monthsToShift) / 12;
+
+				var shiftedYear = this.year + yearsToShift;
+				var shiftedMonth = this.month + monthsToShift;
+				var shiftedDay = this.day;
+
+				if (shiftedMonth > 12) {
+					shiftedYear = shiftedYear + 1;
+					shiftedMonth = shiftedMonth - 12;
+				}
+
+				if (shiftedMonth < 1) {
+					shiftedYear = shiftedYear - 1;
+					shiftedMonth = shiftedMonth + 12;
+				}
+
+				while (!Day.validate(shiftedYear, shiftedMonth, shiftedDay)) {
+					shiftedDay = shiftedDay - 1;
+				}
+
+				return new Day(shiftedYear, shiftedMonth, shiftedDay);
+			}
+
+			/**
+    * Calculates a new {@link Day} in the past (or future).
+    *
+    * @public
+    * @param {Number} months - The number of months to subtract (negative numbers can be used for addition).
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'subtractMonths',
+			value: function subtractMonths(months) {
+				return this.addMonths(months, true);
+			}
+
+			/**
+    * Calculates a new {@link Day} in the future (or past). If the new date is at the end of
+    * the month and the new month has fewer days than the current month, days will be subtracted
+    * as necessary (e.g. adding one year to February 29 will return February 28).
+    *
+    * @public
+    * @param {Number} years - The number of years to add (negative numbers can be used for subtraction).
+    * @param {Boolean=} inverse - If true, the sign of the "days" value will be flipped.
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'addYears',
+			value: function addYears(years, inverse) {
+				assert.argumentIsRequired(years, 'years', Number);
+				assert.argumentIsOptional(inverse, inverse, Boolean);
+				assert.argumentIsValid(years, 'years', is.large, 'is an integer');
+
+				var yearsToShift = void 0;
+
+				if (is.boolean(inverse) && inverse) {
+					yearsToShift = years * -1;
+				} else {
+					yearsToShift = years;
+				}
+
+				var shiftedYear = this.year + yearsToShift;
+				var shiftedMonth = this.month;
+				var shiftedDay = this.day;
+
+				while (!Day.validate(shiftedYear, shiftedMonth, shiftedDay)) {
+					shiftedDay = shiftedDay - 1;
+				}
+
+				return new Day(shiftedYear, shiftedMonth, shiftedDay);
+			}
+
+			/**
+    * Calculates a new {@link Day} in the past (or future).
+    *
+    * @public
+    * @param {Number} years - The number of years to subtract (negative numbers can be used for addition).
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'subtractYears',
+			value: function subtractYears(years) {
+				return this.addYears(years, true);
+			}
+
+			/**
+    * Indicates if another {@link Day} occurs before the current instance.
+    *
+    * @public
+    * @param {Day} other
+    * @returns {boolean}
+    */
+
+		}, {
+			key: 'getIsBefore',
+			value: function getIsBefore(other) {
+				return Day.compareDays(this, other) < 0;
+			}
+
+			/**
+    * Indicates if another {@link Day} occurs after the current instance.
+    *
+    * @public
+    * @param {Day} other
+    * @returns {boolean}
+    */
+
+		}, {
+			key: 'getIsAfter',
+			value: function getIsAfter(other) {
+				return Day.compareDays(this, other) > 0;
+			}
+
+			/**
+    * Indicates if another {@link Day} occurs after the current instance.
+    *
+    * @public
+    * @param {Day} other
+    * @returns {boolean}
+    */
+
+		}, {
+			key: 'getIsEqual',
+			value: function getIsEqual(other) {
+				return Day.compareDays(this, other) === 0;
+			}
+
+			/**
+    * The year.
+    *
+    * @public
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'format',
+
+
+			/**
+    * Outputs the date as the formatted string: {year}-{month}-{day}.
+    *
+    * @public
+    * @returns {String}
+    */
+			value: function format() {
+				return this._year + '-' + leftPad(this._month) + '-' + leftPad(this._day);
+			}
+
+			/**
+    * Returns the JSON representation.
+    *
+    * @public
+    * @returns {String}
+    */
+
+		}, {
+			key: 'toJSON',
+			value: function toJSON() {
+				return this.format();
+			}
+
+			/**
+    * Converts a string (which matches the output of {@link Day#format} into
+    * a {@link Day} instance.
+    *
+    * @public
+    * @static
+    * @param {String} value
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[Day]';
+			}
+		}, {
+			key: 'year',
+			get: function get() {
+				return this._year;
+			}
+
+			/**
+    * The month of the year (January is one, December is twelve).
+    *
+    * @public
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'month',
+			get: function get() {
+				return this._month;
+			}
+
+			/**
+    * The day of the month.
+    *
+    * @public
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'day',
+			get: function get() {
+				return this._day;
+			}
+		}], [{
+			key: 'parse',
+			value: function parse(value) {
+				assert.argumentIsRequired(value, 'value', String);
+
+				var match = value.match(dayRegex);
+
+				if (match === null) {
+					throw new Error('Unable to parse value as Day [ ' + value + ' ]');
+				}
+
+				return new Day(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
+			}
+
+			/**
+    * Creates a {@link Day} from the year, month, and day properties (in local time)
+    * of the {@link Date} argument.
+    *
+    * @public
+    * @static
+    * @param {Date} date
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'fromDate',
+			value: function fromDate(date) {
+				assert.argumentIsRequired(date, 'date', Date);
+
+				return new Day(date.getFullYear(), date.getMonth() + 1, date.getDate());
+			}
+
+			/**
+    * Creates a {@link Day} from the year, month, and day properties (in UTC)
+    * of the {@link Date} argument.
+    *
+    * @public
+    * @static
+    * @param {Date} date
+    * @returns {Day}
+    */
+
+		}, {
+			key: 'fromDateUtc',
+			value: function fromDateUtc(date) {
+				assert.argumentIsRequired(date, 'date', Date);
+
+				return new Day(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
+			}
+
+			/**
+    * Returns a {@link Day} instance using today's local date.
+    *
+    * @static
+    * @public
+    * @return {Day}
+    */
+
+		}, {
+			key: 'getToday',
+			value: function getToday() {
+				return Day.fromDate(new Date());
+			}
+
+			/**
+    * Returns true if the year, month, and day combination is valid; otherwise false.
+    *
+    * @public
+    * @static
+    * @param {Number} year
+    * @param {Number} month
+    * @param {Number} day
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'validate',
+			value: function validate(year, month, day) {
+				return is.integer(year) && is.integer(month) && is.integer(day) && !(month < 1) && !(month > 12) && !(day < 1) && !(day > Day.getDaysInMonth(year, month));
+			}
+
+			/**
+    * Returns the number of days in a given month.
+    *
+    * @public
+    * @static
+    * @param {number} year - The year number (e.g. 2017)
+    * @param {number} month - The month number (e.g. 2 is February)
+    */
+
+		}, {
+			key: 'getDaysInMonth',
+			value: function getDaysInMonth(year, month) {
+				switch (month) {
+					case 1:
+					case 3:
+					case 5:
+					case 7:
+					case 8:
+					case 10:
+					case 12:
+						{
+							return 31;
+						}
+					case 4:
+					case 6:
+					case 9:
+					case 11:
+						{
+							return 30;
+						}
+					case 2:
+						{
+							if (year % 4 === 0 && year % 100 !== 0 || year % 400 === 0) {
+								return 29;
+							} else {
+								return 28;
+							}
+						}
+				}
+			}
+
+			/**
+    * A comparator function for {@link Day} instances.
+    *
+    * @public
+    * @static
+    * @param {Day} a
+    * @param {Day} b
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'compareDays',
+			value: function compareDays(a, b) {
+				assert.argumentIsRequired(a, 'a', Day, 'Day');
+				assert.argumentIsRequired(b, 'b', Day, 'Day');
+
+				return comparator(a, b);
+			}
+		}]);
+
+		return Day;
+	}();
+
+	var dayRegex = /^([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/;
+
+	function leftPad(value) {
+		return value < 10 ? '0' + value : '' + value;
+	}
+
+	var comparator = ComparatorBuilder.startWith(function (a, b) {
+		return comparators.compareNumbers(a.year, b.year);
+	}).thenBy(function (a, b) {
+		return comparators.compareNumbers(a.month, b.month);
+	}).thenBy(function (a, b) {
+		return comparators.compareNumbers(a.day, b.day);
+	}).toComparator();
+
+	return Day;
+}();
+
+},{"./../collections/sorting/ComparatorBuilder":25,"./../collections/sorting/comparators":26,"./assert":35,"./is":38}],29:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var assert = require('./assert'),
+    Enum = require('./Enum'),
+    is = require('./is');
+
+var Big = require('big.js');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * An immutable object that allows for arbitrary-precision calculations.
+  *
+  * @public
+  * @param {Decimal|Number|String} value - The value.
+  */
+
+	var Decimal = function () {
+		function Decimal(value) {
+			_classCallCheck(this, Decimal);
+
+			this._big = getBig(value);
+		}
+
+		/**
+   * Returns a new {@link Decimal} instance that is the sum of the
+   * current instance's value and the value supplied.
+   *
+   * @public
+   * @param {Decimal|Number|String} other - The value to add.
+   * @returns {Decimal}
+   */
+
+
+		_createClass(Decimal, [{
+			key: 'add',
+			value: function add(other) {
+				return new Decimal(this._big.plus(getBig(other)));
+			}
+
+			/**
+    * Returns a new {@link Decimal} instance with a value that results
+    * from the subtraction of the value supplied from the current instance's
+    * value.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to subtract.
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'subtract',
+			value: function subtract(other) {
+				return new Decimal(this._big.minus(getBig(other)));
+			}
+
+			/**
+    * Returns a new {@link Decimal} instance that is the product of the
+    * current instance's value and the value supplied.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to add.
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'multiply',
+			value: function multiply(other) {
+				return new Decimal(this._big.times(getBig(other)));
+			}
+
+			/**
+    * Returns a new {@link Decimal} instance with a value that results
+    * from the division of the current instance's value by the value
+    * supplied.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to subtract.
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'divide',
+			value: function divide(other) {
+				return new Decimal(this._big.div(getBig(other)));
+			}
+
+			/**
+    * Returns a new {@link Decimal} with a value resulting from a rounding
+    * operation on the current value.
+    *
+    * @public
+    * @param {Number} places - The number of decimal places to retain.
+    * @param {RoundingMode=} mode - The strategy to use for rounding.
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'round',
+			value: function round(places, mode) {
+				assert.argumentIsRequired(places, 'places', Number);
+				assert.argumentIsOptional(mode, 'mode', RoundingMode, 'RoundingMode');
+
+				var modeToUse = mode || RoundingMode.NORMAL;
+
+				return new Decimal(this._big.round(places, modeToUse.value));
+			}
+
+			/**
+    * Returns a new {@link Decimal} instance having the absolute value of
+    * the current instance's value.
+    *
+    * @public
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'absolute',
+			value: function absolute() {
+				return new Decimal(this._big.abs());
+			}
+
+			/**
+    * Returns a new {@link Decimal} instance the opposite sign as the
+    * current instance's value.
+    *
+    * @public
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'opposite',
+			value: function opposite() {
+				return this.multiply(-1);
+			}
+
+			/**
+    * Returns a Boolean value, indicating if the current instance's value is
+    * equal to zero (or approximately equal to zero).
+    *
+    * @public
+    * @param {Boolean=} approximate
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsZero',
+			value: function getIsZero(approximate) {
+				assert.argumentIsOptional(approximate, 'approximate', Boolean);
+
+				return this._big.eq(zero) || is.boolean(approximate) && approximate && this.round(20, RoundingMode.NORMAL).getIsZero();
+			}
+
+			/**
+    * Returns true if the current instance is positive; otherwise false.
+    *
+    * @public
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsPositive',
+			value: function getIsPositive() {
+				return this._big.gt(zero);
+			}
+
+			/**
+    * Returns true if the current instance is negative; otherwise false.
+    *
+    * @public
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsNegative',
+			value: function getIsNegative() {
+				return this._big.lt(zero);
+			}
+
+			/**
+    * Returns true if the current instance is greater than the value.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to compare.
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsGreaterThan',
+			value: function getIsGreaterThan(other) {
+				return this._big.gt(getBig(other));
+			}
+
+			/**
+    * Returns true if the current instance is less than the value.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to compare.
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsLessThan',
+			value: function getIsLessThan(other) {
+				return this._big.lt(getBig(other));
+			}
+
+			/**
+    * Returns true if the current instance is equal to the value.
+    *
+    * @public
+    * @param {Decimal|Number|String} other - The value to compare.
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'getIsEqual',
+			value: function getIsEqual(other) {
+				return this._big.eq(getBig(other));
+			}
+
+			/**
+    * Emits a floating point value that approximates the value of the current
+    * instance.
+    *
+    * @public
+    * @param {Number=} places
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'toFloat',
+			value: function toFloat(places) {
+				assert.argumentIsOptional(places, 'places', Number);
+
+				// Accepting places might be a mistake here; perhaps
+				// the consumer should be forced to use the round
+				// function.
+
+				return parseFloat(this._big.toFixed(places || 16));
+			}
+
+			/**
+    * Returns a string-based representation of the instance's value.
+    *
+    * @public
+    * @returns {String}
+    */
+
+		}, {
+			key: 'toFixed',
+			value: function toFixed() {
+				return this._big.toFixed();
+			}
+
+			/**
+    * Returns the JSON representation.
+    *
+    * @public
+    * @returns {String}
+    */
+
+		}, {
+			key: 'toJSON',
+			value: function toJSON() {
+				return this.toFixed();
+			}
+
+			/**
+    * Parses the value emitted by {@link Decimal#toJSON}.
+    *
+    * @public
+    * @param {String} value
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[Decimal]';
+			}
+		}], [{
+			key: 'parse',
+			value: function parse(value) {
+				return new Decimal(value);
+			}
+
+			/**
+    * Returns an instance with the value of zero.
+    *
+    * @public
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'getIsZero',
+
+
+			/**
+    * Runs {@link Decimal#getIsZero} and returns the result.
+    *
+    * @public
+    * @param {Decimal} instance
+    * @return {Boolean}
+    */
+			value: function getIsZero(instance) {
+				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+
+				return instance.getIsZero();
+			}
+
+			/**
+    * Runs {@link Decimal#getIsZero} and returns the inverse.
+    *
+    * @public
+    * @param {Decimal} instance
+    * @return {Boolean}
+    */
+
+		}, {
+			key: 'getIsNotZero',
+			value: function getIsNotZero(instance) {
+				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+
+				return !instance.getIsZero();
+			}
+
+			/**
+    * Runs {@link Decimal#getIsPositive} and returns the result.
+    *
+    * @public
+    * @param {Decimal} instance
+    * @return {Boolean}
+    */
+
+		}, {
+			key: 'getIsPositive',
+			value: function getIsPositive(instance) {
+				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+
+				return instance.getIsPositive();
+			}
+
+			/**
+    * Checks an instance to see if its negative or zero.
+    *
+    * @public
+    * @param {Decimal} instance
+    * @return {Boolean}
+    */
+
+		}, {
+			key: 'getIsNotPositive',
+			value: function getIsNotPositive(instance) {
+				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+
+				return instance.getIsNegative() || instance.getIsZero();
+			}
+
+			/**
+    * Runs {@link Decimal#getIsNegative} and returns the result.
+    *
+    * @public
+    * @param {Decimal} instance
+    * @return {Boolean}
+    */
+
+		}, {
+			key: 'getIsNegative',
+			value: function getIsNegative(instance) {
+				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+
+				return instance.getIsNegative();
+			}
+
+			/**
+    * Checks an instance to see if its positive or zero.
+    *
+    * @public
+    * @param {Decimal} instance
+    * @return {Boolean}
+    */
+
+		}, {
+			key: 'getIsNotNegative',
+			value: function getIsNotNegative(instance) {
+				assert.argumentIsRequired(instance, 'instance', Decimal, 'Decimal');
+
+				return instance.getIsPositive() || instance.getIsZero();
+			}
+
+			/**
+    * A comparator function for {@link Decimal} instances.
+    *
+    * @public
+    * @param {Decimal} a
+    * @param {Decimal} b
+    * @returns {Number}
+    */
+
+		}, {
+			key: 'compareDecimals',
+			value: function compareDecimals(a, b) {
+				assert.argumentIsRequired(a, 'a', Decimal, 'Decimal');
+				assert.argumentIsRequired(b, 'b', Decimal, 'Decimal');
+
+				if (a._big.gt(b)) {
+					return 1;
+				} else if (a._big.lt(b)) {
+					return -1;
+				} else {
+					return 0;
+				}
+			}
+		}, {
+			key: 'ZERO',
+			get: function get() {
+				return decimalZero;
+			}
+
+			/**
+    * Returns an instance with the value of one.
+    *
+    * @public
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'ONE',
+			get: function get() {
+				return decimalOne;
+			}
+
+			/**
+    * Returns an instance with the value of one.
+    *
+    * @public
+    * @returns {Decimal}
+    */
+
+		}, {
+			key: 'NEGATIVE_ONE',
+			get: function get() {
+				return decimalNegativeOne;
+			}
+
+			/**
+    * Return the {@link RoundingMode} enumeration.
+    *
+    * @public
+    * @returns {RoundingMode}
+    */
+
+		}, {
+			key: 'ROUNDING_MODE',
+			get: function get() {
+				return RoundingMode;
+			}
+		}]);
+
+		return Decimal;
+	}();
+
+	var zero = new Big(0);
+	var positiveOne = new Big(1);
+	var negativeOne = new Big(-1);
+
+	var decimalZero = new Decimal(zero);
+	var decimalOne = new Decimal(positiveOne);
+	var decimalNegativeOne = new Decimal(negativeOne);
+
+	function getBig(value) {
+		if (value instanceof Big) {
+			return value;
+		} else if (value instanceof Decimal) {
+			return value._big;
+		} else {
+			return new Big(value);
+		}
+	}
+
+	/**
+  * An enumeration of strategies for rouding a {@link Decimal} instance.
+  *
+  * @public
+  * @inner
+  * @extends {Enum}
+  */
+
+	var RoundingMode = function (_Enum) {
+		_inherits(RoundingMode, _Enum);
+
+		function RoundingMode(value, description) {
+			_classCallCheck(this, RoundingMode);
+
+			var _this = _possibleConstructorReturn(this, (RoundingMode.__proto__ || Object.getPrototypeOf(RoundingMode)).call(this, value.toString(), description));
+
+			_this._value = value;
+			return _this;
+		}
+
+		/**
+   * The code used by the Big.js library.
+   *
+   * @ignore
+   * @returns {Number}
+   */
+
+
+		_createClass(RoundingMode, [{
+			key: 'toString',
+			value: function toString() {
+				return '[RoundingMode]';
+			}
+		}, {
+			key: 'value',
+			get: function get() {
+				return this._value;
+			}
+
+			/**
+    * Rounds away from zero.
+    *
+    * @public
+    * @returns {RoundingMode}
+    */
+
+		}], [{
+			key: 'UP',
+			get: function get() {
+				return up;
+			}
+
+			/**
+    * Rounds towards zero.
+    *
+    * @public
+    * @returns {RoundingMode}
+    */
+
+		}, {
+			key: 'DOWN',
+			get: function get() {
+				return down;
+			}
+
+			/**
+    * Rounds towards nearest neighbor. If equidistant, rounds away from zero.
+    *
+    * @public
+    * @returns {RoundingMode}
+    */
+
+		}, {
+			key: 'NORMAL',
+			get: function get() {
+				return normal;
+			}
+		}]);
+
+		return RoundingMode;
+	}(Enum);
+
+	var up = new RoundingMode(3, 'up');
+	var down = new RoundingMode(0, 'down');
+	var normal = new RoundingMode(1, 'normal');
+
+	return Decimal;
+}();
+
+},{"./Enum":31,"./assert":35,"./is":38,"big.js":75}],30:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3476,7 +5093,7 @@ module.exports = function () {
 	return Disposable;
 }();
 
-},{"./assert":28}],25:[function(require,module,exports){
+},{"./assert":35}],31:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3618,7 +5235,130 @@ module.exports = function () {
 	return Enum;
 }();
 
-},{"./assert":28}],26:[function(require,module,exports){
+},{"./assert":35}],32:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var assert = require('./assert'),
+    is = require('./is');
+
+var Decimal = require('./Decimal'),
+    Currency = require('./Currency');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * A structure for storing money amounts.
+  *
+  * @public
+  * @param {Decimal|Number|String} - A amount, which can be parsed as a {@link Decimal}
+  * @param {Currency} - The currency.
+  */
+
+	var Money = function () {
+		function Money(value, currency) {
+			_classCallCheck(this, Money);
+
+			assert.argumentIsRequired(currency, 'currency', Currency, 'Currency');
+
+			this._decimal = getDecimal(value);
+			this._currency = currency;
+		}
+
+		/**
+   * The currency amount.
+   *
+   * @public
+   * @returns {Decimal}
+   */
+
+
+		_createClass(Money, [{
+			key: 'toAmount',
+			value: function toAmount(places, mode) {
+				return new Money(this._decimal.round(getPlaces(places), mode), this._currency);
+			}
+
+			/**
+    * Returns the JSON representation.
+    *
+    * @public
+    * @returns {Object}
+    */
+
+		}, {
+			key: 'toJSON',
+			value: function toJSON() {
+				return {
+					decimal: this._decimal,
+					currency: this._currency
+				};
+			}
+			/**
+    * Parses the value emitted by {@link Decimal#toJSON}.
+    *
+    * @public
+    * @param {Object} value
+    * @returns {Money}
+    */
+
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[Money]';
+			}
+		}, {
+			key: 'decimal',
+			get: function get() {
+				return this._decimal;
+			}
+
+			/**
+    * The currency.
+    *
+    * @public
+    * @returns {Currency}
+    */
+
+		}, {
+			key: 'currency',
+			get: function get() {
+				return this._currency;
+			}
+		}], [{
+			key: 'parse',
+			value: function parse(value) {
+				return new Money(value.decimal, value.currency);
+			}
+		}]);
+
+		return Money;
+	}();
+
+	function getDecimal(value) {
+		if (value instanceof Decimal) {
+			return value;
+		} else {
+			return new Decimal(value);
+		}
+	}
+
+	function getPlaces(value) {
+		if (is.integer(value) && !(value < 0)) {
+			return value;
+		} else {
+			return 2;
+		}
+	}
+
+	return Money;
+}();
+
+},{"./Currency":27,"./Decimal":29,"./assert":35,"./is":38}],33:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3741,7 +5481,7 @@ module.exports = function () {
 	return Timestamp;
 }();
 
-},{"./assert":28,"./is":30,"moment-timezone":66}],27:[function(require,module,exports){
+},{"./assert":35,"./is":38,"moment-timezone":79}],34:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -3900,6 +5640,29 @@ module.exports = function () {
 
 			if (returnRef.length !== 0) {
 				returnRef.pop();
+			}
+
+			return returnRef;
+		},
+
+
+		/**
+   * Returns the first item from an array, or an undefined value, if the
+   * array is empty.
+   *
+   * @static
+   * @param {Array} a
+   * @returns {*|undefined}
+   */
+		first: function first(a) {
+			assert.argumentIsArray(a, 'a');
+
+			var returnRef = void 0;
+
+			if (a.length !== 0) {
+				returnRef = a[0];
+			} else {
+				returnRef = undefined;
 			}
 
 			return returnRef;
@@ -4079,7 +5842,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":28,"./is":30}],28:[function(require,module,exports){
+},{"./assert":35,"./is":38}],35:[function(require,module,exports){
 'use strict';
 
 var is = require('./is');
@@ -4227,7 +5990,7 @@ module.exports = function () {
 	};
 }();
 
-},{"./is":30}],29:[function(require,module,exports){
+},{"./is":38}],36:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert'),
@@ -4399,7 +6162,51 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":28,"./is":30}],30:[function(require,module,exports){
+},{"./assert":35,"./is":38}],37:[function(require,module,exports){
+'use strict';
+
+module.exports = function () {
+	'use strict';
+
+	function tautology(x) {
+		return x;
+	}
+
+	function empty() {
+		return;
+	}
+
+	/**
+  * Utilities for working with functions.
+  *
+  * @public
+  * @module lang/functions
+  */
+	return {
+		/**
+   * A function that returns the first argument passed.
+   *
+   * @static
+   * @returns {Function}
+   */
+		getTautology: function getTautology() {
+			return tautology;
+		},
+
+
+		/**
+   * A function with no return value.
+   *
+   * @static
+   * @returns {Function}
+   */
+		getEmpty: function getEmpty() {
+			return empty;
+		}
+	};
+}();
+
+},{}],38:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -4622,7 +6429,7 @@ module.exports = function () {
 	};
 }();
 
-},{}],31:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 var array = require('./array'),
@@ -4771,7 +6578,7 @@ module.exports = function () {
 	return object;
 }();
 
-},{"./array":27,"./is":30}],32:[function(require,module,exports){
+},{"./array":34,"./is":38}],40:[function(require,module,exports){
 'use strict';
 
 var assert = require('./assert');
@@ -4963,7 +6770,748 @@ module.exports = function () {
 	};
 }();
 
-},{"./assert":28}],33:[function(require,module,exports){
+},{"./assert":35}],41:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Currency = require('./../../lang/Currency'),
+    Money = require('./../../lang/Money');
+
+var DataType = require('./DataType'),
+    Field = require('./Field');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * A complex object built from many {@link Field} instances.
+  *
+  * @public
+  * @param {String} name
+  * @param {Array<Field>} componentType
+  */
+
+	var Component = function () {
+		function Component(name, fields, reviver) {
+			_classCallCheck(this, Component);
+
+			this._name = name;
+			this._fields = fields || [];
+			this._reviver = reviver;
+		}
+
+		/**
+   * Name of the component.
+   *
+   * @public
+   * @returns {String}
+   */
+
+
+		_createClass(Component, [{
+			key: 'toString',
+			value: function toString() {
+				return '[Component (name=' + this._name + ')]';
+			}
+		}, {
+			key: 'name',
+			get: function get() {
+				return this._name;
+			}
+
+			/**
+    * Type of the component.
+    *
+    * @public
+    * @returns {ComponentType}
+    */
+
+		}, {
+			key: 'fields',
+			get: function get() {
+				return this._fields;
+			}
+
+			/**
+    * The reviver used to rebuild the entire component.
+    *
+    * @returns {Function}
+    */
+
+		}, {
+			key: 'reviver',
+			get: function get() {
+				return this._reviver;
+			}
+
+			/**
+    * The builds a {@link Component} for {@link Money}.
+    *
+    * @public
+    * @returns {Component}
+    */
+
+		}], [{
+			key: 'forMoney',
+			value: function forMoney(name) {
+				return new Component(name, [new Field('decimal', DataType.DECIMAL), new Field('currency', DataType.forEnum(Currency, 'Currency'))], function (x) {
+					return Money.parse(x);
+				});
+			}
+		}]);
+
+		return Component;
+	}();
+
+	return Component;
+}();
+
+},{"./../../lang/Currency":27,"./../../lang/Money":32,"./DataType":42,"./Field":43}],42:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var assert = require('./../../lang/assert'),
+    Day = require('./../../lang/Day'),
+    Decimal = require('./../../lang/Decimal'),
+    Enum = require('./../../lang/Enum'),
+    is = require('./../../lang/is'),
+    Timestamp = require('./../../lang/Timestamp');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * The formal definition of a data type which is used by an {@link Field}.
+  *
+  * @public
+  * @param {String} description
+  * @param {Function=} enumerationType
+  */
+
+	var DataType = function () {
+		function DataType(description, enumerationType, reviver, validator) {
+			_classCallCheck(this, DataType);
+
+			assert.argumentIsRequired(description, 'description', String);
+			assert.argumentIsOptional(enumerationType, 'enumerationType', Function);
+			assert.argumentIsOptional(reviver, 'reviver', Function);
+			assert.argumentIsOptional(validator, 'validator', Function);
+
+			if (enumerationType) {
+				assert.argumentIsValid(enumerationType, 'enumerationType', extendsEnumeration, 'is an enumeration');
+			}
+
+			this._description = description;
+			this._enumerationType = enumerationType || null;
+
+			var reviverToUse = void 0;
+
+			if (reviver) {
+				reviverToUse = reviver;
+			} else if (enumerationType) {
+				reviverToUse = function reviverToUse(x) {
+					return Enum.fromCode(enumerationType, x);
+				};
+			} else {
+				reviverToUse = function reviverToUse(x) {
+					return x;
+				};
+			}
+
+			this._reviver = reviverToUse;
+			this._validator = validator || function (candidate) {
+				return true;
+			};
+		}
+
+		/**
+   * Description of the data type.
+   *
+   * @public
+   * @returns {String}
+   */
+
+
+		_createClass(DataType, [{
+			key: 'toString',
+			value: function toString() {
+				return '[DataType (description=' + this._description + ')]';
+			}
+		}, {
+			key: 'description',
+			get: function get() {
+				return this._description;
+			}
+
+			/**
+    * The {@Enumeration} type, if applicable.
+    *
+    * @public
+    * @returns {Function|null}
+    */
+
+		}, {
+			key: 'enumerationType',
+			get: function get() {
+				return this._enumerationType;
+			}
+
+			/**
+    * A function which "revives" a value after serialization to JSON.
+    *
+    * @public
+    * @returns {Function} reviver
+    */
+
+		}, {
+			key: 'reviver',
+			get: function get() {
+				return this._reviver;
+			}
+
+			/**
+    * A function validates data, returning true or false.
+    *
+    * @public
+    * @returns {Function} reviver
+    */
+
+		}, {
+			key: 'validator',
+			get: function get() {
+				return this._validator;
+			}
+
+			/**
+    * Return a {@link DataType} instance for use with an {@link @Enum}.
+    *
+    * @public
+    * @param {Function} enumerationType - A class that extends {@link Enum}
+    * @param description - The description
+    * @returns {DataType}
+    */
+
+		}], [{
+			key: 'forEnum',
+			value: function forEnum(enumerationType, description) {
+				return new DataType(description, enumerationType);
+			}
+
+			/**
+    * References a string.
+    *
+    * @public
+    * @returns {DataType}
+    */
+
+		}, {
+			key: 'STRING',
+			get: function get() {
+				return dataTypeString;
+			}
+
+			/**
+    * References a number.
+    *
+    * @public
+    * @returns {DataType}
+    */
+
+		}, {
+			key: 'NUMBER',
+			get: function get() {
+				return dataTypeNumber;
+			}
+
+			/**
+    * References a Boolean value.
+    *
+    * @public
+    * @returns {DataType}
+    */
+
+		}, {
+			key: 'BOOLEAN',
+			get: function get() {
+				return dataTypeBoolean;
+			}
+
+			/**
+    * References an object (serialized as JSON).
+    *
+    * @public
+    * @returns {DataType}
+    */
+
+		}, {
+			key: 'OBJECT',
+			get: function get() {
+				return dataTypeObject;
+			}
+
+			/**
+    * References a {@link Decimal} instance.
+    *
+    * @public
+    * @returns {DataType}
+    */
+
+		}, {
+			key: 'DECIMAL',
+			get: function get() {
+				return dataTypeDecimal;
+			}
+
+			/**
+    * References a {@link Day} instance.
+    *
+    * @public
+    * @returns {DataType}
+    */
+
+		}, {
+			key: 'DAY',
+			get: function get() {
+				return dataTypeDay;
+			}
+
+			/**
+    * References a {@link Timestamp} instance.
+    *
+    * @public
+    * @returns {DataType}
+    */
+
+		}, {
+			key: 'TIMESTAMP',
+			get: function get() {
+				return dataTypeTimestamp;
+			}
+		}]);
+
+		return DataType;
+	}();
+
+	function extendsEnumeration(EnumerationType) {
+		return is.extension(Enum, EnumerationType);
+	}
+
+	var dataTypeString = new DataType('String', null, null, is.string);
+	var dataTypeNumber = new DataType('Number', null, null, is.number);
+	var dataTypeBoolean = new DataType('Boolean', null, null, is.boolean);
+	var dataTypeObject = new DataType('Object', null, null, is.object);
+
+	var dataTypeDecimal = new DataType('Decimal', null, function (x) {
+		return Decimal.parse(x);
+	}, function (x) {
+		return x instanceof Decimal;
+	});
+	var dataTypeDay = new DataType('Day', null, function (x) {
+		return Day.parse(x);
+	}, function (x) {
+		return x instanceof Day;
+	});
+	var dataTypeTimestamp = new DataType('Timestamp', null, function (x) {
+		return Timestamp.parse(x);
+	}, function (x) {
+		return x instanceof Timestamp;
+	});
+
+	var dataTypes = [dataTypeString, dataTypeNumber, dataTypeBoolean, dataTypeObject, dataTypeDecimal, dataTypeDay, dataTypeTimestamp];
+
+	return DataType;
+}();
+
+},{"./../../lang/Day":28,"./../../lang/Decimal":29,"./../../lang/Enum":31,"./../../lang/Timestamp":33,"./../../lang/assert":35,"./../../lang/is":38}],43:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * A simple field.
+  *
+  * @public
+  * @param {String} name
+  * @param {DataType} dataType
+  * @param {Boolean} optional
+  */
+
+	var Field = function () {
+		function Field(name, dataType, optional) {
+			_classCallCheck(this, Field);
+
+			this._name = name;
+			this._dataType = dataType;
+			this._optional = optional || false;
+		}
+
+		/**
+   * Name of the field.
+   *
+   * @public
+   * @returns {String}
+   */
+
+
+		_createClass(Field, [{
+			key: 'toString',
+			value: function toString() {
+				return '[Field (name=' + this._name + ')]';
+			}
+		}, {
+			key: 'name',
+			get: function get() {
+				return this._name;
+			}
+
+			/**
+    * Type of the field.
+    *
+    * @public
+    * @returns {DataType}
+    */
+
+		}, {
+			key: 'dataType',
+			get: function get() {
+				return this._dataType;
+			}
+
+			/**
+    * Indicates if the field can be omitted without violating the schema.
+    *
+    * @public
+    * @returns {Boolean}
+    */
+
+		}, {
+			key: 'optional',
+			get: function get() {
+				return this._optional;
+			}
+		}]);
+
+		return Field;
+	}();
+
+	return Field;
+}();
+
+},{}],44:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var functions = require('./../../lang/functions'),
+    is = require('./../../lang/is');
+
+var LinkedList = require('./../../collections/LinkedList'),
+    Tree = require('./../../collections/Tree');
+
+var Component = require('./Component'),
+    Field = require('./Field');
+
+module.exports = function () {
+	'use strict';
+
+	/**
+  * A schema definition, can be used for serialization and deserialization.
+  *
+  * @public
+  * @param {String} name - The name of the schema
+  * @param {Array<Field>} fields
+  * @param {Array<Component>} components
+  * @param {Boolean=} strict
+  */
+
+	var Schema = function () {
+		function Schema(name, fields, components, strict) {
+			_classCallCheck(this, Schema);
+
+			this._name = name;
+
+			this._fields = fields || [];
+			this._components = components || [];
+
+			this._strict = is.boolean(strict) && strict;
+
+			this._revivers = getReviverItems(this._fields, this._components);
+		}
+
+		/**
+   * Name of the table.
+   *
+   * @public
+   * @returns {String}
+   */
+
+
+		_createClass(Schema, [{
+			key: 'validate',
+
+
+			/**
+    * Returns true, if an object complies with the schema.
+    *
+    * @public
+    * @param {*} candidate
+    */
+			value: function validate(candidate) {
+				var returnVal = is.object(candidate);
+
+				return false;
+			}
+
+			/**
+    * Generates a function suitable for use by JSON.parse.
+    *
+    * @public
+    * @returns {Function}
+    */
+
+		}, {
+			key: 'getReviver',
+			value: function getReviver() {
+				var head = this._revivers;
+				var node = null;
+
+				var advance = function advance(key) {
+					if (node === null) {
+						node = head;
+					} else {
+						node = node.getNext();
+					}
+
+					var item = node.getValue();
+
+					if (key !== item.name) {
+						if (item.reset || key === '' && node === head) {
+							node = null;
+						} else if (item.optional) {
+							item = advance(key);
+						} else {
+							throw new Error('Schema parsing is using strict mode, unexpected key found [ found: ' + key + ', expected: ' + item.name + ' ]');
+						}
+					}
+
+					return item;
+				};
+
+				return function (key, value) {
+					return advance(key).reviver(value);
+				};
+			}
+
+			/**
+    * Returns a function that will generate a *new* reviver function
+    * (see {@link Schema#getReviver}.
+    *
+    * @public
+    * @returns {Function}
+    */
+
+		}, {
+			key: 'getReviverFactory',
+			value: function getReviverFactory() {
+				var _this = this;
+
+				return function () {
+					return _this.getReviver();
+				};
+			}
+		}, {
+			key: 'toString',
+			value: function toString() {
+				return '[Schema (name=' + this._name + ')]';
+			}
+		}, {
+			key: 'name',
+			get: function get() {
+				return this._name;
+			}
+
+			/**
+    * The fields of the table.
+    *
+    * @public
+    * @returns {Array<Field>}
+    */
+
+		}, {
+			key: 'fields',
+			get: function get() {
+				return [].concat(_toConsumableArray(this._fields));
+			}
+
+			/**
+    * The components of the table.
+    *
+    * @public
+    * @returns {Array<Component>}
+    */
+
+		}, {
+			key: 'components',
+			get: function get() {
+				return [].concat(_toConsumableArray(this._components));
+			}
+
+			/**
+    * If true, only the explicitly defined fields and components will
+    * be serialized.
+    *
+    * @public
+    * @returns {boolean}
+    */
+
+		}, {
+			key: 'strict',
+			get: function get() {
+				return this._strict;
+			}
+		}]);
+
+		return Schema;
+	}();
+
+	var ReviverItem = function () {
+		function ReviverItem(name, reviver, optional, reset) {
+			_classCallCheck(this, ReviverItem);
+
+			this._name = name;
+			this._reviver = reviver || functions.getTautology();
+			this._optional = is.boolean(optional) && optional;
+			this._reset = is.boolean(reset) && reset;
+		}
+
+		_createClass(ReviverItem, [{
+			key: 'name',
+			get: function get() {
+				return this._name;
+			}
+		}, {
+			key: 'reviver',
+			get: function get() {
+				return this._reviver;
+			}
+		}, {
+			key: 'optional',
+			get: function get() {
+				return this._optional;
+			}
+		}, {
+			key: 'reset',
+			get: function get() {
+				return this._reset;
+			}
+		}]);
+
+		return ReviverItem;
+	}();
+
+	function getReviverItems(fields, components) {
+		var root = new Tree(new ReviverItem(null, null, false, true));
+
+		// 2017/08/26, BRI. The Field and Component types could inherit a common
+		// type, allowing the following duplication to be avoided with polymorphism.
+
+		fields.forEach(function (field) {
+			var names = field.name.split('.');
+
+			var node = root;
+
+			names.forEach(function (name, i) {
+				if (names.length === i + 1) {
+					node.addChild(new ReviverItem(name, field.dataType.reviver, field.optional));
+				} else {
+					var child = node.findChild(function (n) {
+						return n.name === name;
+					});
+
+					if (!child) {
+						child = node.addChild(new ReviverItem(name));
+					}
+
+					node = child;
+				}
+			});
+		});
+
+		components.forEach(function (component) {
+			var node = root;
+
+			var names = component.name.split('.');
+
+			names.forEach(function (name, i) {
+				if (names.length === i + 1) {
+					node = node.addChild(new ReviverItem(name, component.reviver));
+				} else {
+					var child = node.findChild(function (n) {
+						return n.name === name;
+					});
+
+					if (!child) {
+						child = node.addChild(new ReviverItem(name));
+					}
+
+					node = child;
+				}
+			});
+
+			component.fields.forEach(function (f) {
+				return node.addChild(new ReviverItem(f.name, f.dataType.reviver));
+			});
+		});
+
+		var head = null;
+		var current = null;
+
+		var addItemToList = function addItemToList(item, node) {
+			var itemToUse = item;
+
+			if (!node.getIsLeaf()) {
+				var required = node.search(function (i, n) {
+					return n.getIsLeaf() && !i.optional;
+				}, true, false) !== null;
+
+				if (!required) {
+					itemToUse = new ReviverItem(item.name, item.reviver, true, item.reset);
+				}
+			} else {
+				itemToUse = item;
+			}
+
+			if (current === null) {
+				current = head = new LinkedList(itemToUse);
+			} else {
+				current = current.insert(itemToUse);
+			}
+		};
+
+		root.walk(addItemToList, false, true);
+
+		return head;
+	}
+
+	return Schema;
+}();
+
+},{"./../../collections/LinkedList":23,"./../../collections/Tree":24,"./../../lang/functions":37,"./../../lang/is":38,"./Component":41,"./Field":43}],45:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5211,7 +7759,7 @@ module.exports = function () {
 	return Scheduler;
 }();
 
-},{"./../lang/Disposable":24,"./../lang/assert":28,"./../lang/is":30,"./../lang/object":31,"./../lang/promise":32}],34:[function(require,module,exports){
+},{"./../lang/Disposable":30,"./../lang/assert":35,"./../lang/is":38,"./../lang/object":39,"./../lang/promise":40}],46:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5502,7 +8050,7 @@ module.exports = function () {
 	return JwtGateway;
 }();
 
-},{"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":24,"@barchart/common-js/lang/Enum":25,"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30,"@barchart/common-js/timing/Scheduler":33}],35:[function(require,module,exports){
+},{"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":30,"@barchart/common-js/lang/Enum":31,"@barchart/common-js/lang/assert":35,"@barchart/common-js/lang/is":38,"@barchart/common-js/timing/Scheduler":45}],47:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
     is = require('@barchart/common-js/lang/is');
 
@@ -5594,7 +8142,7 @@ module.exports = (() => {
 		}
 
 		/**
-         * Adds a new {@link WatchlistEntry} to the end of the list.
+         * Adds a new {@link WatchlistEntry} to the end of the list
          *
 		 * @public
 		 * @param {WatchlistEntry} entry
@@ -5602,7 +8150,9 @@ module.exports = (() => {
 		addEntry(entry) {
 		    assert.argumentIsRequired(entry, 'entry', Object);
 
-			this._entries.push(entry);
+		    if (!this._entries.some(e => e.symbol === entry.symbol)) {
+			    this._entries.push(entry);
+		    }
 		}
 
 		/**
@@ -5616,6 +8166,18 @@ module.exports = (() => {
 			assert.argumentIsRequired(entry, 'entry', Object);
 
 			this._entries = this._entries.filter((e) => e !== entry);
+		}
+
+		/**
+		 * Removes all items from the watchlist for a given symbol.
+		 *
+		 * @public
+		 * @param {String} symbol
+		 */
+		removeSymbol(symbol) {
+			assert.argumentIsRequired(symbol, 'symbol', String);
+
+			this._entries = this._entries.filter((e) => e.symbol !== symbol);
 		}
 
 		/**
@@ -5681,7 +8243,7 @@ module.exports = (() => {
 
 	return Watchlist;
 })();
-},{"@barchart/common-js/lang/assert":28,"@barchart/common-js/lang/is":30}],36:[function(require,module,exports){
+},{"@barchart/common-js/lang/assert":35,"@barchart/common-js/lang/is":38}],48:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -5757,7 +8319,7 @@ module.exports = (() => {
 	return WatchlistAction;
 })();
 
-},{"@barchart/common-js/lang/Enum":25,"@barchart/common-js/lang/assert":28}],37:[function(require,module,exports){
+},{"@barchart/common-js/lang/Enum":31,"@barchart/common-js/lang/assert":35}],49:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
     Timestamp = require('@barchart/common-js/lang/Timestamp');
 
@@ -5993,9 +8555,9 @@ module.exports = (() => {
 
 	return WatchlistUser;
 })();
-},{"./Watchlist":35,"./WatchlistAction":36,"@barchart/common-js/lang/Timestamp":26,"@barchart/common-js/lang/assert":28}],38:[function(require,module,exports){
+},{"./Watchlist":47,"./WatchlistAction":48,"@barchart/common-js/lang/Timestamp":33,"@barchart/common-js/lang/assert":35}],50:[function(require,module,exports){
 module.exports = require('./lib/axios');
-},{"./lib/axios":40}],39:[function(require,module,exports){
+},{"./lib/axios":52}],51:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -6179,7 +8741,7 @@ module.exports = function xhrAdapter(config) {
 };
 
 }).call(this,require('_process'))
-},{"../core/createError":46,"./../core/settle":49,"./../helpers/btoa":53,"./../helpers/buildURL":54,"./../helpers/cookies":56,"./../helpers/isURLSameOrigin":58,"./../helpers/parseHeaders":60,"./../utils":62,"_process":63}],40:[function(require,module,exports){
+},{"../core/createError":58,"./../core/settle":61,"./../helpers/btoa":65,"./../helpers/buildURL":66,"./../helpers/cookies":68,"./../helpers/isURLSameOrigin":70,"./../helpers/parseHeaders":72,"./../utils":74,"_process":76}],52:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -6233,7 +8795,7 @@ module.exports = axios;
 // Allow use of default import syntax in TypeScript
 module.exports.default = axios;
 
-},{"./cancel/Cancel":41,"./cancel/CancelToken":42,"./cancel/isCancel":43,"./core/Axios":44,"./defaults":51,"./helpers/bind":52,"./helpers/spread":61,"./utils":62}],41:[function(require,module,exports){
+},{"./cancel/Cancel":53,"./cancel/CancelToken":54,"./cancel/isCancel":55,"./core/Axios":56,"./defaults":63,"./helpers/bind":64,"./helpers/spread":73,"./utils":74}],53:[function(require,module,exports){
 'use strict';
 
 /**
@@ -6254,7 +8816,7 @@ Cancel.prototype.__CANCEL__ = true;
 
 module.exports = Cancel;
 
-},{}],42:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 'use strict';
 
 var Cancel = require('./Cancel');
@@ -6313,14 +8875,14 @@ CancelToken.source = function source() {
 
 module.exports = CancelToken;
 
-},{"./Cancel":41}],43:[function(require,module,exports){
+},{"./Cancel":53}],55:[function(require,module,exports){
 'use strict';
 
 module.exports = function isCancel(value) {
   return !!(value && value.__CANCEL__);
 };
 
-},{}],44:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 'use strict';
 
 var defaults = require('./../defaults');
@@ -6401,7 +8963,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = Axios;
 
-},{"./../defaults":51,"./../utils":62,"./InterceptorManager":45,"./dispatchRequest":47}],45:[function(require,module,exports){
+},{"./../defaults":63,"./../utils":74,"./InterceptorManager":57,"./dispatchRequest":59}],57:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -6455,7 +9017,7 @@ InterceptorManager.prototype.forEach = function forEach(fn) {
 
 module.exports = InterceptorManager;
 
-},{"./../utils":62}],46:[function(require,module,exports){
+},{"./../utils":74}],58:[function(require,module,exports){
 'use strict';
 
 var enhanceError = require('./enhanceError');
@@ -6475,7 +9037,7 @@ module.exports = function createError(message, config, code, request, response) 
   return enhanceError(error, config, code, request, response);
 };
 
-},{"./enhanceError":48}],47:[function(require,module,exports){
+},{"./enhanceError":60}],59:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -6563,7 +9125,7 @@ module.exports = function dispatchRequest(config) {
   });
 };
 
-},{"../cancel/isCancel":43,"../defaults":51,"./../helpers/combineURLs":55,"./../helpers/isAbsoluteURL":57,"./../utils":62,"./transformData":50}],48:[function(require,module,exports){
+},{"../cancel/isCancel":55,"../defaults":63,"./../helpers/combineURLs":67,"./../helpers/isAbsoluteURL":69,"./../utils":74,"./transformData":62}],60:[function(require,module,exports){
 'use strict';
 
 /**
@@ -6586,7 +9148,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
   return error;
 };
 
-},{}],49:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 'use strict';
 
 var createError = require('./createError');
@@ -6614,7 +9176,7 @@ module.exports = function settle(resolve, reject, response) {
   }
 };
 
-},{"./createError":46}],50:[function(require,module,exports){
+},{"./createError":58}],62:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -6636,7 +9198,7 @@ module.exports = function transformData(data, headers, fns) {
   return data;
 };
 
-},{"./../utils":62}],51:[function(require,module,exports){
+},{"./../utils":74}],63:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -6732,7 +9294,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 }).call(this,require('_process'))
-},{"./adapters/http":39,"./adapters/xhr":39,"./helpers/normalizeHeaderName":59,"./utils":62,"_process":63}],52:[function(require,module,exports){
+},{"./adapters/http":51,"./adapters/xhr":51,"./helpers/normalizeHeaderName":71,"./utils":74,"_process":76}],64:[function(require,module,exports){
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -6745,7 +9307,7 @@ module.exports = function bind(fn, thisArg) {
   };
 };
 
-},{}],53:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 'use strict';
 
 // btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
@@ -6783,7 +9345,7 @@ function btoa(input) {
 
 module.exports = btoa;
 
-},{}],54:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -6853,7 +9415,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
   return url;
 };
 
-},{"./../utils":62}],55:[function(require,module,exports){
+},{"./../utils":74}],67:[function(require,module,exports){
 'use strict';
 
 /**
@@ -6869,7 +9431,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
     : baseURL;
 };
 
-},{}],56:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -6924,7 +9486,7 @@ module.exports = (
   })()
 );
 
-},{"./../utils":62}],57:[function(require,module,exports){
+},{"./../utils":74}],69:[function(require,module,exports){
 'use strict';
 
 /**
@@ -6940,7 +9502,7 @@ module.exports = function isAbsoluteURL(url) {
   return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
 };
 
-},{}],58:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -7010,7 +9572,7 @@ module.exports = (
   })()
 );
 
-},{"./../utils":62}],59:[function(require,module,exports){
+},{"./../utils":74}],71:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -7024,7 +9586,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
   });
 };
 
-},{"../utils":62}],60:[function(require,module,exports){
+},{"../utils":74}],72:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -7079,7 +9641,7 @@ module.exports = function parseHeaders(headers) {
   return parsed;
 };
 
-},{"./../utils":62}],61:[function(require,module,exports){
+},{"./../utils":74}],73:[function(require,module,exports){
 'use strict';
 
 /**
@@ -7108,7 +9670,7 @@ module.exports = function spread(callback) {
   };
 };
 
-},{}],62:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 'use strict';
 
 var bind = require('./helpers/bind');
@@ -7413,7 +9975,948 @@ module.exports = {
   trim: trim
 };
 
-},{"./helpers/bind":52,"is-buffer":64}],63:[function(require,module,exports){
+},{"./helpers/bind":64,"is-buffer":77}],75:[function(require,module,exports){
+/*
+ *  big.js v5.0.3
+ *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
+ *  Copyright (c) 2017 Michael Mclaughlin <M8ch88l@gmail.com>
+ *  https://github.com/MikeMcl/big.js/LICENCE
+ */
+;(function (GLOBAL) {
+  'use strict';
+  var Big,
+
+
+/************************************** EDITABLE DEFAULTS *****************************************/
+
+
+    // The default values below must be integers within the stated ranges.
+
+    /*
+     * The maximum number of decimal places (DP) of the results of operations involving division:
+     * div and sqrt, and pow with negative exponents.
+     */
+    DP = 20,          // 0 to MAX_DP
+
+    /*
+     * The rounding mode (RM) used when rounding to the above decimal places.
+     *
+     *  0  Towards zero (i.e. truncate, no rounding).       (ROUND_DOWN)
+     *  1  To nearest neighbour. If equidistant, round up.  (ROUND_HALF_UP)
+     *  2  To nearest neighbour. If equidistant, to even.   (ROUND_HALF_EVEN)
+     *  3  Away from zero.                                  (ROUND_UP)
+     */
+    RM = 1,             // 0, 1, 2 or 3
+
+    // The maximum value of DP and Big.DP.
+    MAX_DP = 1E6,       // 0 to 1000000
+
+    // The maximum magnitude of the exponent argument to the pow method.
+    MAX_POWER = 1E6,    // 1 to 1000000
+
+    /*
+     * The negative exponent (NE) at and beneath which toString returns exponential notation.
+     * (JavaScript numbers: -7)
+     * -1000000 is the minimum recommended exponent value of a Big.
+     */
+    NE = -7,            // 0 to -1000000
+
+    /*
+     * The positive exponent (PE) at and above which toString returns exponential notation.
+     * (JavaScript numbers: 21)
+     * 1000000 is the maximum recommended exponent value of a Big.
+     * (This limit is not enforced or checked.)
+     */
+    PE = 21,            // 0 to 1000000
+
+
+/**************************************************************************************************/
+
+
+    // Error messages.
+    NAME = '[big.js] ',
+    INVALID = NAME + 'Invalid ',
+    INVALID_DP = INVALID + 'decimal places',
+    INVALID_RM = INVALID + 'rounding mode',
+    DIV_BY_ZERO = NAME + 'Division by zero',
+
+    // The shared prototype object.
+    P = {},
+    UNDEFINED = void 0,
+    NUMERIC = /^-?(\d+(\.\d*)?|\.\d+)(e[+-]?\d+)?$/i;
+
+
+  /*
+   * Create and return a Big constructor.
+   *
+   */
+  function _Big_() {
+
+    /*
+     * The Big constructor and exported function.
+     * Create and return a new instance of a Big number object.
+     *
+     * n {number|string|Big} A numeric value.
+     */
+    function Big(n) {
+      var x = this;
+
+      // Enable constructor usage without new.
+      if (!(x instanceof Big)) return n === UNDEFINED ? _Big_() : new Big(n);
+
+      // Duplicate.
+      if (n instanceof Big) {
+        x.s = n.s;
+        x.e = n.e;
+        x.c = n.c.slice();
+      } else {
+        parse(x, n);
+      }
+
+      /*
+       * Retain a reference to this Big constructor, and shadow Big.prototype.constructor which
+       * points to Object.
+       */
+      x.constructor = Big;
+    }
+
+    Big.prototype = P;
+    Big.DP = DP;
+    Big.RM = RM;
+    Big.NE = NE;
+    Big.PE = PE;
+    Big.version = '5.0.2';
+
+    return Big;
+  }
+
+
+  /*
+   * Parse the number or string value passed to a Big constructor.
+   *
+   * x {Big} A Big number instance.
+   * n {number|string} A numeric value.
+   */
+  function parse(x, n) {
+    var e, i, nl;
+
+    // Minus zero?
+    if (n === 0 && 1 / n < 0) n = '-0';
+    else if (!NUMERIC.test(n += '')) throw Error(INVALID + 'number');
+
+    // Determine sign.
+    x.s = n.charAt(0) == '-' ? (n = n.slice(1), -1) : 1;
+
+    // Decimal point?
+    if ((e = n.indexOf('.')) > -1) n = n.replace('.', '');
+
+    // Exponential form?
+    if ((i = n.search(/e/i)) > 0) {
+
+      // Determine exponent.
+      if (e < 0) e = i;
+      e += +n.slice(i + 1);
+      n = n.substring(0, i);
+    } else if (e < 0) {
+
+      // Integer.
+      e = n.length;
+    }
+
+    nl = n.length;
+
+    // Determine leading zeros.
+    for (i = 0; i < nl && n.charAt(i) == '0';) ++i;
+
+    if (i == nl) {
+
+      // Zero.
+      x.c = [x.e = 0];
+    } else {
+
+      // Determine trailing zeros.
+      for (; nl > 0 && n.charAt(--nl) == '0';);
+      x.e = e - i - 1;
+      x.c = [];
+
+      // Convert string to array of digits without leading/trailing zeros.
+      for (e = 0; i <= nl;) x.c[e++] = +n.charAt(i++);
+    }
+
+    return x;
+  }
+
+
+  /*
+   * Round Big x to a maximum of dp decimal places using rounding mode rm.
+   * Called by stringify, P.div, P.round and P.sqrt.
+   *
+   * x {Big} The Big to round.
+   * dp {number} Integer, 0 to MAX_DP inclusive.
+   * rm {number} 0, 1, 2 or 3 (DOWN, HALF_UP, HALF_EVEN, UP)
+   * [more] {boolean} Whether the result of division was truncated.
+   */
+  function round(x, dp, rm, more) {
+    var xc = x.c,
+      i = x.e + dp + 1;
+
+    if (i < xc.length) {
+      if (rm === 1) {
+
+        // xc[i] is the digit after the digit that may be rounded up.
+        more = xc[i] >= 5;
+      } else if (rm === 2) {
+        more = xc[i] > 5 || xc[i] == 5 &&
+          (more || i < 0 || xc[i + 1] !== UNDEFINED || xc[i - 1] & 1);
+      } else if (rm === 3) {
+        more = more || xc[i] !== UNDEFINED || i < 0;
+      } else {
+        more = false;
+        if (rm !== 0) throw Error(INVALID_RM);
+      }
+
+      if (i < 1) {
+        xc.length = 1;
+
+        if (more) {
+
+          // 1, 0.1, 0.01, 0.001, 0.0001 etc.
+          x.e = -dp;
+          xc[0] = 1;
+        } else {
+
+          // Zero.
+          xc[0] = x.e = 0;
+        }
+      } else {
+
+        // Remove any digits after the required decimal places.
+        xc.length = i--;
+
+        // Round up?
+        if (more) {
+
+          // Rounding up may mean the previous digit has to be rounded up.
+          for (; ++xc[i] > 9;) {
+            xc[i] = 0;
+            if (!i--) {
+              ++x.e;
+              xc.unshift(1);
+            }
+          }
+        }
+
+        // Remove trailing zeros.
+        for (i = xc.length; !xc[--i];) xc.pop();
+      }
+    } else if (rm < 0 || rm > 3 || rm !== ~~rm) {
+      throw Error(INVALID_RM);
+    }
+
+    return x;
+  }
+
+
+  /*
+   * Return a string representing the value of Big x in normal or exponential notation.
+   * Handles P.toExponential, P.toFixed, P.toJSON, P.toPrecision, P.toString and P.valueOf.
+   *
+   * x {Big}
+   * id? {number} Caller id.
+   *         1 toExponential
+   *         2 toFixed
+   *         3 toPrecision
+   *         4 valueOf
+   * n? {number|undefined} Caller's argument.
+   * k? {number|undefined}
+   */
+  function stringify(x, id, n, k) {
+    var e, s,
+      Big = x.constructor,
+      z = !x.c[0];
+
+    if (n !== UNDEFINED) {
+      if (n !== ~~n || n < (id == 3) || n > MAX_DP) {
+        throw Error(id == 3 ? INVALID + 'precision' : INVALID_DP);
+      }
+
+      x = new Big(x);
+
+      // The index of the digit that may be rounded up.
+      n = k - x.e;
+
+      // Round?
+      if (x.c.length > ++k) round(x, n, Big.RM);
+
+      // toFixed: recalculate k as x.e may have changed if value rounded up.
+      if (id == 2) k = x.e + n + 1;
+
+      // Append zeros?
+      for (; x.c.length < k;) x.c.push(0);
+    }
+
+    e = x.e;
+    s = x.c.join('');
+    n = s.length;
+
+    // Exponential notation?
+    if (id != 2 && (id == 1 || id == 3 && k <= e || e <= Big.NE || e >= Big.PE)) {
+      s = s.charAt(0) + (n > 1 ? '.' + s.slice(1) : '') + (e < 0 ? 'e' : 'e+') + e;
+
+    // Normal notation.
+    } else if (e < 0) {
+      for (; ++e;) s = '0' + s;
+      s = '0.' + s;
+    } else if (e > 0) {
+      if (++e > n) for (e -= n; e--;) s += '0';
+      else if (e < n) s = s.slice(0, e) + '.' + s.slice(e);
+    } else if (n > 1) {
+      s = s.charAt(0) + '.' + s.slice(1);
+    }
+
+    return x.s < 0 && (!z || id == 4) ? '-' + s : s;
+  }
+
+
+  // Prototype/instance methods
+
+
+  /*
+   * Return a new Big whose value is the absolute value of this Big.
+   */
+  P.abs = function () {
+    var x = new this.constructor(this);
+    x.s = 1;
+    return x;
+  };
+
+
+  /*
+   * Return 1 if the value of this Big is greater than the value of Big y,
+   *       -1 if the value of this Big is less than the value of Big y, or
+   *        0 if they have the same value.
+  */
+  P.cmp = function (y) {
+    var isneg,
+      x = this,
+      xc = x.c,
+      yc = (y = new x.constructor(y)).c,
+      i = x.s,
+      j = y.s,
+      k = x.e,
+      l = y.e;
+
+    // Either zero?
+    if (!xc[0] || !yc[0]) return !xc[0] ? !yc[0] ? 0 : -j : i;
+
+    // Signs differ?
+    if (i != j) return i;
+
+    isneg = i < 0;
+
+    // Compare exponents.
+    if (k != l) return k > l ^ isneg ? 1 : -1;
+
+    j = (k = xc.length) < (l = yc.length) ? k : l;
+
+    // Compare digit by digit.
+    for (i = -1; ++i < j;) {
+      if (xc[i] != yc[i]) return xc[i] > yc[i] ^ isneg ? 1 : -1;
+    }
+
+    // Compare lengths.
+    return k == l ? 0 : k > l ^ isneg ? 1 : -1;
+  };
+
+
+  /*
+   * Return a new Big whose value is the value of this Big divided by the value of Big y, rounded,
+   * if necessary, to a maximum of Big.DP decimal places using rounding mode Big.RM.
+   */
+  P.div = function (y) {
+    var x = this,
+      Big = x.constructor,
+      a = x.c,                  // dividend
+      b = (y = new Big(y)).c,   // divisor
+      k = x.s == y.s ? 1 : -1,
+      dp = Big.DP;
+
+    if (dp !== ~~dp || dp < 0 || dp > MAX_DP) throw Error(INVALID_DP);
+
+    // Divisor is zero?
+    if (!b[0]) throw Error(DIV_BY_ZERO);
+
+    // Dividend is 0? Return +-0.
+    if (!a[0]) return new Big(k * 0);
+
+    var bl, bt, n, cmp, ri,
+      bz = b.slice(),
+      ai = bl = b.length,
+      al = a.length,
+      r = a.slice(0, bl),   // remainder
+      rl = r.length,
+      q = y,                // quotient
+      qc = q.c = [],
+      qi = 0,
+      d = dp + (q.e = x.e - y.e) + 1;    // number of digits of the result
+
+    q.s = k;
+    k = d < 0 ? 0 : d;
+
+    // Create version of divisor with leading zero.
+    bz.unshift(0);
+
+    // Add zeros to make remainder as long as divisor.
+    for (; rl++ < bl;) r.push(0);
+
+    do {
+
+      // n is how many times the divisor goes into current remainder.
+      for (n = 0; n < 10; n++) {
+
+        // Compare divisor and remainder.
+        if (bl != (rl = r.length)) {
+          cmp = bl > rl ? 1 : -1;
+        } else {
+          for (ri = -1, cmp = 0; ++ri < bl;) {
+            if (b[ri] != r[ri]) {
+              cmp = b[ri] > r[ri] ? 1 : -1;
+              break;
+            }
+          }
+        }
+
+        // If divisor < remainder, subtract divisor from remainder.
+        if (cmp < 0) {
+
+          // Remainder can't be more than 1 digit longer than divisor.
+          // Equalise lengths using divisor with extra leading zero?
+          for (bt = rl == bl ? b : bz; rl;) {
+            if (r[--rl] < bt[rl]) {
+              ri = rl;
+              for (; ri && !r[--ri];) r[ri] = 9;
+              --r[ri];
+              r[rl] += 10;
+            }
+            r[rl] -= bt[rl];
+          }
+
+          for (; !r[0];) r.shift();
+        } else {
+          break;
+        }
+      }
+
+      // Add the digit n to the result array.
+      qc[qi++] = cmp ? n : ++n;
+
+      // Update the remainder.
+      if (r[0] && cmp) r[rl] = a[ai] || 0;
+      else r = [a[ai]];
+
+    } while ((ai++ < al || r[0] !== UNDEFINED) && k--);
+
+    // Leading zero? Do not remove if result is simply zero (qi == 1).
+    if (!qc[0] && qi != 1) {
+
+      // There can't be more than one zero.
+      qc.shift();
+      q.e--;
+    }
+
+    // Round?
+    if (qi > d) round(q, dp, Big.RM, r[0] !== UNDEFINED);
+
+    return q;
+  };
+
+
+  /*
+   * Return true if the value of this Big is equal to the value of Big y, otherwise return false.
+   */
+  P.eq = function (y) {
+    return !this.cmp(y);
+  };
+
+
+  /*
+   * Return true if the value of this Big is greater than the value of Big y, otherwise return
+   * false.
+   */
+  P.gt = function (y) {
+    return this.cmp(y) > 0;
+  };
+
+
+  /*
+   * Return true if the value of this Big is greater than or equal to the value of Big y, otherwise
+   * return false.
+   */
+  P.gte = function (y) {
+    return this.cmp(y) > -1;
+  };
+
+
+  /*
+   * Return true if the value of this Big is less than the value of Big y, otherwise return false.
+   */
+  P.lt = function (y) {
+    return this.cmp(y) < 0;
+  };
+
+
+  /*
+   * Return true if the value of this Big is less than or equal to the value of Big y, otherwise
+   * return false.
+   */
+  P.lte = function (y) {
+    return this.cmp(y) < 1;
+  };
+
+
+  /*
+   * Return a new Big whose value is the value of this Big minus the value of Big y.
+   */
+  P.minus = P.sub = function (y) {
+    var i, j, t, xlty,
+      x = this,
+      Big = x.constructor,
+      a = x.s,
+      b = (y = new Big(y)).s;
+
+    // Signs differ?
+    if (a != b) {
+      y.s = -b;
+      return x.plus(y);
+    }
+
+    var xc = x.c.slice(),
+      xe = x.e,
+      yc = y.c,
+      ye = y.e;
+
+    // Either zero?
+    if (!xc[0] || !yc[0]) {
+
+      // y is non-zero? x is non-zero? Or both are zero.
+      return yc[0] ? (y.s = -b, y) : new Big(xc[0] ? x : 0);
+    }
+
+    // Determine which is the bigger number. Prepend zeros to equalise exponents.
+    if (a = xe - ye) {
+
+      if (xlty = a < 0) {
+        a = -a;
+        t = xc;
+      } else {
+        ye = xe;
+        t = yc;
+      }
+
+      t.reverse();
+      for (b = a; b--;) t.push(0);
+      t.reverse();
+    } else {
+
+      // Exponents equal. Check digit by digit.
+      j = ((xlty = xc.length < yc.length) ? xc : yc).length;
+
+      for (a = b = 0; b < j; b++) {
+        if (xc[b] != yc[b]) {
+          xlty = xc[b] < yc[b];
+          break;
+        }
+      }
+    }
+
+    // x < y? Point xc to the array of the bigger number.
+    if (xlty) {
+      t = xc;
+      xc = yc;
+      yc = t;
+      y.s = -y.s;
+    }
+
+    /*
+     * Append zeros to xc if shorter. No need to add zeros to yc if shorter as subtraction only
+     * needs to start at yc.length.
+     */
+    if ((b = (j = yc.length) - (i = xc.length)) > 0) for (; b--;) xc[i++] = 0;
+
+    // Subtract yc from xc.
+    for (b = i; j > a;) {
+      if (xc[--j] < yc[j]) {
+        for (i = j; i && !xc[--i];) xc[i] = 9;
+        --xc[i];
+        xc[j] += 10;
+      }
+
+      xc[j] -= yc[j];
+    }
+
+    // Remove trailing zeros.
+    for (; xc[--b] === 0;) xc.pop();
+
+    // Remove leading zeros and adjust exponent accordingly.
+    for (; xc[0] === 0;) {
+      xc.shift();
+      --ye;
+    }
+
+    if (!xc[0]) {
+
+      // n - n = +0
+      y.s = 1;
+
+      // Result must be zero.
+      xc = [ye = 0];
+    }
+
+    y.c = xc;
+    y.e = ye;
+
+    return y;
+  };
+
+
+  /*
+   * Return a new Big whose value is the value of this Big modulo the value of Big y.
+   */
+  P.mod = function (y) {
+    var ygtx,
+      x = this,
+      Big = x.constructor,
+      a = x.s,
+      b = (y = new Big(y)).s;
+
+    if (!y.c[0]) throw Error(DIV_BY_ZERO);
+
+    x.s = y.s = 1;
+    ygtx = y.cmp(x) == 1;
+    x.s = a;
+    y.s = b;
+
+    if (ygtx) return new Big(x);
+
+    a = Big.DP;
+    b = Big.RM;
+    Big.DP = Big.RM = 0;
+    x = x.div(y);
+    Big.DP = a;
+    Big.RM = b;
+
+    return this.minus(x.times(y));
+  };
+
+
+  /*
+   * Return a new Big whose value is the value of this Big plus the value of Big y.
+   */
+  P.plus = P.add = function (y) {
+    var t,
+      x = this,
+      Big = x.constructor,
+      a = x.s,
+      b = (y = new Big(y)).s;
+
+    // Signs differ?
+    if (a != b) {
+      y.s = -b;
+      return x.minus(y);
+    }
+
+    var xe = x.e,
+      xc = x.c,
+      ye = y.e,
+      yc = y.c;
+
+    // Either zero? y is non-zero? x is non-zero? Or both are zero.
+    if (!xc[0] || !yc[0]) return yc[0] ? y : new Big(xc[0] ? x : a * 0);
+
+    xc = xc.slice();
+
+    // Prepend zeros to equalise exponents.
+    // Note: Faster to use reverse then do unshifts.
+    if (a = xe - ye) {
+      if (a > 0) {
+        ye = xe;
+        t = yc;
+      } else {
+        a = -a;
+        t = xc;
+      }
+
+      t.reverse();
+      for (; a--;) t.push(0);
+      t.reverse();
+    }
+
+    // Point xc to the longer array.
+    if (xc.length - yc.length < 0) {
+      t = yc;
+      yc = xc;
+      xc = t;
+    }
+
+    a = yc.length;
+
+    // Only start adding at yc.length - 1 as the further digits of xc can be left as they are.
+    for (b = 0; a; xc[a] %= 10) b = (xc[--a] = xc[a] + yc[a] + b) / 10 | 0;
+
+    // No need to check for zero, as +x + +y != 0 && -x + -y != 0
+
+    if (b) {
+      xc.unshift(b);
+      ++ye;
+    }
+
+    // Remove trailing zeros.
+    for (a = xc.length; xc[--a] === 0;) xc.pop();
+
+    y.c = xc;
+    y.e = ye;
+
+    return y;
+  };
+
+
+  /*
+   * Return a Big whose value is the value of this Big raised to the power n.
+   * If n is negative, round to a maximum of Big.DP decimal places using rounding
+   * mode Big.RM.
+   *
+   * n {number} Integer, -MAX_POWER to MAX_POWER inclusive.
+   */
+  P.pow = function (n) {
+    var x = this,
+      one = new x.constructor(1),
+      y = one,
+      isneg = n < 0;
+
+    if (n !== ~~n || n < -MAX_POWER || n > MAX_POWER) throw Error(INVALID + 'exponent');
+    if (isneg) n = -n;
+
+    for (;;) {
+      if (n & 1) y = y.times(x);
+      n >>= 1;
+      if (!n) break;
+      x = x.times(x);
+    }
+
+    return isneg ? one.div(y) : y;
+  };
+
+
+  /*
+   * Return a new Big whose value is the value of this Big rounded to a maximum of dp decimal
+   * places using rounding mode rm.
+   * If dp is not specified, round to 0 decimal places.
+   * If rm is not specified, use Big.RM.
+   *
+   * dp? {number} Integer, 0 to MAX_DP inclusive.
+   * rm? 0, 1, 2 or 3 (ROUND_DOWN, ROUND_HALF_UP, ROUND_HALF_EVEN, ROUND_UP)
+   */
+  P.round = function (dp, rm) {
+    var Big = this.constructor;
+    if (dp === UNDEFINED) dp = 0;
+    else if (dp !== ~~dp || dp < 0 || dp > MAX_DP) throw Error(INVALID_DP);
+    return round(new Big(this), dp, rm === UNDEFINED ? Big.RM : rm);
+  };
+
+
+  /*
+   * Return a new Big whose value is the square root of the value of this Big, rounded, if
+   * necessary, to a maximum of Big.DP decimal places using rounding mode Big.RM.
+   */
+  P.sqrt = function () {
+    var r, c, t,
+      x = this,
+      Big = x.constructor,
+      s = x.s,
+      e = x.e,
+      half = new Big(0.5);
+
+    // Zero?
+    if (!x.c[0]) return new Big(x);
+
+    // Negative?
+    if (s < 0) throw Error(NAME + 'No square root');
+
+    // Estimate.
+    s = Math.sqrt(x.toString());
+
+    // Math.sqrt underflow/overflow?
+    // Re-estimate: pass x to Math.sqrt as integer, then adjust the result exponent.
+    if (s === 0 || s === 1 / 0) {
+      c = x.c.join('');
+      if (!(c.length + e & 1)) c += '0';
+      r = new Big(Math.sqrt(c).toString());
+      r.e = ((e + 1) / 2 | 0) - (e < 0 || e & 1);
+    } else {
+      r = new Big(s.toString());
+    }
+
+    e = r.e + (Big.DP += 4);
+
+    // Newton-Raphson iteration.
+    do {
+      t = r;
+      r = half.times(t.plus(x.div(t)));
+    } while (t.c.slice(0, e).join('') !== r.c.slice(0, e).join(''));
+
+    return round(r, Big.DP -= 4, Big.RM);
+  };
+
+
+  /*
+   * Return a new Big whose value is the value of this Big times the value of Big y.
+   */
+  P.times = P.mul = function (y) {
+    var c,
+      x = this,
+      Big = x.constructor,
+      xc = x.c,
+      yc = (y = new Big(y)).c,
+      a = xc.length,
+      b = yc.length,
+      i = x.e,
+      j = y.e;
+
+    // Determine sign of result.
+    y.s = x.s == y.s ? 1 : -1;
+
+    // Return signed 0 if either 0.
+    if (!xc[0] || !yc[0]) return new Big(y.s * 0);
+
+    // Initialise exponent of result as x.e + y.e.
+    y.e = i + j;
+
+    // If array xc has fewer digits than yc, swap xc and yc, and lengths.
+    if (a < b) {
+      c = xc;
+      xc = yc;
+      yc = c;
+      j = a;
+      a = b;
+      b = j;
+    }
+
+    // Initialise coefficient array of result with zeros.
+    for (c = new Array(j = a + b); j--;) c[j] = 0;
+
+    // Multiply.
+
+    // i is initially xc.length.
+    for (i = b; i--;) {
+      b = 0;
+
+      // a is yc.length.
+      for (j = a + i; j > i;) {
+
+        // Current sum of products at this digit position, plus carry.
+        b = c[j] + yc[i] * xc[j - i - 1] + b;
+        c[j--] = b % 10;
+
+        // carry
+        b = b / 10 | 0;
+      }
+
+      c[j] = (c[j] + b) % 10;
+    }
+
+    // Increment result exponent if there is a final carry, otherwise remove leading zero.
+    if (b) ++y.e;
+    else c.shift();
+
+    // Remove trailing zeros.
+    for (i = c.length; !c[--i];) c.pop();
+    y.c = c;
+
+    return y;
+  };
+
+
+  /*
+   * Return a string representing the value of this Big in exponential notation to dp fixed decimal
+   * places and rounded using Big.RM.
+   *
+   * dp? {number} Integer, 0 to MAX_DP inclusive.
+   */
+  P.toExponential = function (dp) {
+    return stringify(this, 1, dp, dp);
+  };
+
+
+  /*
+   * Return a string representing the value of this Big in normal notation to dp fixed decimal
+   * places and rounded using Big.RM.
+   *
+   * dp? {number} Integer, 0 to MAX_DP inclusive.
+   *
+   * (-0).toFixed(0) is '0', but (-0.1).toFixed(0) is '-0'.
+   * (-0).toFixed(1) is '0.0', but (-0.01).toFixed(1) is '-0.0'.
+   */
+  P.toFixed = function (dp) {
+    return stringify(this, 2, dp, this.e + dp);
+  };
+
+
+  /*
+   * Return a string representing the value of this Big rounded to sd significant digits using
+   * Big.RM. Use exponential notation if sd is less than the number of digits necessary to represent
+   * the integer part of the value in normal notation.
+   *
+   * sd {number} Integer, 1 to MAX_DP inclusive.
+   */
+  P.toPrecision = function (sd) {
+    return stringify(this, 3, sd, sd - 1);
+  };
+
+
+  /*
+   * Return a string representing the value of this Big.
+   * Return exponential notation if this Big has a positive exponent equal to or greater than
+   * Big.PE, or a negative exponent equal to or less than Big.NE.
+   * Omit the sign for negative zero.
+   */
+  P.toString = function () {
+    return stringify(this);
+  };
+
+
+  /*
+   * Return a string representing the value of this Big.
+   * Return exponential notation if this Big has a positive exponent equal to or greater than
+   * Big.PE, or a negative exponent equal to or less than Big.NE.
+   * Include the sign for negative zero.
+   */
+  P.valueOf = P.toJSON = function () {
+    return stringify(this, 4);
+  };
+
+
+  // Export
+
+
+  Big = _Big_();
+
+  Big['default'] = Big.Big = Big;
+
+  //AMD.
+  if (typeof define === 'function' && define.amd) {
+    define(function () { return Big; });
+
+  // Node and other CommonJS-like environments that support module.exports.
+  } else if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Big;
+
+  //Browser.
+  } else {
+    GLOBAL.Big = Big;
+  }
+})(this);
+
+},{}],76:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -7599,7 +11102,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],64:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -7622,7 +11125,7 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],65:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 module.exports={
 	"version": "2016j",
 	"zones": [
@@ -8222,11 +11725,11 @@ module.exports={
 		"Pacific/Pohnpei|Pacific/Ponape"
 	]
 }
-},{}],66:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 var moment = module.exports = require("./moment-timezone");
 moment.tz.load(require('./data/packed/latest.json'));
 
-},{"./data/packed/latest.json":65,"./moment-timezone":67}],67:[function(require,module,exports){
+},{"./data/packed/latest.json":78,"./moment-timezone":80}],80:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.11
 //! Copyright (c) JS Foundation and other contributors
@@ -8829,12 +12332,8 @@ moment.tz.load(require('./data/packed/latest.json'));
 	return moment;
 }));
 
-},{"moment":68}],68:[function(require,module,exports){
+},{"moment":81}],81:[function(require,module,exports){
 //! moment.js
-//! version : 2.20.1
-//! authors : Tim Wood, Iskren Chernev, Moment.js contributors
-//! license : MIT
-//! momentjs.com
 
 ;(function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -9492,7 +12991,6 @@ var matchTimestamp = /[+-]?\d+(\.\d{1,3})?/; // 123456789 123456789.123
 // any word (or two) characters or numbers including two/three word month in arabic.
 // includes scottish gaelic two word and hyphenated months
 var matchWord = /[0-9]{0,256}['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFF07\uFF10-\uFFEF]{1,256}|[\u0600-\u06FF\/]{1,256}(\s*?[\u0600-\u06FF]{1,256}){1,2}/i;
-
 
 var regexes = {};
 
@@ -10606,10 +14104,6 @@ function localeMeridiem (hours, minutes, isLower) {
 // this rule.
 var getSetHour = makeGetSet('Hours', true);
 
-// months
-// week
-// weekdays
-// meridiem
 var baseConfig = {
     calendar: defaultCalendar,
     longDateFormat: defaultLongDateFormat,
@@ -10663,7 +14157,7 @@ function chooseLocale(names) {
         }
         i++;
     }
-    return null;
+    return globalLocale;
 }
 
 function loadLocale(name) {
@@ -10698,6 +14192,12 @@ function getSetGlobalLocale (key, values) {
             // moment.duration._locale = moment._locale = data;
             globalLocale = data;
         }
+        else {
+            if ((typeof console !==  'undefined') && console.warn) {
+                //warn user if arguments are passed but the locale could not be set
+                console.warn('Locale ' + key +  ' not found. Did you forget to load it?');
+            }
+        }
     }
 
     return globalLocale._abbr;
@@ -10705,7 +14205,7 @@ function getSetGlobalLocale (key, values) {
 
 function defineLocale (name, config) {
     if (config !== null) {
-        var parentConfig = baseConfig;
+        var locale, parentConfig = baseConfig;
         config.abbr = name;
         if (locales[name] != null) {
             deprecateSimple('defineLocaleOverride',
@@ -10718,14 +14218,19 @@ function defineLocale (name, config) {
             if (locales[config.parentLocale] != null) {
                 parentConfig = locales[config.parentLocale]._config;
             } else {
-                if (!localeFamilies[config.parentLocale]) {
-                    localeFamilies[config.parentLocale] = [];
+                locale = loadLocale(config.parentLocale);
+                if (locale != null) {
+                    parentConfig = locale._config;
+                } else {
+                    if (!localeFamilies[config.parentLocale]) {
+                        localeFamilies[config.parentLocale] = [];
+                    }
+                    localeFamilies[config.parentLocale].push({
+                        name: name,
+                        config: config
+                    });
+                    return null;
                 }
-                localeFamilies[config.parentLocale].push({
-                    name: name,
-                    config: config
-                });
-                return null;
             }
         }
         locales[name] = new Locale(mergeConfigs(parentConfig, config));
@@ -12073,7 +15578,7 @@ function isSameOrBefore (input, units) {
 function diff (input, units, asFloat) {
     var that,
         zoneDelta,
-        delta, output;
+        output;
 
     if (!this.isValid()) {
         return NaN;
@@ -12146,7 +15651,7 @@ function toISOString(keepOffset) {
         if (utc) {
             return this.toDate().toISOString();
         } else {
-            return new Date(this._d.valueOf()).toISOString().replace('Z', formatMoment(m, 'Z'));
+            return new Date(this.valueOf() + this.utcOffset() * 60 * 1000).toISOString().replace('Z', formatMoment(m, 'Z'));
         }
     }
     return formatMoment(m, utc ? 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]' : 'YYYY-MM-DD[T]HH:mm:ss.SSSZ');
@@ -12700,48 +16205,26 @@ proto.toString          = toString;
 proto.unix              = unix;
 proto.valueOf           = valueOf;
 proto.creationData      = creationData;
-
-// Year
 proto.year       = getSetYear;
 proto.isLeapYear = getIsLeapYear;
-
-// Week Year
 proto.weekYear    = getSetWeekYear;
 proto.isoWeekYear = getSetISOWeekYear;
-
-// Quarter
 proto.quarter = proto.quarters = getSetQuarter;
-
-// Month
 proto.month       = getSetMonth;
 proto.daysInMonth = getDaysInMonth;
-
-// Week
 proto.week           = proto.weeks        = getSetWeek;
 proto.isoWeek        = proto.isoWeeks     = getSetISOWeek;
 proto.weeksInYear    = getWeeksInYear;
 proto.isoWeeksInYear = getISOWeeksInYear;
-
-// Day
 proto.date       = getSetDayOfMonth;
 proto.day        = proto.days             = getSetDayOfWeek;
 proto.weekday    = getSetLocaleDayOfWeek;
 proto.isoWeekday = getSetISODayOfWeek;
 proto.dayOfYear  = getSetDayOfYear;
-
-// Hour
 proto.hour = proto.hours = getSetHour;
-
-// Minute
 proto.minute = proto.minutes = getSetMinute;
-
-// Second
 proto.second = proto.seconds = getSetSecond;
-
-// Millisecond
 proto.millisecond = proto.milliseconds = getSetMillisecond;
-
-// Offset
 proto.utcOffset            = getSetOffset;
 proto.utc                  = setOffsetToUTC;
 proto.local                = setOffsetToLocal;
@@ -12752,12 +16235,8 @@ proto.isLocal              = isLocal;
 proto.isUtcOffset          = isUtcOffset;
 proto.isUtc                = isUtc;
 proto.isUTC                = isUtc;
-
-// Timezone
 proto.zoneAbbr = getZoneAbbr;
 proto.zoneName = getZoneName;
-
-// Deprecations
 proto.dates  = deprecate('dates accessor is deprecated. Use date instead.', getSetDayOfMonth);
 proto.months = deprecate('months accessor is deprecated. Use month instead', getSetMonth);
 proto.years  = deprecate('years accessor is deprecated. Use year instead', getSetYear);
@@ -12788,19 +16267,15 @@ proto$1.relativeTime    = relativeTime;
 proto$1.pastFuture      = pastFuture;
 proto$1.set             = set;
 
-// Month
 proto$1.months            =        localeMonths;
 proto$1.monthsShort       =        localeMonthsShort;
 proto$1.monthsParse       =        localeMonthsParse;
 proto$1.monthsRegex       = monthsRegex;
 proto$1.monthsShortRegex  = monthsShortRegex;
-
-// Week
 proto$1.week = localeWeek;
 proto$1.firstDayOfYear = localeFirstDayOfYear;
 proto$1.firstDayOfWeek = localeFirstDayOfWeek;
 
-// Day of Week
 proto$1.weekdays       =        localeWeekdays;
 proto$1.weekdaysMin    =        localeWeekdaysMin;
 proto$1.weekdaysShort  =        localeWeekdaysShort;
@@ -12810,7 +16285,6 @@ proto$1.weekdaysRegex       =        weekdaysRegex;
 proto$1.weekdaysShortRegex  =        weekdaysShortRegex;
 proto$1.weekdaysMinRegex    =        weekdaysMinRegex;
 
-// Hours
 proto$1.isPM = localeIsPM;
 proto$1.meridiem = localeMeridiem;
 
@@ -12917,6 +16391,7 @@ getSetGlobalLocale('en', {
 });
 
 // Side effect imports
+
 hooks.lang = deprecate('moment.lang is deprecated. Use moment.locale instead.', getSetGlobalLocale);
 hooks.langData = deprecate('moment.langData is deprecated. Use moment.localeData instead.', getLocale);
 
@@ -13292,7 +16767,6 @@ proto$2.toJSON         = toISOString$1;
 proto$2.locale         = locale;
 proto$2.localeData     = localeData;
 
-// Deprecations
 proto$2.toIsoString = deprecate('toIsoString() is deprecated. Please use toISOString() instead (notice the capitals)', toISOString$1);
 proto$2.lang = lang;
 
@@ -13317,7 +16791,7 @@ addParseToken('x', function (input, array, config) {
 // Side effect imports
 
 
-hooks.version = '2.20.1';
+hooks.version = '2.21.0';
 
 setHookCallback(createLocal);
 
