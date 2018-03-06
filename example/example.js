@@ -465,7 +465,7 @@ module.exports = function () {
 	return {
 		JwtEndpoint: JwtEndpoint,
 		WatchlistGateway: WatchlistGateway,
-		version: '1.0.25'
+		version: '1.0.26'
 	};
 }();
 
@@ -7986,6 +7986,36 @@ module.exports = function () {
 			}
 
 			/**
+    * Creates and starts a new {@link JwtGateway} for use in the staging environment.
+    *
+    * @public
+    * @static
+    * @returns {Promise.<JwtGateway>}
+    */
+
+		}, {
+			key: 'forStaging',
+			value: function forStaging() {
+				return start(new JwtGateway(_forStaging(), 300000));
+			}
+
+			/**
+    * Creates and starts a new {@link RequestInterceptor} for use in the staging environment.
+    *
+    * @public
+    * @static
+    * @returns {Promise.<RequestInterceptor>}
+    */
+
+		}, {
+			key: 'forStagingClient',
+			value: function forStagingClient() {
+				return JwtGateway.forStaging().then(function (jwtGateway) {
+					return jwtGateway.toRequestInterceptor();
+				});
+			}
+
+			/**
     * Creates and starts a new {@link JwtGateway} for use in the production environment.
     *
     * @public
@@ -7996,7 +8026,7 @@ module.exports = function () {
 		}, {
 			key: 'forProduction',
 			value: function forProduction() {
-				return start(new JwtGateway(_forProduction('gamservices.stg2.theglobeandmail.com/usermanagement/public/v3/user/sso'), 300000));
+				return start(new JwtGateway(_forProduction(), 300000));
 			}
 
 			/**
@@ -8035,9 +8065,17 @@ module.exports = function () {
 		}
 	}
 
-	function _forProduction(host) {
-		return EndpointBuilder.for('read-jwt-token-for-production', 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHeadersBuilder(function (hb) {
-			return hb.withLiteralParameter('X-GAM-CLIENT-APP-ID', 'X-GAM-CLIENT-APP-ID', '1348').withLiteralParameter('X-GAM-CLIENT-APP-SECRET', 'X-GAM-CLIENT-APP-SECRET', '1bcc5c85-e833-4936-9313-abe5dfdcef76');
+	function _forStaging() {
+		return forTgam('gamservices.stg2.theglobeandmail.com/usermanagement/public/v3/user/sso', '1bcc5c85-e833-4936-9313-abe5dfdcef76', 'staging');
+	}
+
+	function _forProduction() {
+		return forTgam('gamservices.theglobeandmail.com/usermanagement/public/v3/user/sso', '7359a9ae-171b-41a6-af0b-6f2812133516', 'production');
+	}
+
+	function forTgam(host, secret, environment) {
+		return EndpointBuilder.for('read-jwt-token-for-' + environment, 'lookup user identity').withVerb(VerbType.GET).withProtocol(ProtocolType.HTTPS).withHeadersBuilder(function (hb) {
+			return hb.withLiteralParameter('X-GAM-CLIENT-APP-ID', 'X-GAM-CLIENT-APP-ID', '1348').withLiteralParameter('X-GAM-CLIENT-APP-SECRET', 'X-GAM-CLIENT-APP-SECRET', secret);
 		}).withHost(host).withRequestInterceptor(RequestInterceptor.fromDelegate(function (request) {
 			request.withCredentials = true;
 
@@ -8051,8 +8089,10 @@ module.exports = function () {
 }();
 
 },{"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":30,"@barchart/common-js/lang/Enum":31,"@barchart/common-js/lang/assert":35,"@barchart/common-js/lang/is":38,"@barchart/common-js/timing/Scheduler":45}],47:[function(require,module,exports){
+const uuid = require('uuid');
+
 const assert = require('@barchart/common-js/lang/assert'),
-    is = require('@barchart/common-js/lang/is');
+	is = require('@barchart/common-js/lang/is');
 
 module.exports = (() => {
 	'use strict';
@@ -8061,13 +8101,16 @@ module.exports = (() => {
 	 * A named collection of {@link WatchlistEntry} objects.
 	 *
 	 * @public
-	 * @param {String} id
+	 * @param {String} name
+	 * @param {String=} id
 	 */
 	class Watchlist {
-		constructor(id) {
-		    assert.argumentIsRequired(id, 'id', String);
+		constructor(name, id) {
+			assert.argumentIsRequired(name, 'name', String);
+			assert.argumentIsOptional(id, 'id', String);
 
-			this._id = id;
+			this._id = id || uuid.v4();
+			this._name = name;
 
 			this._email = false;
 			this._view = null;
@@ -8084,6 +8127,28 @@ module.exports = (() => {
 		 */
 		get id() {
 			return this._id;
+		}
+
+		/**
+		 * Gets the watchlist's name.
+		 *
+		 * @public
+		 * @returns {string}
+		 */
+		get name() {
+			return this._name;
+		}
+
+		/**
+		 * Gets the watchlist's name.
+		 *
+		 * @public
+		 * @param {string} name
+		 */
+		set name(name) {
+			assert.argumentIsRequired(name, 'name', Boolean);
+
+			this._name = name;
 		}
 
 		/**
@@ -8142,17 +8207,17 @@ module.exports = (() => {
 		}
 
 		/**
-         * Adds a new {@link WatchlistEntry} to the end of the list
-         *
+		 * Adds a new {@link WatchlistEntry} to the end of the list
+		 *
 		 * @public
 		 * @param {WatchlistEntry} entry
 		 */
 		addEntry(entry) {
-		    assert.argumentIsRequired(entry, 'entry', Object);
+			assert.argumentIsRequired(entry, 'entry', Object);
 
-		    if (!this._entries.some(e => e.symbol === entry.symbol)) {
-			    this._entries.push(entry);
-		    }
+			if (!this._entries.some(e => e.symbol === entry.symbol)) {
+				this._entries.push(entry);
+			}
 		}
 
 		/**
@@ -8188,13 +8253,14 @@ module.exports = (() => {
 		 */
 		toJSObj() {
 			const plain = {
-                id: this.id,
+				id: this.id,
+				name: this.name,
 				email: this.email,
 				view: this.view,
-                entries: this.entries.map((e) => e)
-            };
+				entries: this.entries.map((e) => e)
+			};
 
-            return plain;
+			return plain;
 		}
 
 		/**
@@ -8205,10 +8271,11 @@ module.exports = (() => {
 		 * @returns {Watchlist}
 		 */
 		static fromJSObj(obj) {
-		    assert.argumentIsRequired(obj, 'obj', Object);
+			assert.argumentIsRequired(obj, 'obj', Object);
 			assert.argumentIsRequired(obj.id, 'obj.id', String);
+			assert.argumentIsRequired(obj.name, 'obj.name', String);
 
-			const watchlist = new Watchlist(obj.id);
+			const watchlist = new Watchlist(obj.name, obj.id);
 
 			if (is.boolean(obj.email) && obj.email) {
 				watchlist.email = true;
@@ -8220,7 +8287,7 @@ module.exports = (() => {
 
 			if (is.array(obj.entries)) {
 				obj.entries.map((e) => watchlist.addEntry(e));
-            }
+			}
 
 			return watchlist;
 		}
@@ -8243,7 +8310,7 @@ module.exports = (() => {
 
 	return Watchlist;
 })();
-},{"@barchart/common-js/lang/assert":35,"@barchart/common-js/lang/is":38}],48:[function(require,module,exports){
+},{"@barchart/common-js/lang/assert":35,"@barchart/common-js/lang/is":38,"uuid":82}],48:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
 	Enum = require('@barchart/common-js/lang/Enum');
 
@@ -8310,7 +8377,7 @@ module.exports = (() => {
 			return '[WatchlistAction]';
 		}
 	}
-	
+
 	const actionInit = new WatchlistAction('Init', 'Init');
 	const actionImport = new WatchlistAction('Import', 'Import');
 	const actionCreate = new WatchlistAction('Create', 'Create');
@@ -8321,7 +8388,7 @@ module.exports = (() => {
 
 },{"@barchart/common-js/lang/Enum":31,"@barchart/common-js/lang/assert":35}],49:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
-    Timestamp = require('@barchart/common-js/lang/Timestamp');
+	Timestamp = require('@barchart/common-js/lang/Timestamp');
 
 const Watchlist = require('./Watchlist'),
 	WatchlistAction = require('./WatchlistAction');
@@ -8330,14 +8397,14 @@ module.exports = (() => {
 	'use strict';
 
 	/**
-     * A watchlist user, including the user's collection of {@link Watchlist} items.
-     *
-     * @public
-     * @param {string} id
+	 * A watchlist user, including the user's collection of {@link Watchlist} items.
+	 *
+	 * @public
+	 * @param {string} id
 	 */
 	class WatchlistUser {
 		constructor(id) {
-		    assert.argumentIsRequired(id, 'id', String);
+			assert.argumentIsRequired(id, 'id', String);
 
 			this._id = id;
 
@@ -8348,9 +8415,9 @@ module.exports = (() => {
 		}
 
 		/**
-         * Gets the watchlist user's id.
-         *
-         * @public
+		 * Gets the watchlist user's id.
+		 *
+		 * @public
 		 * @readonly
 		 * @type {string}
 		 */
@@ -8370,9 +8437,9 @@ module.exports = (() => {
 		}
 
 		/**
-         * Gets the last {@link WatchlistAction} performed on the instance.
-         *
-         * @public
+		 * Gets the last {@link WatchlistAction} performed on the instance.
+		 *
+		 * @public
 		 * @returns {WatchlistAction}
 		 */
 		get lastAction() {
@@ -8386,16 +8453,16 @@ module.exports = (() => {
 		 * @param {WatchlistAction} value
 		 */
 		set lastAction(value) {
-		    assert.argumentIsRequired(value, 'value', WatchlistAction, 'WatchlistAction');
+			assert.argumentIsRequired(value, 'value', WatchlistAction, 'WatchlistAction');
 
 			this._lastAction = value;
 		}
 
 		/**
 		 * Gets the {@link Timestamp} of the last action.
-         *
-         * @public
-         * @returns {Timestamp}
+		 *
+		 * @public
+		 * @returns {Timestamp}
 		 */
 		get lastUpdate() {
 			return this._lastUpdate;
@@ -8414,9 +8481,9 @@ module.exports = (() => {
 		}
 
 		/**
-         * Gets the users collection of {@link Watchlist} items, keyed by watchlist id.
-         *
-         * @public
+		 * Gets the users collection of {@link Watchlist} items, keyed by watchlist id.
+		 *
+		 * @public
 		 * @readonly
 		 * @returns {Object}
 		 */
@@ -8425,14 +8492,18 @@ module.exports = (() => {
 		}
 
 		/**
-         * Adds (or overwrites) a watchlist.
-         *
+		 * Adds (or overwrites) a watchlist.
+		 *
+		 * @public
 		 * @param {Watchlist} watchlist
+		 * @returns {Watchlist}
 		 */
 		addWatchlist(watchlist) {
 			assert.argumentIsRequired(watchlist, 'watchlist', Watchlist, 'Watchlist');
 
 			this._watchlists[watchlist.id] = watchlist;
+
+			return watchlist;
 		}
 
 		/**
@@ -8440,14 +8511,17 @@ module.exports = (() => {
 		 * already exists, it is returned.
 		 *
 		 * @public
-		 * @param {String} id
+		 * @param {String} name
 		 * @returns {Watchlist}
 		 */
-		createWatchlist(id) {
-			assert.argumentIsRequired(id, 'id', String);
+		createWatchlist(name) {
+			assert.argumentIsRequired(name, 'name', String);
+
+			const watchlist = new Watchlist(name);
+			const id = watchlist.id;
 
 			if (!this._watchlists.hasOwnProperty(id)) {
-				this._watchlists[id] = new Watchlist(id);
+				this._watchlists[id] = watchlist;
 			}
 
 			return this._watchlists[id];
@@ -8459,7 +8533,6 @@ module.exports = (() => {
 		 *
 		 * @public
 		 * @param {String} id
-		 * @returns {Watchlist}
 		 */
 		removeWatchlist(id) {
 			assert.argumentIsRequired(id, 'id', String);
@@ -8473,8 +8546,8 @@ module.exports = (() => {
 		 * Converts the instance to a pure JavaScript object. This object can
 		 * be converted back into a {@link WatchlistUser} object using the
 		 * {@link WatchlistUser.fromJSObj} function.
-         *
-         * @public
+		 *
+		 * @public
 		 * @returns {Object}
 		 */
 		toJSObj() {
@@ -8514,7 +8587,7 @@ module.exports = (() => {
 		 * @returns {WatchlistUser}
 		 */
 		static fromJSObj(obj) {
-		    assert.argumentIsRequired(obj, 'obj', Object);
+			assert.argumentIsRequired(obj, 'obj', Object);
 			assert.argumentIsRequired(obj.id, 'obj.id', String);
 
 			const u = new WatchlistUser(obj.id);
@@ -16840,5 +16913,210 @@ return hooks;
 
 })));
 
-},{}]},{},[1,5])(5)
+},{}],82:[function(require,module,exports){
+var v1 = require('./v1');
+var v4 = require('./v4');
+
+var uuid = v4;
+uuid.v1 = v1;
+uuid.v4 = v4;
+
+module.exports = uuid;
+
+},{"./v1":85,"./v4":86}],83:[function(require,module,exports){
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+var byteToHex = [];
+for (var i = 0; i < 256; ++i) {
+  byteToHex[i] = (i + 0x100).toString(16).substr(1);
+}
+
+function bytesToUuid(buf, offset) {
+  var i = offset || 0;
+  var bth = byteToHex;
+  return bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]];
+}
+
+module.exports = bytesToUuid;
+
+},{}],84:[function(require,module,exports){
+(function (global){
+// Unique ID creation requires a high quality random # generator.  In the
+// browser this is a little complicated due to unknown quality of Math.random()
+// and inconsistent support for the `crypto` API.  We do the best we can via
+// feature-detection
+var rng;
+
+var crypto = global.crypto || global.msCrypto; // for IE 11
+if (crypto && crypto.getRandomValues) {
+  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
+  var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
+  rng = function whatwgRNG() {
+    crypto.getRandomValues(rnds8);
+    return rnds8;
+  };
+}
+
+if (!rng) {
+  // Math.random()-based (RNG)
+  //
+  // If all else fails, use Math.random().  It's fast, but is of unspecified
+  // quality.
+  var rnds = new Array(16);
+  rng = function() {
+    for (var i = 0, r; i < 16; i++) {
+      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
+      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
+    }
+
+    return rnds;
+  };
+}
+
+module.exports = rng;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],85:[function(require,module,exports){
+var rng = require('./lib/rng');
+var bytesToUuid = require('./lib/bytesToUuid');
+
+// **`v1()` - Generate time-based UUID**
+//
+// Inspired by https://github.com/LiosK/UUID.js
+// and http://docs.python.org/library/uuid.html
+
+// random #'s we need to init node and clockseq
+var _seedBytes = rng();
+
+// Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+var _nodeId = [
+  _seedBytes[0] | 0x01,
+  _seedBytes[1], _seedBytes[2], _seedBytes[3], _seedBytes[4], _seedBytes[5]
+];
+
+// Per 4.2.2, randomize (14 bit) clockseq
+var _clockseq = (_seedBytes[6] << 8 | _seedBytes[7]) & 0x3fff;
+
+// Previous uuid creation time
+var _lastMSecs = 0, _lastNSecs = 0;
+
+// See https://github.com/broofa/node-uuid for API details
+function v1(options, buf, offset) {
+  var i = buf && offset || 0;
+  var b = buf || [];
+
+  options = options || {};
+
+  var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
+
+  // UUID timestamps are 100 nano-second units since the Gregorian epoch,
+  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
+  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
+  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+  var msecs = options.msecs !== undefined ? options.msecs : new Date().getTime();
+
+  // Per 4.2.1.2, use count of uuid's generated during the current clock
+  // cycle to simulate higher resolution clock
+  var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1;
+
+  // Time since last uuid creation (in msecs)
+  var dt = (msecs - _lastMSecs) + (nsecs - _lastNSecs)/10000;
+
+  // Per 4.2.1.2, Bump clockseq on clock regression
+  if (dt < 0 && options.clockseq === undefined) {
+    clockseq = clockseq + 1 & 0x3fff;
+  }
+
+  // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
+  // time interval
+  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
+    nsecs = 0;
+  }
+
+  // Per 4.2.1.2 Throw error if too many uuids are requested
+  if (nsecs >= 10000) {
+    throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');
+  }
+
+  _lastMSecs = msecs;
+  _lastNSecs = nsecs;
+  _clockseq = clockseq;
+
+  // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
+  msecs += 12219292800000;
+
+  // `time_low`
+  var tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
+  b[i++] = tl >>> 24 & 0xff;
+  b[i++] = tl >>> 16 & 0xff;
+  b[i++] = tl >>> 8 & 0xff;
+  b[i++] = tl & 0xff;
+
+  // `time_mid`
+  var tmh = (msecs / 0x100000000 * 10000) & 0xfffffff;
+  b[i++] = tmh >>> 8 & 0xff;
+  b[i++] = tmh & 0xff;
+
+  // `time_high_and_version`
+  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
+  b[i++] = tmh >>> 16 & 0xff;
+
+  // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+  b[i++] = clockseq >>> 8 | 0x80;
+
+  // `clock_seq_low`
+  b[i++] = clockseq & 0xff;
+
+  // `node`
+  var node = options.node || _nodeId;
+  for (var n = 0; n < 6; ++n) {
+    b[i + n] = node[n];
+  }
+
+  return buf ? buf : bytesToUuid(b);
+}
+
+module.exports = v1;
+
+},{"./lib/bytesToUuid":83,"./lib/rng":84}],86:[function(require,module,exports){
+var rng = require('./lib/rng');
+var bytesToUuid = require('./lib/bytesToUuid');
+
+function v4(options, buf, offset) {
+  var i = buf && offset || 0;
+
+  if (typeof(options) == 'string') {
+    buf = options == 'binary' ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+
+  var rnds = options.random || (options.rng || rng)();
+
+  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+  // Copy bytes to buffer, if provided
+  if (buf) {
+    for (var ii = 0; ii < 16; ++ii) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+
+  return buf || bytesToUuid(rnds);
+}
+
+module.exports = v4;
+
+},{"./lib/bytesToUuid":83,"./lib/rng":84}]},{},[1,5])(5)
 });
