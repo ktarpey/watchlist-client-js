@@ -465,7 +465,7 @@ module.exports = function () {
 	return {
 		JwtEndpoint: JwtEndpoint,
 		WatchlistGateway: WatchlistGateway,
-		version: '1.1.3'
+		version: '1.1.4'
 	};
 }();
 
@@ -6980,6 +6980,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var moment = require('moment');
+
 var AdHoc = require('./../../lang/AdHoc'),
     assert = require('./../../lang/assert'),
     Day = require('./../../lang/Day'),
@@ -7000,13 +7002,15 @@ module.exports = function () {
   */
 
 	var DataType = function () {
-		function DataType(description, enumerationType, reviver, validator) {
+		function DataType(description, enumerationType, reviver, validator, builder) {
 			_classCallCheck(this, DataType);
 
 			assert.argumentIsRequired(description, 'description', String);
 			assert.argumentIsOptional(enumerationType, 'enumerationType', Function);
+
 			assert.argumentIsOptional(reviver, 'reviver', Function);
 			assert.argumentIsOptional(validator, 'validator', Function);
+			assert.argumentIsOptional(builder, 'builder', Function);
 
 			if (enumerationType) {
 				assert.argumentIsValid(enumerationType, 'enumerationType', extendsEnumeration, 'is an enumeration');
@@ -7030,20 +7034,55 @@ module.exports = function () {
 			}
 
 			this._reviver = reviverToUse;
-			this._validator = validator || function (candidate) {
-				return true;
-			};
+
+			var validatorToUse = void 0;
+
+			if (validator) {
+				validatorToUse = validator;
+			} else {
+				validatorToUse = function validatorToUse(candidate) {
+					return true;
+				};
+			}
+
+			this._validator = validatorToUse;
+
+			var builderToUse = void 0;
+
+			if (builder) {
+				builderToUse = builder;
+			} else {
+				builderToUse = function builderToUse(data) {
+					return data;
+				};
+			}
+
+			this._builder = builderToUse;
 		}
 
 		/**
-   * Description of the data type.
+   * A function that converts data into the desired format.
    *
    * @public
-   * @returns {String}
+   * @param {*} data
+   * @returns {*}
    */
 
 
 		_createClass(DataType, [{
+			key: 'convert',
+			value: function convert(data) {
+				return this._builder(data);
+			}
+
+			/**
+    * Description of the data type.
+    *
+    * @public
+    * @returns {String}
+    */
+
+		}, {
 			key: 'toString',
 			value: function toString() {
 				return '[DataType (description=' + this._description + ')]';
@@ -7105,7 +7144,9 @@ module.exports = function () {
 		}], [{
 			key: 'forEnum',
 			value: function forEnum(enumerationType, description) {
-				return new DataType(description, enumerationType);
+				return new DataType(description, enumerationType, null, function (x) {
+					return x instanceof enumerationType;
+				}, getBuilder(getEnumerationBuilder(enumerationType)));
 			}
 
 			/**
@@ -7237,29 +7278,79 @@ module.exports = function () {
 		return Decimal.parse(x);
 	}, function (x) {
 		return x instanceof Decimal;
-	});
+	}, getBuilder(buildDecimal));
 	var dataTypeDay = new DataType('Day', null, function (x) {
 		return Day.parse(x);
 	}, function (x) {
 		return x instanceof Day;
-	});
+	}, getBuilder(buildDay));
 	var dataTypeTimestamp = new DataType('Timestamp', null, function (x) {
 		return Timestamp.parse(x);
 	}, function (x) {
 		return x instanceof Timestamp;
-	});
+	}, getBuilder(buildTimestamp));
 	var dataTypeAdHoc = new DataType('AdHoc', null, function (x) {
 		return AdHoc.parse(x);
 	}, function (x) {
 		return x instanceof AdHoc;
-	});
+	}, getBuilder(buildAdHoc));
 
 	var dataTypes = [dataTypeString, dataTypeNumber, dataTypeBoolean, dataTypeObject, dataTypeDecimal, dataTypeDay, dataTypeTimestamp, dataTypeAdHoc];
+
+	function getBuilder(builder) {
+		return function (data) {
+			try {
+				return builder(data);
+			} catch (e) {
+				return data;
+			}
+		};
+	}
+
+	function buildDecimal(data) {
+		return new Decimal(data);
+	}
+
+	function buildDay(data) {
+		if (data instanceof Day) {
+			return new Day(data.year, data.month, data.day);
+		} else if (is.date(data)) {
+			return Day.fromDate(data);
+		} else if (is.string(data)) {
+			return Day.parse(data);
+		} else if (data instanceof moment) {
+			return new Day(data.year(), data.month() + 1, data.date());
+		} else {
+			return data;
+		}
+	}
+
+	function buildTimestamp(data) {
+		return new Timestamp(data);
+	}
+
+	function buildAdHoc(data) {
+		if (data instanceof AdHoc) {
+			return new AdHoc(data.data);
+		} else if (is.object(data)) {
+			return new AdHoc(data);
+		}
+	}
+
+	function getEnumerationBuilder(enumerationType) {
+		return function (data) {
+			if (is.string(data)) {
+				return Enum.fromCode(enumerationType, data);
+			} else {
+				return data;
+			}
+		};
+	}
 
 	return DataType;
 }();
 
-},{"./../../lang/AdHoc":27,"./../../lang/Day":29,"./../../lang/Decimal":30,"./../../lang/Enum":32,"./../../lang/Timestamp":34,"./../../lang/assert":36,"./../../lang/is":39}],44:[function(require,module,exports){
+},{"./../../lang/AdHoc":27,"./../../lang/Day":29,"./../../lang/Decimal":30,"./../../lang/Enum":32,"./../../lang/Timestamp":34,"./../../lang/assert":36,"./../../lang/is":39,"moment":82}],44:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -7352,7 +7443,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var functions = require('./../../lang/functions'),
+var attributes = require('./../../lang/attributes'),
+    functions = require('./../../lang/functions'),
     is = require('./../../lang/is');
 
 var LinkedList = require('./../../collections/LinkedList'),
@@ -7389,14 +7481,41 @@ module.exports = function () {
 		}
 
 		/**
-   * Name of the table.
+   * Accepts data and returns a new object which (should) conform to
+   * the schema.
    *
    * @public
-   * @returns {String}
+   * @param {data} data
+   * @returns {Object}
    */
 
 
 		_createClass(Schema, [{
+			key: 'format',
+			value: function format(data) {
+				var returnRef = {};
+
+				this._fields.forEach(function (field) {
+					formatField(returnRef, field, data);
+				});
+
+				this._components.forEach(function (component) {
+					component.fields.forEach(function (field) {
+						formatField(returnRef, field, data);
+					});
+				});
+
+				return returnRef;
+			}
+
+			/**
+    * Name of the table.
+    *
+    * @public
+    * @returns {String}
+    */
+
+		}, {
 			key: 'validate',
 
 
@@ -7666,10 +7785,16 @@ module.exports = function () {
 		return head;
 	}
 
+	function formatField(target, field, data) {
+		if (attributes.has(data, field.name)) {
+			attributes.write(target, field.name, field.dataType.convert(attributes.read(data, field.name)));
+		}
+	}
+
 	return Schema;
 }();
 
-},{"./../../collections/LinkedList":23,"./../../collections/Tree":24,"./../../lang/functions":38,"./../../lang/is":39,"./Component":42,"./Field":44}],46:[function(require,module,exports){
+},{"./../../collections/LinkedList":23,"./../../collections/Tree":24,"./../../lang/attributes":37,"./../../lang/functions":38,"./../../lang/is":39,"./Component":42,"./Field":44}],46:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -7947,6 +8072,8 @@ var EndpointBuilder = require('@barchart/common-js/api/http/builders/EndpointBui
 module.exports = function () {
 	'use strict';
 
+	var DEFAULT_TOKEN_REFRESH_INTERVAL = 600000;
+
 	/**
   * Web service gateway for obtaining JWT tokens from TGAM (The Globe and Mail).
   *
@@ -7971,7 +8098,7 @@ module.exports = function () {
 			_this._startPromise = null;
 
 			_this._endpoint = endpoint;
-			_this._refreshInterval = refreshInterval || null;
+			_this._refreshInterval = refreshInterval;
 			return _this;
 		}
 
@@ -8045,19 +8172,26 @@ module.exports = function () {
 
 				var cachePromise = null;
 				var cacheDisposable = null;
+				var cacheTime = null;
 
 				var refreshToken = function refreshToken() {
 					var refreshPromise = scheduler.backoff(function () {
 						return _this4.readToken();
 					}, 100, 'Read JWT token', 3).then(function (token) {
-						if (_this4._refreshInterval) {
+						if (_this4._refreshInterval > 0) {
 							cachePromise = refreshPromise;
+
+							if (cacheDisposable === null) {
+								cacheDisposable = scheduler.repeat(function () {
+									return refreshToken();
+								}, _this4._refreshInterval, 'Refresh JWT token');
+							}
 						}
 
-						if (cacheDisposable === null) {
-							cacheDisposable = scheduler.repeat(function () {
-								return refreshToken();
-							}, _this4._refreshInterval, 'Refresh JWT token');
+						return token;
+					}).then(function (token) {
+						if (_this4._refreshInterval > 0) {
+							cacheTime = getTime();
 						}
 
 						return token;
@@ -8067,6 +8201,7 @@ module.exports = function () {
 
 							cacheDisposable = null;
 							cachePromise = null;
+							acheTime = null;
 						}
 
 						return Promise.reject(e);
@@ -8078,10 +8213,14 @@ module.exports = function () {
 				var delegate = function delegate(options, endpoint) {
 					var tokenPromise = void 0;
 
-					if (cachePromise !== null) {
-						tokenPromise = cachePromise;
-					} else {
+					if (cachePromise === null) {
 						tokenPromise = refreshToken();
+					} else {
+						if (cacheTime !== null && getTime() > cacheTime + _this4._refreshInterval) {
+							tokenPromise = refreshToken();
+						} else {
+							tokenPromise = cachePromise;
+						}
 					}
 
 					return tokenPromise.then(function (token) {
@@ -8154,7 +8293,7 @@ module.exports = function () {
 		}, {
 			key: 'forStaging',
 			value: function forStaging() {
-				return start(new JwtGateway(_forStaging(), 600000));
+				return start(new JwtGateway(_forStaging(), DEFAULT_TOKEN_REFRESH_INTERVAL));
 			}
 
 			/**
@@ -8184,7 +8323,7 @@ module.exports = function () {
 		}, {
 			key: 'forProduction',
 			value: function forProduction() {
-				return start(new JwtGateway(_forProduction(), 600000));
+				return start(new JwtGateway(_forProduction(), DEFAULT_TOKEN_REFRESH_INTERVAL));
 			}
 
 			/**
@@ -8241,6 +8380,10 @@ module.exports = function () {
 		})).withResponseInterceptor(ResponseInterceptor.DATA).withResponseInterceptor(ResponseInterceptor.fromDelegate(function (response) {
 			return response.token;
 		})).endpoint;
+	}
+
+	function getTime() {
+		return new Date().getTime();
 	}
 
 	return JwtGateway;
