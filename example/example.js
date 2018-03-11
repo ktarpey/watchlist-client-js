@@ -465,7 +465,7 @@ module.exports = function () {
 	return {
 		JwtEndpoint: JwtEndpoint,
 		WatchlistGateway: WatchlistGateway,
-		version: '1.1.4'
+		version: '1.1.5'
 	};
 }();
 
@@ -8098,7 +8098,9 @@ module.exports = function () {
 			_this._startPromise = null;
 
 			_this._endpoint = endpoint;
-			_this._refreshInterval = refreshInterval;
+
+			_this._refreshInterval = refreshInterval || 0;
+			_this._refreshJitter = Math.floor(_this._refreshInterval / 10);
 			return _this;
 		}
 
@@ -8216,7 +8218,7 @@ module.exports = function () {
 					if (cachePromise === null) {
 						tokenPromise = refreshToken();
 					} else {
-						if (cacheTime !== null && getTime() > cacheTime + _this4._refreshInterval) {
+						if (cacheTime !== null && getTime() > cacheTime + _this4._refreshInterval + _this4._refreshJitter) {
 							tokenPromise = refreshToken();
 						} else {
 							tokenPromise = cachePromise;
