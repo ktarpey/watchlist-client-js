@@ -465,7 +465,7 @@ module.exports = function () {
 	return {
 		JwtEndpoint: JwtEndpoint,
 		WatchlistGateway: WatchlistGateway,
-		version: '1.1.6'
+		version: '1.1.7'
 	};
 }();
 
@@ -8761,6 +8761,7 @@ module.exports = (() => {
 			this._id = id;
 
 			this._watchlists = {};
+			this._preferences = {};
 
 			this._lastAction = WatchlistAction.Init;
 			this._lastUpdate = Timestamp.now();
@@ -8844,6 +8845,26 @@ module.exports = (() => {
 		}
 
 		/**
+		 * Get unstructured preferences for the user.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
+		get preferences() {
+			return this._preferences;
+		}
+
+		/**
+		 * Sets unstructured preferences for the user.
+		 *
+		 * @public
+		 * @param {Object} value
+		 */
+		set preferences(value) {
+			this._preferences = value;
+		}
+
+		/**
 		 * Adds (or overwrites) a watchlist.
 		 *
 		 * @public
@@ -8907,7 +8928,8 @@ module.exports = (() => {
 				id: this.id,
 				email: this.email,
 				lastAction: this.lastAction,
-				lastUpdate: this.lastUpdate
+				lastUpdate: this.lastUpdate,
+				preferences: this.preferences
 			};
 
 			plain.watchlists = Object.keys(this.watchlists).reduce((copy, k) => {
@@ -8946,6 +8968,7 @@ module.exports = (() => {
 
 			u.lastAction = obj.lastAction;
 			u.lastUpdate = obj.lastUpdate;
+			u.preferences = obj.preferences || { };
 
 			for (let k in obj.watchlists) {
 				u.addWatchlist(Watchlist.fromJSObj(obj.watchlists[k]));
