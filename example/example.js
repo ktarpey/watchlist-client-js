@@ -465,7 +465,7 @@ module.exports = function () {
 	return {
 		JwtEndpoint: JwtEndpoint,
 		WatchlistGateway: WatchlistGateway,
-		version: '1.1.8'
+		version: '1.1.9'
 	};
 }();
 
