@@ -192,6 +192,13 @@
 				    favoriteNumber: Math.floor(Math.random() * 1000)
                 };
 
+				let watchlists = that.watchlistUser().watchlists;
+				let counter = 0;
+
+				for (var id in watchlists) {
+					watchlists[id].preferences = { favoriteColor: ((counter++) % 2 === 0 ? 'blue' : 'red' )};
+				}
+
 				return that.gateway.writeUser(that.watchlistUser())
                     .then(function(response) {
                         writeConsoleText(action);
