@@ -465,7 +465,7 @@ module.exports = function () {
 	return {
 		JwtEndpoint: JwtEndpoint,
 		WatchlistGateway: WatchlistGateway,
-		version: '1.1.10'
+		version: '1.1.11'
 	};
 }();
 
@@ -8468,6 +8468,7 @@ module.exports = (() => {
 			this._view = null;
 
 			this._entries = [];
+			this._preferences = {};
 		}
 
 		/**
@@ -8551,11 +8552,40 @@ module.exports = (() => {
 		 * Gets the watchlist's entries.
 		 *
 		 * @public
-		 * @readonly
 		 * @returns {Array.<WatchlistEntry>}
 		 */
 		get entries() {
 			return this._entries;
+		}
+
+		/**
+		 * Overwrites the watchlist's entries.
+		 *
+		 * @public
+		 * @param {Array.<WatchlistEntry>} value
+		 */
+		set entries(value) {
+			this._entries = value;
+		}
+
+		/**
+		 * Get unstructured preferences for the watchlist.
+		 *
+		 * @public
+		 * @returns {Object}
+		 */
+		get preferences() {
+			return this._preferences;
+		}
+
+		/**
+		 * Sets unstructured preferences for the watchlist.
+		 *
+		 * @public
+		 * @param {Object} value
+		 */
+		set preferences(value) {
+			this._preferences = value;
 		}
 
 		/**
@@ -8609,7 +8639,8 @@ module.exports = (() => {
 				name: this.name,
 				email: this.email,
 				view: this.view,
-				entries: this.entries.map((e) => e)
+				entries: this.entries.map((e) => e),
+				preferences: this.preferences
 			};
 
 			return plain;
@@ -8639,6 +8670,10 @@ module.exports = (() => {
 
 			if (is.array(obj.entries)) {
 				obj.entries.map((e) => watchlist.addEntry(e));
+			}
+
+			if (is.object(obj.preferences)) {
+				watchlist.preferences = obj.preferences;
 			}
 
 			return watchlist;
