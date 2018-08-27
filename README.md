@@ -24,3 +24,7 @@ Gulp is used to check "linting" and to run unit tests.
 Polyfills for ES6 are required:
 
 * Promise
+
+## Server
+
+Code can be found [here](https://github.com/barchart/aws-lambda-watchlist).
