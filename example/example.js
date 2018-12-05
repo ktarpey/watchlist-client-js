@@ -409,7 +409,7 @@ module.exports = function () {
 		}], [{
 			key: 'developmentHost',
 			get: function get() {
-				return '54eorn43h5.execute-api.us-east-1.amazonaws.com/dev';
+				return 'watchlist-dev.aws.barchart.com';
 			}
 
 			/**
@@ -423,7 +423,7 @@ module.exports = function () {
 		}, {
 			key: 'stagingHost',
 			get: function get() {
-				return 'xd4wbdxze7.execute-api.us-east-1.amazonaws.com/stage';
+				return 'watchlist-stage.aws.barchart.com';
 			}
 
 			/**
@@ -437,7 +437,7 @@ module.exports = function () {
 		}, {
 			key: 'productionHost',
 			get: function get() {
-				return '6o6d1jqrwa.execute-api.us-east-1.amazonaws.com/prod';
+				return 'watchlist.aws.barchart.com';
 			}
 		}]);
 
@@ -825,7 +825,7 @@ module.exports = function () {
 	return {
 		JwtEndpoint: JwtEndpoint,
 		WatchlistGateway: WatchlistGateway,
-		version: '1.1.12'
+		version: '1.1.13'
 	};
 }();
 
