@@ -460,8 +460,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var assert = require('@barchart/common-js/lang/assert'),
     Disposable = require('@barchart/common-js/lang/Disposable'),
-    Enum = require('@barchart/common-js/lang/Enum'),
-    is = require('@barchart/common-js/lang/is');
+    Enum = require('@barchart/common-js/lang/Enum');
 
 var EndpointBuilder = require('@barchart/common-js/api/http/builders/EndpointBuilder'),
     Gateway = require('@barchart/common-js/api/http/Gateway'),
@@ -544,7 +543,7 @@ module.exports = function () {
     * containing the current instance.
     *
     * @public
-    * @returns {Promise.<WatchlistGateway>}
+    * @returns {Promise<WatchlistGateway>}
     */
 			value: function start() {
 				var _this2 = this;
@@ -570,7 +569,7 @@ module.exports = function () {
     * Retrieves the {@link WatchlistServiceMetadata} from the remote server.
     *
     * @public
-    * @returns {Promise.<WatchlistServiceMetadata>}
+    * @returns {Promise<WatchlistServiceMetadata>}
     */
 
 		}, {
@@ -589,7 +588,7 @@ module.exports = function () {
     * Retrieves the {@link WatchlistUser} from the remote server.
     *
     * @public
-    * @returns {Promise.<WatchlistUser>}
+    * @returns {Promise<WatchlistUser>}
     */
 
 		}, {
@@ -609,7 +608,7 @@ module.exports = function () {
     *
     * @public
     * @param {WatchlistUser} watchlistUser
-    * @returns {Promise.<WatchlistUser>}
+    * @returns {Promise<WatchlistUser>}
     */
 
 		}, {
@@ -631,8 +630,8 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {RequestInterceptor=|Promise.<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
-    * @returns {Promise.<WatchlistGateway>}
+    * @param {RequestInterceptor=|Promise<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
+    * @returns {Promise<WatchlistGateway>}
     */
 
 		}, {
@@ -665,8 +664,8 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {RequestInterceptor=|Promise.<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
-    * @returns {Promise.<WatchlistGateway>}
+    * @param {RequestInterceptor=|Promise<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
+    * @returns {Promise<WatchlistGateway>}
     */
 
 		}, {
@@ -684,8 +683,8 @@ module.exports = function () {
     *
     * @public
     * @static
-    * @param {RequestInterceptor=|Promise.<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
-    * @returns {Promise.<WatchlistGateway>}
+    * @param {RequestInterceptor=|Promise<RequestInterceptor>=} requestInterceptor - A request interceptor used with each request (typically used to inject JWT tokens).
+    * @returns {Promise<WatchlistGateway>}
     */
 
 		}, {
@@ -744,24 +743,15 @@ module.exports = function () {
 	return WatchlistGateway;
 }();
 
-},{"./../common/Configuration":2,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":36,"@barchart/common-js/lang/is":39,"@barchart/watchlist-api-common/WatchlistUser":51}],4:[function(require,module,exports){
+},{"./../common/Configuration":2,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":20,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Disposable":31,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":36,"@barchart/watchlist-api-common/WatchlistUser":51}],4:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var assert = require('@barchart/common-js/lang/assert'),
-    Enum = require('@barchart/common-js/lang/Enum'),
-    is = require('@barchart/common-js/lang/is');
-
 var EndpointBuilder = require('@barchart/common-js/api/http/builders/EndpointBuilder'),
-    Endpoint = require('@barchart/common-js/api/http/definitions/Endpoint'),
-    FailureReason = require('@barchart/common-js/api/failures/FailureReason'),
-    FailureType = require('@barchart/common-js/api/failures/FailureType'),
-    Gateway = require('@barchart/common-js/api/http/Gateway'),
     ProtocolType = require('@barchart/common-js/api/http/definitions/ProtocolType'),
-    RequestInterceptor = require('@barchart/common-js/api/http/interceptors/RequestInterceptor'),
     ResponseInterceptor = require('@barchart/common-js/api/http/interceptors/ResponseInterceptor'),
     VerbType = require('@barchart/common-js/api/http/definitions/VerbType');
 
@@ -787,7 +777,7 @@ module.exports = function () {
    * @public
    * @static
    * @param {String} user - The identifier of the user to impersonate.
-   * @returns {Promise.<Endpoints>}
+   * @returns {Endpoint}
    */
 
 
@@ -813,7 +803,7 @@ module.exports = function () {
 	return JwtEndpoint;
 }();
 
-},{"./../../common/Configuration":2,"@barchart/common-js/api/failures/FailureReason":6,"@barchart/common-js/api/failures/FailureType":8,"@barchart/common-js/api/http/Gateway":9,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/Endpoint":12,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/RequestInterceptor":21,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22,"@barchart/common-js/lang/Enum":32,"@barchart/common-js/lang/assert":36,"@barchart/common-js/lang/is":39}],5:[function(require,module,exports){
+},{"./../../common/Configuration":2,"@barchart/common-js/api/http/builders/EndpointBuilder":10,"@barchart/common-js/api/http/definitions/ProtocolType":15,"@barchart/common-js/api/http/definitions/VerbType":16,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":22}],5:[function(require,module,exports){
 'use strict';
 
 var JwtEndpoint = require('./gateway/jwt/JwtEndpoint'),
@@ -825,7 +815,7 @@ module.exports = function () {
 	return {
 		JwtEndpoint: JwtEndpoint,
 		WatchlistGateway: WatchlistGateway,
-		version: '1.1.13'
+		version: '1.3.1'
 	};
 }();
 
