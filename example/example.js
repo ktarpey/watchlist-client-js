@@ -702,8 +702,8 @@ module.exports = function () {
     */
 
 		}, {
-			key: 'forDevelopment',
-			value: function forDevelopment(requestInterceptor) {
+			key: 'forDemo',
+			value: function forDemo(requestInterceptor) {
 				return Promise.resolve(requestInterceptor).then(function (requestInterceptor) {
 					assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
 
@@ -1127,7 +1127,7 @@ module.exports = function () {
 		JwtEndpoint: JwtEndpoint,
 		JwtGateway: JwtGateway,
 		WatchlistGateway: WatchlistGateway,
-		version: '1.3.3'
+		version: '1.3.4'
 	};
 }();
 
