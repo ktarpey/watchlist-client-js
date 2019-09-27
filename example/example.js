@@ -1,13 +1,9 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const version = require('./../../lib/index').version;
 
-const JwtEndpoint = require('./../../lib/gateway/jwt/JwtEndpoint');
+const JwtGateway = require('./../../lib/gateway/jwt/JwtGateway');
 
 const WatchlistGateway = require('./../../lib/gateway/WatchlistGateway');
-
-const Gateway = require('@barchart/common-js/api/http/Gateway');
-
-const RequestInterceptor = require('@barchart/common-js/api/http/interceptors/RequestInterceptor');
 
 module.exports = (() => {
   'use strict';
@@ -58,16 +54,7 @@ module.exports = (() => {
     that.connect = function () {
       that.disconnect();
       that.connecting(true);
-      const jwtEndpoint = JwtEndpoint.forDevelopment(that.user());
-      const jwtPromise = Gateway.invoke(jwtEndpoint);
-      const jwtInterceptor = RequestInterceptor.fromDelegate((options, endpoint) => {
-        return jwtPromise.then(token => {
-          options.headers = options.headers || {};
-          options.headers.Authorization = `Bearer ${token}`;
-          return options;
-        });
-      });
-      WatchlistGateway.forDevelopment(jwtInterceptor).then(gateway => {
+      WatchlistGateway.forDevelopment(JwtGateway.forDevelopmentClient(that.user())).then(gateway => {
         that.gateway = gateway;
         var action = 'watchlistGateway.readServiceMetadataEndpoint()';
         that.gateway.readServiceMetadata().then(metadata => {
@@ -347,7 +334,7 @@ module.exports = (() => {
   });
 })();
 
-},{"./../../lib/gateway/WatchlistGateway":3,"./../../lib/gateway/jwt/JwtEndpoint":4,"./../../lib/index":6,"@barchart/common-js/api/http/Gateway":10,"@barchart/common-js/api/http/interceptors/RequestInterceptor":24}],2:[function(require,module,exports){
+},{"./../../lib/gateway/WatchlistGateway":3,"./../../lib/gateway/jwt/JwtGateway":5,"./../../lib/index":6}],2:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
   /**
@@ -919,7 +906,7 @@ module.exports = (() => {
     JwtEndpoint: JwtEndpoint,
     JwtGateway: JwtGateway,
     WatchlistGateway: WatchlistGateway,
-    version: '1.3.7'
+    version: '1.3.8'
   };
 })();
 
