@@ -30,7 +30,7 @@ gulp.task('ensure-clean-working-directory', (cb) => {
 
 gulp.task('bump-version', () => {
 	return gulp.src([ './package.json' ])
-		.pipe(bump({ type: 'patch' }).on('error', util.log))
+		.pipe(bump({ type: 'patch' }))
 		.pipe(gulp.dest('./'));
 });
 
