@@ -74,12 +74,12 @@ module.exports = (() => {
 
 			const jwtInterceptor = RequestInterceptor.fromDelegate((options, endpoint) => {
 				return jwtPromise
-				.then((token) => {
-					options.headers = options.headers || { };
-					options.headers.Authorization = `Bearer ${token}`;
+					.then((token) => {
+						options.headers = options.headers || { };
+						options.headers.Authorization = `Bearer ${token}`;
 
-					return options;
-				});
+						return options;
+					});
 			});
 
 			WatchlistGateway.forDevelopment(jwtInterceptor)
