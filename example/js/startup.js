@@ -1,8 +1,10 @@
 const version = require('./../../lib/index').version;
 
-const JwtProvider = require('@barchart/tgam-jwt-js/lib/JwtGateway');
 const JwtEndpoint = require('./../../lib/gateway/jwt/JwtEndpoint');
 const WatchlistGateway = require('./../../lib/gateway/WatchlistGateway');
+
+const Gateway = require('@barchart/common-js/api/http/Gateway');
+const RequestInterceptor = require('@barchart/common-js/api/http/interceptors/RequestInterceptor');
 
 module.exports = (() => {
 	'use strict';
@@ -67,7 +69,20 @@ module.exports = (() => {
 
 			that.connecting(true);
 
-			WatchlistGateway.forDevelopment(JwtProvider.forDevelopmentClient(JwtEndpoint.forDevelopment(that.user())))
+			const jwtEndpoint = JwtEndpoint.forDevelopment(that.user());
+			const jwtPromise = Gateway.invoke(jwtEndpoint);
+
+			const jwtInterceptor = RequestInterceptor.fromDelegate((options, endpoint) => {
+				return jwtPromise
+				.then((token) => {
+					options.headers = options.headers || { };
+					options.headers.Authorization = `Bearer ${token}`;
+
+					return options;
+				});
+			});
+
+			WatchlistGateway.forDevelopment(jwtInterceptor)
 				.then((gateway) => {
 					that.gateway = gateway;
 
