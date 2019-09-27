@@ -283,8 +283,8 @@ module.exports = (() => {
 
 					const watchlists = [];
 
-					for (var key in watchlistUser.watchlists) {
-						watchlists.push(watchlistUser.watchlists[key]);
+					for (var k in watchlistUser.watchlists) {
+						watchlists.push(watchlistUser.watchlists[k]);
 					}
 
 					that.watchlists(Object.values(watchlists));
