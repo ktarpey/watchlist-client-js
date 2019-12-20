@@ -8,7 +8,8 @@
     "url": "http://www.barchart.com"
   },
   "scripts": {
-    "test": "echo \"Error: Please use gulp to run tests\" && exit 1"
+    "prettier": "prettier --config .prettierrc --write './**/*.js'",
+    "lint": "eslint --fix --config=.eslintrc './**/*.js'"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,9 @@
     "@babel/core": "^7.6.2",
     "babelify": "^10.0.0",
     "browserify": "^16.5.0",
+    "eslint": "^6.5.1",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-prettier": "^3.1.1",
     "git-get-status": "^1.0.5",
     "glob": "^6.0.1",
     "gulp": "^4.0.2",
@@ -39,6 +43,7 @@
     "gulp-replace": "^0.5.4",
     "jsdoc": "^3.5.5",
     "jshint": "2.9.5",
+    "prettier": "^1.18.2",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   },
