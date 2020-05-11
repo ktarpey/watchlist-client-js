@@ -34,7 +34,7 @@ gulp.task('bump-version', () => {
 });
 
 gulp.task('embed-version', () => {
-	var version = getVersionFromPackage();
+	let version = getVersionFromPackage();
 
 	return gulp.src(['./lib/index.js'])
 		.pipe(replace(/(version:\s*')([0-9]+\.[0-9]+\.[0-9]+)(')/g, '$1' + version + '$3'))
