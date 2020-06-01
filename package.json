@@ -1,6 +1,6 @@
 {
   "name": "@barchart/watchlist-client-js",
-  "version": "1.3.8",
+  "version": "2.0.1",
   "description": "JavaScript library for interfacing with Barchart's Watchlist API",
   "author": {
     "name": "Bryan Ingle",
@@ -22,8 +22,8 @@
     "API"
   ],
   "dependencies": {
-    "@barchart/common-js": "~3.3.0",
-    "@barchart/watchlist-api-common": "~1.3.0"
+    "@barchart/common-js": "^3.5.1",
+    "@barchart/watchlist-api-common": "^2.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
@@ -38,10 +38,8 @@
     "gulp-bump": "~1.0.0",
     "gulp-git": "^2.9.0",
     "gulp-jasmine": "^2.2.1",
-    "gulp-jsdoc3": "^1.0.1",
     "gulp-jshint": "~2.1.0",
     "gulp-replace": "^0.5.4",
-    "jsdoc": "^3.5.5",
     "jshint": "2.9.5",
     "prettier": "^1.18.2",
     "vinyl-buffer": "^1.0.1",

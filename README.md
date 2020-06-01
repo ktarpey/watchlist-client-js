@@ -1,28 +1,24 @@
 # @barchart/watchlist-client-js
-## JavaScript library for interfacing with Barchart's Watchlist API
 
-## Documentation
+[![AWS CodeBuild](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiUHlZU3ZxOHdDWHprRzNEMXhoUGhTUHlOc1hGM3pEMnFhVG1UekdCWEN1K1hvWEFnTTcxWnhGYjZuUFpuUnl4QVhvVWFVMUQ4Rkx3TGFpaFhFQzBLUm1JPSIsIml2UGFyYW1ldGVyU3BlYyI6ImN3Y1RhZnV1ais3VXZ2WlgiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)](https://github.com/barchart/watchlist-client-js)
 
-The code is documented with [JSDoc](http://usejsdoc.org/). While the output hasn't been committed to source control, you can generate the documentation by using the following commands:
+A JavaScript SDK for Barchart's Watchlist System.
 
-    > npm install
-    > gulp document
+### Development
 
-## Development
+#### Documentation
 
-Gulp is used to check "linting" and to run unit tests.
+The code is documented with [JSDoc](http://usejsdoc.org/). This will be used as the basis for formal documentation (coming soon).
 
-    > nvm use 6.10.1
-    > npm install
-    > gulp lint
-    > gulp test
-    
-## Build
+#### Package Managers
 
-Polyfills for ES6 are required:
+This library has been published as a *private* module to NPM as [@barchart/watchlist-client-js](https://www.npmjs.com/package/@barchart/watchlist-client-js).
 
-* Promise
+```shell
+npm login
+npm install @barchart/watchlist-client-js -S
+```
 
-## Server
+#### Build
 
-Code can be found [here](https://github.com/barchart/aws-lambda-watchlist).
+Modern JavaScript language features are used. Some browsers may still require polyfills.
