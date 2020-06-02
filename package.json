@@ -22,8 +22,9 @@
     "API"
   ],
   "dependencies": {
-    "@barchart/common-js": "^3.5.1",
-    "@barchart/watchlist-api-common": "^2.0.1"
+    "@barchart/common-js": "^3.8.0",
+    "@barchart/watchlist-api-common": "^2.0.1",
+    "uuid": "3.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
