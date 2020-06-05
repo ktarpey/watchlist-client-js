@@ -97,7 +97,7 @@ servers:
   - url: https://dev.watchlist.aws.barchart.com/v1
     description: Development server
   - url: https://watchlist.aws.barchart.com/v1
-    description: Prod server
+    description: Production server
 
 tags:
   - name: Watchlist
