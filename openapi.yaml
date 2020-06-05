@@ -1,0 +1,649 @@
+openapi: 3.0.0
+
+info:
+  title: Watchlist API
+  description: Watchlist API
+  version: 1.0.0
+
+components:
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    Unauthorized:
+      description: User not authorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Unauthorized
+
+  schemas:
+    watchlist:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 81b2d6fa-bb7e-485b-8670-6d0c9330aa21
+        context:
+          type: string
+          example: TGAM
+        name:
+          type: string
+          example: Watchlist name
+        view:
+          type: string
+          example: main
+        entries:
+          $ref: '#/components/schemas/entries'
+        preferences:
+          $ref: '#/components/schemas/preferences'
+        user:
+          type: string
+          example: 113692067
+        system:
+          $ref: '#/components/schemas/system'
+
+    preferences:
+      type: object
+      properties:
+        sorting:
+          type: object
+          properties:
+            column:
+              type: string
+              example: symbol
+            desc:
+              type: boolean
+              example: false
+
+    system:
+      type: object
+      properties:
+        sequence:
+          type: integer
+          example: 1
+
+        timestamp:
+          type: string
+          example: 1580990379106
+
+    entries:
+      type: array
+      items:
+        $ref: '#/components/schemas/symbol'
+
+    symbol:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: TSLA
+        tgam_symbol:
+          type: string
+          example: TSLA-Q
+        notes:
+          type: object
+          additionalProperties: {}
+          
+servers:
+  - url: https://dev.watchlist.aws.barchart.com/v1
+    description: Development server
+  - url: https://watchlist.aws.barchart.com/v1
+    description: Prod server
+
+tags:
+  - name: Watchlist
+  - name: Symbols
+
+paths:
+  /watchlist:
+    get:
+      summary: Returns watchlists of user.
+      description: Reads all user watchlists and returns as an array. If you do not have watchlists, an empty array will be returned.
+      tags:
+        - Watchlist
+      security:
+        - JWT: []
+      parameters:
+        - name: context
+          in: query
+          required: true
+          description: The company shortcut code.
+          schema:
+            type: string
+            minimum: 1
+        - name: X-BARCHART-CLIENT-ID
+          in: header
+          description: The ID of the client who sent the request.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: A JSON array of user watchlists.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/watchlist'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      summary: Creates a new watchlist.
+      description: Creates a new watchlist for the current user.
+      tags:
+        - Watchlist
+      security:
+        - JWT: []
+      parameters:
+        - name: X-BARCHART-CLIENT-ID
+          in: header
+          description: The ID of the client who sent the request.
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Watchlist name
+                context:
+                  type: string
+                  example: TGAM
+                view:
+                  type: string
+                  example: main
+                entries:
+                  $ref: '#/components/schemas/entries'
+                preferences:
+                  $ref: '#/components/schemas/preferences'
+              required:
+                - context
+                - entries
+                - name
+      responses:
+        '200':
+          description: A JSON object of the created watchlist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/watchlist'
+
+        '500':
+          description: A JSON object of the error.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          example: REQUEST_GENERAL_FAILURE
+                        message:
+                          type: string
+                          example: An attempt to create watchlist failed for unspecified reason(s).
+                    children:
+                      type: array
+                      example: []
+                      items: {}
+
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /watchlist/{watchlist}:
+    delete:
+      summary: Deletes a user watchlist.
+      description: Deletes a user watchlist by watchlist ID.
+      tags:
+        - Watchlist
+      security:
+        - JWT: []
+      parameters:
+        - name: watchlist
+          in: path
+          required: true
+          description: The ID of the watchlist.
+          schema:
+            type: string
+            format: uuid
+            minimum: 1
+        - name: X-BARCHART-CLIENT-ID
+          in: header
+          description: The ID of the client who sent the request .
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The ID of deleted watchlist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  watchlist:
+                    type: string
+                    format: uuid
+                    example: 81b2d6fa-bb7e-485b-8670-6d0c9330aa21
+        '500':
+          description: A JSON object of the error.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          example: REQUEST_GENERAL_FAILURE
+                        message:
+                          type: string
+                          example: An attempt to delete watchlist failed for unspecified reason(s).
+                    children:
+                      type: array
+                      items: {}
+                      example: []
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      summary: Edits a user watchlist.
+      description: Edits a user watchlist by watchlist ID.
+      tags:
+        - Watchlist
+      security:
+        - JWT: []
+      parameters:
+        - name: watchlist
+          in: path
+          required: true
+          description: The ID of the watchlist.
+          schema:
+            type: string
+            format: uuid
+            minimum: 1
+        - name: X-BARCHART-CLIENT-ID
+          in: header
+          description: The ID of the client who sent the request .
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Watchlist name
+                context:
+                  type: string
+                  example: TGAM
+                view:
+                  type: string
+                  example: main
+                entries:
+                  $ref: '#/components/schemas/entries'
+              required:
+                - name
+                - context
+                - entries
+      responses:
+        '200':
+          description: A JSON of user watchlist.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/watchlist'
+
+        '500':
+          description: A JSON object of the error.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          example: REQUEST_GENERAL_FAILURE
+                        message:
+                          type: string
+                          example: An attempt to edit watchlist failed for unspecified reason(s).
+                    children:
+                      type: array
+                      items: {}
+                      example: []
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /watchlist/{watchlist}/preferences:
+    put:
+      summary: Edit watchlist preferences.
+      description: Edit watchlist preferences.
+      tags:
+        - Watchlist
+      security:
+        - JWT: []
+      parameters:
+        - name: watchlist
+          in: path
+          required: true
+          description: The ID of the watchlist.
+          schema:
+            type: string
+            format: uuid
+            minimum: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/preferences'
+
+      responses:
+        '200':
+          description: A JSON object of edited watchlist.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/watchlist'
+        '500':
+          description: A JSON object of the error.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          example: REQUEST_GENERAL_FAILURE
+                        message:
+                          type: string
+                          example: An attempt to edit preferences failed for unspecified reason(s).
+                    children:
+                      type: array
+                      items: {}
+                      example: []
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /watchlist/{watchlist}/symbol:
+    put:
+      summary: Adds a symbol to the watchlist.
+      description: Adds a symbol to the watchlist by index.
+      tags:
+        - Watchlist
+      security:
+        - JWT: []
+      parameters:
+        - name: watchlist
+          in: path
+          required: true
+          description: The ID of the watchlist.
+          schema:
+            type: string
+            format: uuid
+            minimum: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symbol:
+                  $ref: '#/components/schemas/symbol'
+                index:
+                  type: integer
+                  example: 3
+                  description: The index at which the symbol will be inserted
+              required:
+                - symbol
+      responses:
+        '200':
+          description: A JSON object of edited watchlist.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/watchlist'
+        '500':
+          description: A JSON object of the error.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          example: REQUEST_GENERAL_FAILURE
+                        message:
+                          type: string
+                          example: An attempt to add symbols failed for unspecified reason(s).
+                    children:
+                      type: array
+                      items: {}
+                      example: []
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /watchlist/{watchlist}/symbol/{symbol}:
+    delete:
+      summary: Deletes a symbol from the watchlist.
+      description: Deletes a symbol from the watchlist by symbol name.
+      tags:
+        - Watchlist
+      security:
+        - JWT: []
+      parameters:
+        - name: watchlist
+          in: path
+          required: true
+          description: The ID of the watchlist.
+          schema:
+            type: string
+            format: uuid
+            minimum: 1
+        - name: symbol
+          in: path
+          required: true
+          description: A name of the symbol.
+          schema:
+            type: string
+            minimum: 1
+        - name: X-BARCHART-CLIENT-ID
+          in: header
+          description: The ID of the client who sent the request.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: A JSON object of edited watchlist.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/watchlist'
+        '500':
+          description: A JSON object of the error.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          example: REQUEST_GENERAL_FAILURE
+                        message:
+                          type: string
+                          example: An attempt to delete symbol failed for unspecified reason(s).
+                    children:
+                      type: array
+                      items: {}
+                      example: []
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      summary: Change the index of the symbol.
+      description: Change position of the symbol inside the watchlist.
+      tags:
+        - Watchlist
+      security:
+        - JWT: []
+      parameters:
+        - name: watchlist
+          in: path
+          required: true
+          description: The ID of the watchlist.
+          schema:
+            type: string
+            format: uuid
+            minimum: 1
+        - name: symbol
+          in: path
+          required: true
+          description: A name of the symbol.
+          schema:
+            type: string
+            minimum: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                from:
+                  type: integer
+                  example: 3
+                  description: The old index.
+                to:
+                  type: integer
+                  example: 5
+                  description: The new index.
+              required:
+                - from
+                - to
+      responses:
+        '200':
+          description: A JSON object of edited watchlist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/watchlist'
+        '500':
+          description: A JSON object of the error.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          example: REQUEST_GENERAL_FAILURE
+                        message:
+                          type: string
+                          example: An attempt to change index failed for unspecified reason(s).
+                    children:
+                      type: array
+                      items: {}
+                      example: []
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+          
+  /symbols/{symbol}:
+    get:
+      summary: Returns a list of watchlists and information on whether they contain a symbol.
+      description: Returns a list of watchlists and information on whether they contain a symbol. If you do not have watchlists, an empty array will be returned.
+      tags:
+        - Symbols
+      security:
+        - JWT: []
+      parameters:
+        - name: context
+          in: query
+          required: true
+          description: The company shortcut code.
+          schema:
+            type: string
+            minimum: 1
+        - name: symbol
+          in: path
+          required: true
+          description: A symbol to search
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A JSON array of user watchlists.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties: 
+                    id: 
+                      type: string 
+                      format: uuid
+                    name: 
+                      type: string
+                    hasSymbol:
+                      type: boolean
+                      description: Does a watchlist contain a symbol
+        '401':
+          $ref: '#/components/responses/Unauthorized'
