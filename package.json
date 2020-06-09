@@ -23,8 +23,8 @@
   ],
   "dependencies": {
     "@barchart/common-js": "^3.8.0",
-    "@barchart/watchlist-api-common": "^2.0.1",
-    "uuid": "3.1.0"
+    "@barchart/watchlist-api-common": "^3.0.0",
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
@@ -36,12 +36,12 @@
     "git-get-status": "^1.0.5",
     "glob": "^6.0.1",
     "gulp": "^4.0.2",
-    "gulp-bump": "~1.0.0",
     "gulp-git": "^2.9.0",
     "gulp-jasmine": "^2.2.1",
     "gulp-jshint": "~2.1.0",
+    "gulp-prompt": "^1.2.0",
     "gulp-replace": "^0.5.4",
-    "jshint": "2.9.5",
+    "jshint": "^2.10.3",
     "prettier": "^1.18.2",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
