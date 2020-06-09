@@ -776,7 +776,7 @@ module.exports = (() => {
     static forDevelopment(requestInterceptor) {
       return Promise.resolve(requestInterceptor).then(requestInterceptor => {
         assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
-        return start(new WatchlistGateway('https', Configuration.developmentHost, 443, 'development', requestInterceptor, 'wss', Configuration.developmentHost));
+        return start(new WatchlistGateway('https', Configuration.developmentHost, 443, 'development', requestInterceptor, 'wss', '6tyutdt1lf.execute-api.us-east-1.amazonaws.com/dev'));
       });
     }
     /**
@@ -792,7 +792,7 @@ module.exports = (() => {
     static forStaging(requestInterceptor) {
       return Promise.resolve(requestInterceptor).then(requestInterceptor => {
         assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
-        return start(new WatchlistGateway('https', Configuration.stagingHost, 443, 'staging', requestInterceptor, 'wss', Configuration.stagingHost));
+        return start(new WatchlistGateway('https', Configuration.stagingHost, 443, 'staging', requestInterceptor, 'wss', '85i5mijnnb.execute-api.us-east-1.amazonaws.com/stage'));
       });
     }
     /**
@@ -824,7 +824,7 @@ module.exports = (() => {
     static forProduction(requestInterceptor) {
       return Promise.resolve(requestInterceptor).then(requestInterceptor => {
         assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
-        return start(new WatchlistGateway('https', Configuration.productionHost, 443, 'production', requestInterceptor, 'wss', Configuration.productionHost));
+        return start(new WatchlistGateway('https', Configuration.productionHost, 443, 'production', requestInterceptor, 'wss', 'lufdkfctyk.execute-api.us-east-1.amazonaws.com/prod'));
       });
     }
 
@@ -1132,7 +1132,7 @@ module.exports = (() => {
     JwtEndpoint: JwtEndpoint,
     JwtGateway: JwtGateway,
     WatchlistGateway: WatchlistGateway,
-    version: '3.0.0'
+    version: '3.0.1'
   };
 })();
 
