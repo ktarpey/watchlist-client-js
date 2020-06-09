@@ -406,7 +406,8 @@ module.exports = (() => {
 },{}],3:[function(require,module,exports){
 const assert = require('@barchart/common-js/lang/assert'),
       Disposable = require('@barchart/common-js/lang/Disposable'),
-      Enum = require('@barchart/common-js/lang/Enum');
+      Enum = require('@barchart/common-js/lang/Enum'),
+      promise = require('@barchart/common-js/lang/promise');
 
 const EndpointBuilder = require('@barchart/common-js/api/http/builders/EndpointBuilder'),
       Gateway = require('@barchart/common-js/api/http/Gateway'),
@@ -416,7 +417,7 @@ const EndpointBuilder = require('@barchart/common-js/api/http/builders/EndpointB
       ResponseInterceptor = require('@barchart/common-js/api/http/interceptors/ResponseInterceptor'),
       VerbType = require('@barchart/common-js/api/http/definitions/VerbType');
 
-const WatchlistUser = require('@barchart/watchlist-api-common/lib/WatchlistUser');
+const uuid = require('uuid');
 
 const Configuration = require('./../common/Configuration');
 
@@ -435,10 +436,16 @@ module.exports = (() => {
    */
 
   class WatchlistGateway extends Disposable {
-    constructor(protocol, host, port, environment, requestInterceptor) {
+    constructor(protocol, host, port, environment, requestInterceptor, wsProtocol, wsHost, wsPort) {
       super();
       this._started = false;
       this._startPromise = null;
+      this._websocket = null;
+      this._clientId = uuid.v4();
+      this._isSubscriberExist = false;
+      this._wsProtocol = wsProtocol;
+      this._wsHost = wsHost;
+      this._WEBSOCKET_RECONNECT_INTERVAL = 100;
       this._environment = environment;
       const protocolType = Enum.fromCode(ProtocolType, protocol.toUpperCase());
       let requestInterceptorToUse;
@@ -449,9 +456,40 @@ module.exports = (() => {
         requestInterceptorToUse = RequestInterceptor.EMPTY;
       }
 
+      this._wsInterceptor = function () {
+        return Promise.resolve().then(() => {
+          return requestInterceptorToUse.process({}).then(options => {
+            return options.headers.Authorization;
+          });
+        });
+      };
+
       this._readServiceMetadataEndpoint = EndpointBuilder.for('read-service-metadata', 'check watchlist service status').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(pb => pb.withLiteralParameter('version', 'v1').withLiteralParameter('service', 'service')).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(ResponseInterceptor.DATA).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
-      this._readUserEndpoint = EndpointBuilder.for('read-user', 'read your watchlists').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(pb => pb.withLiteralParameter('version', 'v1').withLiteralParameter('user', 'user')).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
-      this._writeUserEndpoint = EndpointBuilder.for('write-user', 'save your watchlists').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(pb => pb.withLiteralParameter('version', 'v1').withLiteralParameter('user', 'user')).withBody('watchlist data').withRequestInterceptor(requestInterceptorToUse).withRequestInterceptor(requestInterceptorForSerialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+      this._readWatchlistsEndpoint = EndpointBuilder.for('read-watchlists', 'read your watchlists').withVerb(VerbType.GET).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(pb => pb.withLiteralParameter('version', 'v1').withLiteralParameter('watchlist', 'watchlist')).withQueryBuilder(qb => qb.withVariableParameter('context', 'context', 'context', false)).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+      this._editWatchlistEndpoint = EndpointBuilder.for('edit-watchlist', 'edit your watchlist').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(pb => pb.withLiteralParameter('version', 'v1').withLiteralParameter('watchlist', 'watchlist').withVariableParameter('watchlist', 'watchlist', 'watchlistId', false)).withBodyBuilder(bb => {
+        bb.withDelegateParameter('Description', 'body', b => b.watchlist);
+      }).withHeadersBuilder(hb => {
+        hb.withLiteralParameter('X-Barchart-Client-ID', 'X-Barchart-Client-ID', this._clientId);
+      }).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+      this._createWatchlistEndpoint = EndpointBuilder.for('create-watchlist', 'create new watchlist').withVerb(VerbType.POST).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(pb => pb.withLiteralParameter('version', 'v1').withLiteralParameter('watchlist', 'watchlist')).withBody('watchlist').withHeadersBuilder(hb => {
+        hb.withLiteralParameter('X-Barchart-Client-ID', 'X-Barchart-Client-ID', this._clientId);
+      }).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+      this._deleteWatchlistEndpoint = EndpointBuilder.for('delete-watchlist', 'delete your watchlist').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(pb => pb.withLiteralParameter('version', 'v1').withLiteralParameter('watchlist', 'watchlist').withVariableParameter('watchlist', 'watchlist', 'watchlist', false)).withHeadersBuilder(hb => {
+        hb.withLiteralParameter('X-Barchart-Client-ID', 'X-Barchart-Client-ID', this._clientId);
+      }).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+      this._addSymbolEndpoint = EndpointBuilder.for('add-symbol', 'add new symbol').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(pb => pb.withLiteralParameter('version', 'v1').withLiteralParameter('watchlist', 'watchlist').withVariableParameter('watchlist', 'watchlist', 'watchlist', false).withLiteralParameter('symbol', 'symbol')).withBodyBuilder(bb => {
+        bb.withDelegateParameter('Description', 'body', b => ({
+          symbol: b.symbol
+        }));
+      }).withHeadersBuilder(hb => {
+        hb.withLiteralParameter('X-Barchart-Client-ID', 'X-Barchart-Client-ID', this._clientId);
+      }).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+      this._deleteSymbolEndpoint = EndpointBuilder.for('delete-symbol', 'delete your symbol').withVerb(VerbType.DELETE).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(pb => pb.withLiteralParameter('version', 'v1').withLiteralParameter('watchlist', 'watchlist').withVariableParameter('watchlist', 'watchlist', 'watchlist', false).withLiteralParameter('symbol', 'symbol').withVariableParameter('symbol', 'symbol', 'symbol', false)).withHeadersBuilder(hb => {
+        hb.withLiteralParameter('X-Barchart-Client-ID', 'X-Barchart-Client-ID', this._clientId);
+      }).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
+      this._editPreferencesEndpoint = EndpointBuilder.for('edit-preferences', 'edit preferences').withVerb(VerbType.PUT).withProtocol(protocolType).withHost(host).withPort(port).withPathBuilder(pb => pb.withLiteralParameter('version', 'v1').withLiteralParameter('watchlist', 'watchlist').withVariableParameter('watchlist', 'watchlist', 'watchlist', false).withLiteralParameter('preferences', 'preferences')).withBodyBuilder(bb => {
+        bb.withDelegateParameter('Description', 'body', b => b.preferences);
+      }).withRequestInterceptor(requestInterceptorToUse).withResponseInterceptor(responseInterceptorForDeserialization).withErrorInterceptor(ErrorInterceptor.GENERAL).endpoint;
     }
     /**
      * Returns a description of the environment (e.g. development or production).
@@ -463,6 +501,17 @@ module.exports = (() => {
 
     get environment() {
       return this._environment;
+    }
+    /**
+     * Returns the client id.
+     *
+     * @public
+     * @returns {*}
+     */
+
+
+    get clientId() {
+      return this._clientId;
     }
     /**
      * Initializes the connection to the remote server and returns a promise
@@ -489,6 +538,82 @@ module.exports = (() => {
       });
     }
     /**
+     * Connect to the websocket with reconnection
+     *
+     * @public
+     * @param {String} token
+     * @param {Function} resolve
+     */
+
+
+    connectWebsocket(token, resolve) {
+      let callback = null;
+
+      if (this._websocket !== null && this._websocket.onmessage !== null) {
+        callback = this._websocket.onmessage;
+      }
+
+      this._websocket = new WebSocket(`${this._wsProtocol}://${this._wsHost}/?Auth=${token}`);
+
+      if (callback !== null) {
+        this._websocket.onmessage = callback;
+      }
+
+      this._websocket.onopen = () => {
+        resolve(true);
+      };
+
+      this._websocket.onclose = () => {
+        setTimeout(this.connectWebsocket.bind(this, token, resolve), this._WEBSOCKET_RECONNECT_INTERVAL);
+
+        if (this._WEBSOCKET_RECONNECT_INTERVAL < 10000) {
+          this._WEBSOCKET_RECONNECT_INTERVAL = this._WEBSOCKET_RECONNECT_INTERVAL * 2;
+        }
+      };
+    }
+    /**
+     * Initialize websocket connection
+     *
+     * @public
+     * @param {String} token
+     * @returns {Promise}
+     */
+
+
+    setupWebsocket(token) {
+      return promise.build((resolve, reject) => {
+        this.connectWebsocket(token, resolve);
+      });
+    }
+    /**
+     * Initializes the callback for onmessage event
+     *
+     * @public
+     * @param {Function} callback
+     * @returns {*}
+     */
+
+
+    subscribe(callback) {
+      return Promise.resolve().then(() => {
+        if (!this._isSubscriberExist && window.WebSocket) {
+          return this._wsInterceptor().then(token => {
+            return this.setupWebsocket(token).then(() => {
+              this._websocket.onmessage = event => {
+                const data = JSON.parse(event.data);
+
+                if (data.clientId !== this._clientId) {
+                  callback(data);
+                }
+              };
+
+              this._isSubscriberExist = true;
+            });
+          });
+        }
+      });
+    }
+    /**
      * Retrieves the {@link WatchlistServiceMetadata} from the remote server.
      *
      * @public
@@ -503,33 +628,139 @@ module.exports = (() => {
       });
     }
     /**
-     * Retrieves the {@link WatchlistUser} from the remote server.
+     * Retrieves the watchlists from the remote server.
      *
      * @public
-     * @returns {Promise<WatchlistUser>}
+     * @param {String} context
+     * @returns {Promise<Object>}
      */
 
 
-    readUser() {
+    readWatchlists(context) {
       return Promise.resolve().then(() => {
+        assert.argumentIsRequired(context, 'context', String);
         checkStart.call(this);
-        return Gateway.invoke(this._readUserEndpoint);
+        return Gateway.invoke(this._readWatchlistsEndpoint, {
+          context
+        });
       });
     }
     /**
-     * Instructs the remote server to save the {@link WatchlistUser}.
+     * Edits the watchlist in the remote server.
      *
      * @public
-     * @param {WatchlistUser} watchlistUser
-     * @returns {Promise<WatchlistUser>}
+     * @param {String} watchlistId
+     * @param {Object} watchlist
+     * @returns {Promise<Object>}
      */
 
 
-    writeUser(watchlistUser) {
+    editWatchlist(watchlistId, watchlist) {
       return Promise.resolve().then(() => {
-        assert.argumentIsRequired(watchlistUser, 'watchlistUser', WatchlistUser, 'WatchlistUser');
+        assert.argumentIsRequired(watchlistId, 'watchlistId', String);
+        assert.argumentIsRequired(watchlist, 'watchlist', Object);
         checkStart.call(this);
-        return Gateway.invoke(this._writeUserEndpoint, watchlistUser);
+        return Gateway.invoke(this._editWatchlistEndpoint, {
+          watchlistId,
+          watchlist
+        });
+      });
+    }
+    /**
+     * Creates the watchlist in the remote server.
+     *
+     * @public
+     * @param {Object} watchlist
+     * @returns {Promise<Object>}
+     */
+
+
+    createWatchlist(watchlist) {
+      return Promise.resolve().then(() => {
+        assert.argumentIsRequired(watchlist, 'watchlist', Object);
+        checkStart.call(this);
+        return Gateway.invoke(this._createWatchlistEndpoint, watchlist);
+      });
+    }
+    /**
+     * Deletes the watchlist in the remote server.
+     *
+     * @public
+     * @param {Object} watchlist
+     * @returns {Promise<Object>}
+     */
+
+
+    deleteWatchlist(watchlist) {
+      return Promise.resolve().then(() => {
+        assert.argumentIsRequired(watchlist, 'watchlist', String);
+        checkStart.call(this);
+        return Gateway.invoke(this._deleteWatchlistEndpoint, {
+          watchlist
+        });
+      });
+    }
+    /**
+     * Adds the symbol in the remote server.
+     *
+     * @public
+     * @param {String} watchlist
+     * @param {Object} symbol
+     * @returns {Promise<Object>}
+     */
+
+
+    addSymbol(watchlist, symbol) {
+      return Promise.resolve().then(() => {
+        assert.argumentIsRequired(watchlist, 'watchlist', String);
+        assert.argumentIsRequired(symbol, 'symbol', Object);
+        checkStart.call(this);
+        return Gateway.invoke(this._addSymbolEndpoint, {
+          watchlist,
+          symbol
+        });
+      });
+    }
+    /**
+     * Deletes the symbol in the remote server.
+     *
+     * @public
+     * @param {String} watchlist
+     * @param {String} symbol
+     * @returns {Promise<Object>}
+     */
+
+
+    deleteSymbol(watchlist, symbol) {
+      return Promise.resolve().then(() => {
+        assert.argumentIsRequired(watchlist, 'watchlist', String);
+        assert.argumentIsRequired(symbol, 'symbol', String);
+        checkStart.call(this);
+        return Gateway.invoke(this._deleteSymbolEndpoint, {
+          watchlist,
+          symbol
+        });
+      });
+    }
+    /**
+     * Edit watchlist preferences in the remote server.
+     *
+     * @public
+     * @param {String} watchlist
+     * @param {Object} preferences
+     * @returns {Promise<Object>}
+     */
+
+
+    editPreferences(watchlist, preferences) {
+      return Promise.resolve().then(() => {
+        assert.argumentIsRequired(watchlist, 'watchlist', String);
+        assert.argumentIsRequired(preferences, 'preferences', Object);
+        checkStart.call(this);
+        return Gateway.invoke(this._editPreferencesEndpoint, {
+          watchlist,
+          preferences
+        });
       });
     }
     /**
@@ -545,7 +776,7 @@ module.exports = (() => {
     static forDevelopment(requestInterceptor) {
       return Promise.resolve(requestInterceptor).then(requestInterceptor => {
         assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
-        return start(new WatchlistGateway('https', Configuration.developmentHost, 443, 'development', requestInterceptor));
+        return start(new WatchlistGateway('https', Configuration.developmentHost, 443, 'development', requestInterceptor, 'wss', Configuration.developmentHost));
       });
     }
     /**
@@ -561,7 +792,7 @@ module.exports = (() => {
     static forStaging(requestInterceptor) {
       return Promise.resolve(requestInterceptor).then(requestInterceptor => {
         assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
-        return start(new WatchlistGateway('https', Configuration.stagingHost, 443, 'staging', requestInterceptor));
+        return start(new WatchlistGateway('https', Configuration.stagingHost, 443, 'staging', requestInterceptor, 'wss', Configuration.stagingHost));
       });
     }
     /**
@@ -577,7 +808,7 @@ module.exports = (() => {
     static forDemo(requestInterceptor) {
       return Promise.resolve(requestInterceptor).then(requestInterceptor => {
         assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
-        return start(new WatchlistGateway('https', Configuration.demoHost, 443, 'demo', requestInterceptor));
+        return start(new WatchlistGateway('https', Configuration.demoHost, 443, 'demo', requestInterceptor, 'wss', Configuration.demoHost));
       });
     }
     /**
@@ -593,7 +824,7 @@ module.exports = (() => {
     static forProduction(requestInterceptor) {
       return Promise.resolve(requestInterceptor).then(requestInterceptor => {
         assert.argumentIsOptional(requestInterceptor, 'requestInterceptor', RequestInterceptor, 'RequestInterceptor');
-        return start(new WatchlistGateway('https', Configuration.productionHost, 443, 'production', requestInterceptor));
+        return start(new WatchlistGateway('https', Configuration.productionHost, 443, 'production', requestInterceptor, 'wss', Configuration.productionHost));
       });
     }
 
@@ -607,13 +838,8 @@ module.exports = (() => {
 
   }
 
-  const requestInterceptorForSerialization = RequestInterceptor.fromDelegate((request, ignored) => {
-    assert.argumentIsRequired(request.data, 'request.data', WatchlistUser, 'WatchlistUser');
-    request.data = request.data.toJSObj();
-    return request;
-  });
   const responseInterceptorForDeserialization = ResponseInterceptor.fromDelegate((response, ignored) => {
-    return WatchlistUser.parse(response.data);
+    return response.data;
   });
 
   function start(gateway) {
@@ -646,7 +872,7 @@ module.exports = (() => {
   return WatchlistGateway;
 })();
 
-},{"./../common/Configuration":2,"@barchart/common-js/api/http/Gateway":10,"@barchart/common-js/api/http/builders/EndpointBuilder":12,"@barchart/common-js/api/http/definitions/ProtocolType":18,"@barchart/common-js/api/http/definitions/VerbType":19,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":23,"@barchart/common-js/api/http/interceptors/RequestInterceptor":24,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":25,"@barchart/common-js/lang/Disposable":34,"@barchart/common-js/lang/Enum":35,"@barchart/common-js/lang/assert":39,"@barchart/watchlist-api-common/lib/WatchlistUser":52}],4:[function(require,module,exports){
+},{"./../common/Configuration":2,"@barchart/common-js/api/http/Gateway":10,"@barchart/common-js/api/http/builders/EndpointBuilder":12,"@barchart/common-js/api/http/definitions/ProtocolType":18,"@barchart/common-js/api/http/definitions/VerbType":19,"@barchart/common-js/api/http/interceptors/ErrorInterceptor":23,"@barchart/common-js/api/http/interceptors/RequestInterceptor":24,"@barchart/common-js/api/http/interceptors/ResponseInterceptor":25,"@barchart/common-js/lang/Disposable":34,"@barchart/common-js/lang/Enum":35,"@barchart/common-js/lang/assert":39,"@barchart/common-js/lang/promise":44,"uuid":82}],4:[function(require,module,exports){
 const EndpointBuilder = require('@barchart/common-js/api/http/builders/EndpointBuilder'),
       ProtocolType = require('@barchart/common-js/api/http/definitions/ProtocolType'),
       ResponseInterceptor = require('@barchart/common-js/api/http/interceptors/ResponseInterceptor'),
@@ -906,7 +1132,7 @@ module.exports = (() => {
     JwtEndpoint: JwtEndpoint,
     JwtGateway: JwtGateway,
     WatchlistGateway: WatchlistGateway,
-    version: '2.0.1'
+    version: '3.0.0'
   };
 })();
 
@@ -1603,7 +1829,7 @@ module.exports = (() => {
   return Gateway;
 })();
 
-},{"./../../lang/array":38,"./../../lang/assert":39,"./../../lang/attributes":40,"./../../lang/is":42,"./../../lang/promise":44,"./../failures/FailureReason":7,"./../failures/FailureType":9,"./definitions/Endpoint":15,"./definitions/VerbType":19,"axios":53}],11:[function(require,module,exports){
+},{"./../../lang/array":38,"./../../lang/assert":39,"./../../lang/attributes":40,"./../../lang/is":42,"./../../lang/promise":44,"./../failures/FailureReason":7,"./../failures/FailureType":9,"./definitions/Endpoint":15,"./definitions/VerbType":19,"axios":50}],11:[function(require,module,exports){
 const assert = require('./../../../lang/assert');
 
 const Credentials = require('./../definitions/Credentials');
@@ -5136,7 +5362,7 @@ module.exports = (() => {
   return Decimal;
 })();
 
-},{"./Enum":35,"./assert":39,"./is":42,"big.js":79}],34:[function(require,module,exports){
+},{"./Enum":35,"./assert":39,"./is":42,"big.js":76}],34:[function(require,module,exports){
 const assert = require('./assert');
 
 module.exports = (() => {
@@ -5580,7 +5806,7 @@ module.exports = (() => {
   return Timestamp;
 })();
 
-},{"./assert":39,"./is":42,"moment-timezone":82}],38:[function(require,module,exports){
+},{"./assert":39,"./is":42,"moment-timezone":79}],38:[function(require,module,exports){
 const assert = require('./assert'),
       is = require('./is');
 
@@ -6471,6 +6697,18 @@ module.exports = (() => {
     },
 
     /**
+     * Returns true if the argument is iterable.
+     *
+     * @static
+     * @public
+     * @param {*} candidate
+     * @returns {boolean}
+     */
+    iterable(candidate) {
+      return !this.null(candidate) && !this.undefined(candidate) && this.fn(candidate[Symbol.iterator]);
+    },
+
+    /**
      * Returns true if the argument is a string.
      *
      * @static
@@ -7309,7 +7547,7 @@ module.exports = (() => {
   return DataType;
 })();
 
-},{"./../../lang/AdHoc":30,"./../../lang/Day":32,"./../../lang/Decimal":33,"./../../lang/Enum":35,"./../../lang/Timestamp":37,"./../../lang/assert":39,"./../../lang/is":42,"moment":84}],47:[function(require,module,exports){
+},{"./../../lang/AdHoc":30,"./../../lang/Day":32,"./../../lang/Decimal":33,"./../../lang/Enum":35,"./../../lang/Timestamp":37,"./../../lang/assert":39,"./../../lang/is":42,"moment":81}],47:[function(require,module,exports){
 module.exports = (() => {
   'use strict';
   /**
@@ -7900,607 +8138,8 @@ module.exports = (() => {
 })();
 
 },{"./../lang/Disposable":34,"./../lang/assert":39,"./../lang/is":42,"./../lang/object":43,"./../lang/promise":44}],50:[function(require,module,exports){
-const uuid = require('uuid');
-
-const assert = require('@barchart/common-js/lang/assert'),
-	is = require('@barchart/common-js/lang/is');
-
-module.exports = (() => {
-	'use strict';
-
-	/**
-	 * A named collection of {@link WatchlistEntry} objects.
-	 *
-	 * @public
-	 * @param {String} name
-	 * @param {String=} id
-	 */
-	class Watchlist {
-		constructor(name, id) {
-			assert.argumentIsRequired(name, 'name', String);
-			assert.argumentIsOptional(id, 'id', String);
-
-			this._id = id || uuid.v4();
-			this._name = name;
-
-			this._email = false;
-			this._view = null;
-
-			this._entries = [];
-			this._preferences = {};
-		}
-
-		/**
-		 * Gets the watchlist's id.
-		 *
-		 * @public
-		 * @readonly
-		 * @returns {string}
-		 */
-		get id() {
-			return this._id;
-		}
-
-		/**
-		 * Gets the watchlist's name.
-		 *
-		 * @public
-		 * @returns {string}
-		 */
-		get name() {
-			return this._name;
-		}
-
-		/**
-		 * Gets the watchlist's name.
-		 *
-		 * @public
-		 * @param {string} name
-		 */
-		set name(name) {
-			assert.argumentIsRequired(name, 'name', String);
-
-			this._name = name;
-		}
-
-		/**
-		 * Indicates if an email communication regarding this watchlist is enabled.
-		 *
-		 * @public
-		 * @returns {Boolean}
-		 */
-		get email() {
-			return this._email;
-		}
-
-		/**
-		 * Sets the email communication flag for this watchlist.
-		 *
-		 * @public
-		 * @param {Boolean} email
-		 */
-		set email(email) {
-			assert.argumentIsRequired(email, 'email', Boolean);
-
-			this._email = email;
-		}
-
-		/**
-		 * Gets the name of the default view.
-		 *
-		 * @public
-		 * @returns {String}
-		 */
-		get view() {
-			return this._view;
-		}
-
-		/**
-		 * Sets the name of the default view.
-		 *
-		 * @public
-		 * @param {String} view
-		 */
-		set view(view) {
-			assert.argumentIsRequired(view, 'view', String);
-
-			this._view = view;
-		}
-
-		/**
-		 * Gets the watchlist's entries.
-		 *
-		 * @public
-		 * @returns {Array.<WatchlistEntry>}
-		 */
-		get entries() {
-			return this._entries;
-		}
-
-		/**
-		 * Overwrites the watchlist's entries.
-		 *
-		 * @public
-		 * @param {Array.<WatchlistEntry>} value
-		 */
-		set entries(value) {
-			this._entries = value;
-		}
-
-		/**
-		 * Get unstructured preferences for the watchlist.
-		 *
-		 * @public
-		 * @returns {Object}
-		 */
-		get preferences() {
-			return this._preferences;
-		}
-
-		/**
-		 * Sets unstructured preferences for the watchlist.
-		 *
-		 * @public
-		 * @param {Object} value
-		 */
-		set preferences(value) {
-			this._preferences = value;
-		}
-
-		/**
-		 * Adds a new {@link WatchlistEntry} to the end of the list
-		 *
-		 * @public
-		 * @param {WatchlistEntry} entry
-		 */
-		addEntry(entry) {
-			assert.argumentIsRequired(entry, 'entry', Object);
-
-			if (!this._entries.some(e => e.symbol === entry.symbol)) {
-				this._entries.push(entry);
-			}
-		}
-
-		/**
-		 * Removes a {@link WatchlistEntry} from the list. If no matching
-		 * entry can be found, nothing happens.
-		 *
-		 * @public
-		 * @param {WatchlistEntry} entry
-		 */
-		removeEntry(entry) {
-			assert.argumentIsRequired(entry, 'entry', Object);
-
-			this._entries = this._entries.filter((e) => e !== entry);
-		}
-
-		/**
-		 * Removes all items from the watchlist for a given symbol.
-		 *
-		 * @public
-		 * @param {String} symbol
-		 */
-		removeSymbol(symbol) {
-			assert.argumentIsRequired(symbol, 'symbol', String);
-
-			this._entries = this._entries.filter((e) => e.symbol !== symbol);
-		}
-
-		/**
-		 * Converts the instance to a pure JavaScript object.
-		 *
-		 * @public
-		 * @returns {Object}
-		 */
-		toJSObj() {
-			const plain = {
-				id: this.id,
-				name: this.name,
-				email: this.email,
-				view: this.view,
-				entries: this.entries.map((e) => e),
-				preferences: this.preferences
-			};
-
-			return plain;
-		}
-
-		/**
-		 * Creates a {@link Watchlist} from a JavaScript object. See
-		 * {@link Watchlist#toJSObj}.
-		 *
-		 * @param {Object} obj
-		 * @returns {Watchlist}
-		 */
-		static fromJSObj(obj) {
-			assert.argumentIsRequired(obj, 'obj', Object);
-			assert.argumentIsRequired(obj.id, 'obj.id', String);
-			assert.argumentIsRequired(obj.name, 'obj.name', String);
-
-			const watchlist = new Watchlist(obj.name, obj.id);
-
-			if (is.boolean(obj.email) && obj.email) {
-				watchlist.email = true;
-			}
-
-			if (is.string(obj.view) && obj.view.length !== 0) {
-				watchlist.view = obj.view;
-			}
-
-			if (is.array(obj.entries)) {
-				obj.entries.map((e) => watchlist.addEntry(e));
-			}
-
-			if (is.object(obj.preferences)) {
-				watchlist.preferences = obj.preferences;
-			} else {
-				watchlist.preferences = { };
-			}
-
-			return watchlist;
-		}
-
-		toString() {
-			return '[Watchlist]';
-		}
-	}
-
-	/**
-	 * An entry in a {@link Watchlist}.
-	 *
-	 * @public
-	 * @typedef WatchlistEntry
-	 * @type {Object}
-	 * @property {String} symbol - The symbol.
-	 * @property {String=} tgam_symbol
-	 * @property {String=} tgam_listing_id
-	 */
-
-	return Watchlist;
-})();
-},{"@barchart/common-js/lang/assert":39,"@barchart/common-js/lang/is":42,"uuid":85}],51:[function(require,module,exports){
-const Enum = require('@barchart/common-js/lang/Enum');
-
-module.exports = (() => {
-	'use strict';
-
-	/**
-	 * Describes an action that can be applied to a {@link WatchlistUser}.
-	 *
-	 * @public
-	 * @extends {Enum}
-	 * @param {String} code
-	 * @param {String} description
-	 */
-	class WatchlistAction extends Enum {
-		constructor(code, description) {
-			super(code, description);
-		}
-
-		/**
-		 * Given a code, returns the enumeration item.
-		 *
-		 * @public
-		 * @param {String} code
-		 * @returns {WatchlistAction|null}
-		 */
-		static parse(code) {
-			return Enum.fromCode(WatchlistAction, code);
-		}
-
-		/**
-		 * @public
-		 * @returns {WatchlistAction}
-		 */
-		static get Init() {
-			return actionInit;
-		}
-
-		/**
-		 * @public
-		 * @returns {WatchlistAction}
-		 */
-		static get Import() {
-			return actionImport;
-		}
-
-		/**
-		 * @public
-		 * @returns {WatchlistAction}
-		 */
-		static get Create() {
-			return actionCreate;
-		}
-
-		/**
-		 * @public
-		 * @returns {WatchlistAction}
-		 */
-		static get Update() {
-			return actionUpdate;
-		}
-
-		toString() {
-			return '[WatchlistAction]';
-		}
-	}
-
-	const actionInit = new WatchlistAction('Init', 'Init');
-	const actionImport = new WatchlistAction('Import', 'Import');
-	const actionCreate = new WatchlistAction('Create', 'Create');
-	const actionUpdate = new WatchlistAction('Update', 'Update');
-
-	return WatchlistAction;
-})();
-
-},{"@barchart/common-js/lang/Enum":35}],52:[function(require,module,exports){
-const assert = require('@barchart/common-js/lang/assert'),
-	Timestamp = require('@barchart/common-js/lang/Timestamp');
-
-const Watchlist = require('./Watchlist'),
-	WatchlistAction = require('./WatchlistAction');
-
-module.exports = (() => {
-	'use strict';
-
-	/**
-	 * A watchlist user, including the user's collection of {@link Watchlist} items.
-	 *
-	 * @public
-	 * @param {string} id
-	 */
-	class WatchlistUser {
-		constructor(id) {
-			assert.argumentIsRequired(id, 'id', String);
-
-			this._id = id;
-
-			this._watchlists = {};
-			this._preferences = {};
-
-			this._lastAction = WatchlistAction.Init;
-			this._lastUpdate = Timestamp.now();
-		}
-
-		/**
-		 * Gets the watchlist user's id.
-		 *
-		 * @public
-		 * @readonly
-		 * @type {string}
-		 */
-		get id() {
-			return this._id;
-		}
-
-		/**
-		 * Returns true if any of the user's watchlist is flagged for email communication.
-		 *
-		 * @public
-		 * @readonly
-		 * @type {Boolean}
-		 */
-		get email() {
-			return Object.keys(this.watchlists).some(key => this.watchlists[key].email);
-		}
-
-		/**
-		 * Gets the last {@link WatchlistAction} performed on the instance.
-		 *
-		 * @public
-		 * @returns {WatchlistAction}
-		 */
-		get lastAction() {
-			return this._lastAction;
-		}
-
-		/**
-		 * Sets the last {@link WatchlistAction} performed on the instance.
-		 *
-		 * @public
-		 * @param {WatchlistAction} value
-		 */
-		set lastAction(value) {
-			assert.argumentIsRequired(value, 'value', WatchlistAction, 'WatchlistAction');
-
-			this._lastAction = value;
-		}
-
-		/**
-		 * Gets the {@link Timestamp} of the last action.
-		 *
-		 * @public
-		 * @returns {Timestamp}
-		 */
-		get lastUpdate() {
-			return this._lastUpdate;
-		}
-
-		/**
-		 * Sets the last {@link WatchlistAction} performed on the instance.
-		 *
-		 * @public
-		 * @param {Timestamp} value
-		 */
-		set lastUpdate(value) {
-			assert.argumentIsRequired(value, 'value', Timestamp, 'Timestamp');
-
-			this._lastUpdate = value;
-		}
-
-		/**
-		 * Gets the users collection of {@link Watchlist} items, keyed by watchlist id.
-		 *
-		 * @public
-		 * @readonly
-		 * @returns {Object}
-		 */
-		get watchlists() {
-			return this._watchlists;
-		}
-
-		/**
-		 * Get unstructured preferences for the user.
-		 *
-		 * @public
-		 * @returns {Object}
-		 */
-		get preferences() {
-			return this._preferences;
-		}
-
-		/**
-		 * Sets unstructured preferences for the user.
-		 *
-		 * @public
-		 * @param {Object} value
-		 */
-		set preferences(value) {
-			this._preferences = value;
-		}
-
-		/**
-		 * Adds (or overwrites) a watchlist.
-		 *
-		 * @public
-		 * @param {Watchlist} watchlist
-		 * @returns {Watchlist}
-		 */
-		addWatchlist(watchlist) {
-			assert.argumentIsRequired(watchlist, 'watchlist', Watchlist, 'Watchlist');
-
-			this._watchlists[watchlist.id] = watchlist;
-
-			return watchlist;
-		}
-
-		/**
-		 * Creates a new {@link Watchlist} for the user and returns it. If the watchlist
-		 * already exists, it is returned.
-		 *
-		 * @public
-		 * @param {String} name
-		 * @returns {Watchlist}
-		 */
-		createWatchlist(name) {
-			assert.argumentIsRequired(name, 'name', String);
-
-			const watchlist = new Watchlist(name);
-			const id = watchlist.id;
-
-			if (!this._watchlists.hasOwnProperty(id)) {
-				this._watchlists[id] = watchlist;
-			}
-
-			return this._watchlists[id];
-		}
-
-		/**
-		 * Deletes an existing {@link Watchlist} for the user. If no matching watchlist
-		 * exists, nothing happens.
-		 *
-		 * @public
-		 * @param {String} id
-		 */
-		removeWatchlist(id) {
-			assert.argumentIsRequired(id, 'id', String);
-
-			if (this._watchlists.hasOwnProperty(id)) {
-				delete this._watchlists[id];
-			}
-		}
-
-		/**
-		 * Converts the instance to a pure JavaScript object. This object can
-		 * be converted back into a {@link WatchlistUser} object using the
-		 * {@link WatchlistUser.fromJSObj} function.
-		 *
-		 * @public
-		 * @returns {Object}
-		 */
-		toJSObj() {
-			const plain = {
-				id: this.id,
-				email: this.email,
-				lastAction: this.lastAction,
-				lastUpdate: this.lastUpdate,
-				preferences: this.preferences
-			};
-
-			plain.watchlists = Object.keys(this.watchlists).reduce((copy, k) => {
-				const watchlist = this.watchlists[k];
-
-				copy[watchlist.id] = watchlist.toJSObj();
-
-				return copy;
-			}, { });
-
-			return plain;
-		}
-
-		/**
-		 * Returns the JSON representation of the current instance.
-		 *
-		 * @public
-		 * @returns {String}
-		 */
-		toJSON() {
-			return JSON.stringify(this.toJSObj());
-		}
-
-		/**
-		 * Creates a {@link WatchlistUser} from a JavaScript object. See
-		 * {@link WatchlistUser#toJSObj}.
-		 *
-		 * @param {Object} obj
-		 * @returns {WatchlistUser}
-		 */
-		static fromJSObj(obj) {
-			assert.argumentIsRequired(obj, 'obj', Object);
-			assert.argumentIsRequired(obj.id, 'obj.id', String);
-
-			const u = new WatchlistUser(obj.id);
-
-			u.lastAction = obj.lastAction;
-			u.lastUpdate = obj.lastUpdate;
-			u.preferences = obj.preferences || { };
-
-			for (let k in obj.watchlists) {
-				u.addWatchlist(Watchlist.fromJSObj(obj.watchlists[k]));
-			}
-
-			return u;
-		}
-
-		/**
-		 * Parses a JSON representation (created by {@link WatchlistUser#toJSON}) of a
-		 * {@link WatchlistUser} instance.
-		 *
-		 * @public
-		 * @param {String} serialized
-		 * @returns {WatchlistUser}
-		 */
-		static parse(serialized) {
-			assert.argumentIsRequired(serialized, 'serialized', String);
-
-			const object = JSON.parse(serialized);
-
-			object.lastAction = WatchlistAction.parse(object.lastAction);
-			object.lastUpdate = Timestamp.parse(object.lastUpdate);
-
-			return WatchlistUser.fromJSObj(object);
-		}
-
-		toString() {
-			return '[WatchlistUser]';
-		}
-	}
-
-	return WatchlistUser;
-})();
-},{"./Watchlist":50,"./WatchlistAction":51,"@barchart/common-js/lang/Timestamp":37,"@barchart/common-js/lang/assert":39}],53:[function(require,module,exports){
 module.exports = require('./lib/axios');
-},{"./lib/axios":55}],54:[function(require,module,exports){
+},{"./lib/axios":52}],51:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -8682,7 +8321,7 @@ module.exports = function xhrAdapter(config) {
   });
 };
 
-},{"../core/buildFullPath":61,"../core/createError":62,"./../core/settle":66,"./../helpers/buildURL":70,"./../helpers/cookies":72,"./../helpers/isURLSameOrigin":74,"./../helpers/parseHeaders":76,"./../utils":78}],55:[function(require,module,exports){
+},{"../core/buildFullPath":58,"../core/createError":59,"./../core/settle":63,"./../helpers/buildURL":67,"./../helpers/cookies":69,"./../helpers/isURLSameOrigin":71,"./../helpers/parseHeaders":73,"./../utils":75}],52:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -8737,7 +8376,7 @@ module.exports = axios;
 // Allow use of default import syntax in TypeScript
 module.exports.default = axios;
 
-},{"./cancel/Cancel":56,"./cancel/CancelToken":57,"./cancel/isCancel":58,"./core/Axios":59,"./core/mergeConfig":65,"./defaults":68,"./helpers/bind":69,"./helpers/spread":77,"./utils":78}],56:[function(require,module,exports){
+},{"./cancel/Cancel":53,"./cancel/CancelToken":54,"./cancel/isCancel":55,"./core/Axios":56,"./core/mergeConfig":62,"./defaults":65,"./helpers/bind":66,"./helpers/spread":74,"./utils":75}],53:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8758,7 +8397,7 @@ Cancel.prototype.__CANCEL__ = true;
 
 module.exports = Cancel;
 
-},{}],57:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 'use strict';
 
 var Cancel = require('./Cancel');
@@ -8817,14 +8456,14 @@ CancelToken.source = function source() {
 
 module.exports = CancelToken;
 
-},{"./Cancel":56}],58:[function(require,module,exports){
+},{"./Cancel":53}],55:[function(require,module,exports){
 'use strict';
 
 module.exports = function isCancel(value) {
   return !!(value && value.__CANCEL__);
 };
 
-},{}],59:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -8920,7 +8559,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = Axios;
 
-},{"../helpers/buildURL":70,"./../utils":78,"./InterceptorManager":60,"./dispatchRequest":63,"./mergeConfig":65}],60:[function(require,module,exports){
+},{"../helpers/buildURL":67,"./../utils":75,"./InterceptorManager":57,"./dispatchRequest":60,"./mergeConfig":62}],57:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -8974,7 +8613,7 @@ InterceptorManager.prototype.forEach = function forEach(fn) {
 
 module.exports = InterceptorManager;
 
-},{"./../utils":78}],61:[function(require,module,exports){
+},{"./../utils":75}],58:[function(require,module,exports){
 'use strict';
 
 var isAbsoluteURL = require('../helpers/isAbsoluteURL');
@@ -8996,7 +8635,7 @@ module.exports = function buildFullPath(baseURL, requestedURL) {
   return requestedURL;
 };
 
-},{"../helpers/combineURLs":71,"../helpers/isAbsoluteURL":73}],62:[function(require,module,exports){
+},{"../helpers/combineURLs":68,"../helpers/isAbsoluteURL":70}],59:[function(require,module,exports){
 'use strict';
 
 var enhanceError = require('./enhanceError');
@@ -9016,7 +8655,7 @@ module.exports = function createError(message, config, code, request, response) 
   return enhanceError(error, config, code, request, response);
 };
 
-},{"./enhanceError":64}],63:[function(require,module,exports){
+},{"./enhanceError":61}],60:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -9097,7 +8736,7 @@ module.exports = function dispatchRequest(config) {
   });
 };
 
-},{"../cancel/isCancel":58,"../defaults":68,"./../utils":78,"./transformData":67}],64:[function(require,module,exports){
+},{"../cancel/isCancel":55,"../defaults":65,"./../utils":75,"./transformData":64}],61:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9141,7 +8780,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
   return error;
 };
 
-},{}],65:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -9216,7 +8855,7 @@ module.exports = function mergeConfig(config1, config2) {
   return config;
 };
 
-},{"../utils":78}],66:[function(require,module,exports){
+},{"../utils":75}],63:[function(require,module,exports){
 'use strict';
 
 var createError = require('./createError');
@@ -9243,7 +8882,7 @@ module.exports = function settle(resolve, reject, response) {
   }
 };
 
-},{"./createError":62}],67:[function(require,module,exports){
+},{"./createError":59}],64:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -9265,7 +8904,7 @@ module.exports = function transformData(data, headers, fns) {
   return data;
 };
 
-},{"./../utils":78}],68:[function(require,module,exports){
+},{"./../utils":75}],65:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -9366,7 +9005,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 }).call(this,require('_process'))
-},{"./adapters/http":54,"./adapters/xhr":54,"./helpers/normalizeHeaderName":75,"./utils":78,"_process":80}],69:[function(require,module,exports){
+},{"./adapters/http":51,"./adapters/xhr":51,"./helpers/normalizeHeaderName":72,"./utils":75,"_process":77}],66:[function(require,module,exports){
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -9379,7 +9018,7 @@ module.exports = function bind(fn, thisArg) {
   };
 };
 
-},{}],70:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -9452,7 +9091,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
   return url;
 };
 
-},{"./../utils":78}],71:[function(require,module,exports){
+},{"./../utils":75}],68:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9468,7 +9107,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
     : baseURL;
 };
 
-},{}],72:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -9523,7 +9162,7 @@ module.exports = (
     })()
 );
 
-},{"./../utils":78}],73:[function(require,module,exports){
+},{"./../utils":75}],70:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9539,7 +9178,7 @@ module.exports = function isAbsoluteURL(url) {
   return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
 };
 
-},{}],74:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -9609,7 +9248,7 @@ module.exports = (
     })()
 );
 
-},{"./../utils":78}],75:[function(require,module,exports){
+},{"./../utils":75}],72:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -9623,7 +9262,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
   });
 };
 
-},{"../utils":78}],76:[function(require,module,exports){
+},{"../utils":75}],73:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -9678,7 +9317,7 @@ module.exports = function parseHeaders(headers) {
   return parsed;
 };
 
-},{"./../utils":78}],77:[function(require,module,exports){
+},{"./../utils":75}],74:[function(require,module,exports){
 'use strict';
 
 /**
@@ -9707,7 +9346,7 @@ module.exports = function spread(callback) {
   };
 };
 
-},{}],78:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 'use strict';
 
 var bind = require('./helpers/bind');
@@ -10053,7 +9692,7 @@ module.exports = {
   trim: trim
 };
 
-},{"./helpers/bind":69}],79:[function(require,module,exports){
+},{"./helpers/bind":66}],76:[function(require,module,exports){
 /*
  *  big.js v5.2.2
  *  A small, fast, easy-to-use library for arbitrary-precision decimal arithmetic.
@@ -10996,7 +10635,7 @@ module.exports = {
   }
 })(this);
 
-},{}],80:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -11182,7 +10821,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],81:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 module.exports={
 	"version": "2019b",
 	"zones": [
@@ -11783,11 +11422,11 @@ module.exports={
 		"Pacific/Tarawa|Pacific/Wallis"
 	]
 }
-},{}],82:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 var moment = module.exports = require("./moment-timezone");
 moment.tz.load(require('./data/packed/latest.json'));
 
-},{"./data/packed/latest.json":81,"./moment-timezone":83}],83:[function(require,module,exports){
+},{"./data/packed/latest.json":78,"./moment-timezone":80}],80:[function(require,module,exports){
 //! moment-timezone.js
 //! version : 0.5.26
 //! Copyright (c) JS Foundation and other contributors
@@ -12416,7 +12055,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 	return moment;
 }));
 
-},{"moment":84}],84:[function(require,module,exports){
+},{"moment":81}],81:[function(require,module,exports){
 //! moment.js
 
 ;(function (global, factory) {
@@ -17020,7 +16659,7 @@ moment.tz.load(require('./data/packed/latest.json'));
 
 })));
 
-},{}],85:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 var v1 = require('./v1');
 var v4 = require('./v4');
 
@@ -17030,7 +16669,7 @@ uuid.v4 = v4;
 
 module.exports = uuid;
 
-},{"./v1":88,"./v4":89}],86:[function(require,module,exports){
+},{"./v1":85,"./v4":86}],83:[function(require,module,exports){
 /**
  * Convert array of 16 byte values to UUID string format of the form:
  * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
@@ -17058,7 +16697,7 @@ function bytesToUuid(buf, offset) {
 
 module.exports = bytesToUuid;
 
-},{}],87:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 // Unique ID creation requires a high quality random # generator.  In the
 // browser this is a little complicated due to unknown quality of Math.random()
 // and inconsistent support for the `crypto` API.  We do the best we can via
@@ -17094,7 +16733,7 @@ if (getRandomValues) {
   };
 }
 
-},{}],88:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 var rng = require('./lib/rng');
 var bytesToUuid = require('./lib/bytesToUuid');
 
@@ -17205,7 +16844,7 @@ function v1(options, buf, offset) {
 
 module.exports = v1;
 
-},{"./lib/bytesToUuid":86,"./lib/rng":87}],89:[function(require,module,exports){
+},{"./lib/bytesToUuid":83,"./lib/rng":84}],86:[function(require,module,exports){
 var rng = require('./lib/rng');
 var bytesToUuid = require('./lib/bytesToUuid');
 
@@ -17236,4 +16875,4 @@ function v4(options, buf, offset) {
 
 module.exports = v4;
 
-},{"./lib/bytesToUuid":86,"./lib/rng":87}]},{},[6,1]);
+},{"./lib/bytesToUuid":83,"./lib/rng":84}]},{},[6,1]);
