@@ -31,8 +31,6 @@
     "babelify": "^10.0.0",
     "browserify": "^16.5.0",
     "eslint": "^6.5.1",
-    "eslint-config-prettier": "^6.4.0",
-    "eslint-plugin-prettier": "^3.1.1",
     "git-get-status": "^1.0.5",
     "glob": "^6.0.1",
     "gulp": "^4.0.2",
@@ -42,7 +40,6 @@
     "gulp-prompt": "^1.2.0",
     "gulp-replace": "^0.5.4",
     "jshint": "^2.10.3",
-    "prettier": "^1.18.2",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   },
