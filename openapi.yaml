@@ -3,7 +3,7 @@ openapi: 3.0.0
 info:
   title: Watchlist API
   description: Watchlist API
-  version: 1.0.0
+  version: 3.0.12
 
 components:
   securitySchemes:
@@ -93,6 +93,7 @@ components:
           type: object
           additionalProperties: {}
           
+
 servers:
   - url: https://dev.watchlist.aws.barchart.com/v1
     description: Development server
@@ -605,6 +606,7 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
           
+  
   /symbols/{symbol}:
     get:
       summary: Returns a list of watchlists and information on whether they contain a symbol.
