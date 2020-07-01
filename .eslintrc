@@ -4,7 +4,6 @@
     "sourceType": "module",
     "ecmaFeatures": {}
   },
-  "plugins": [],
   "rules": {
     "array-bracket-spacing": "error",
     "arrow-parens": ["error", "always"],
@@ -12,7 +11,23 @@
     "camelcase": "error",
     "comma-dangle": ["error", "never"],
     "indent": ["error", "tab", {
-      "MemberExpression": 0
+      "MemberExpression": 1,
+      "VariableDeclarator": 1,
+      "outerIIFEBody": 1,
+      "FunctionDeclaration": {
+        "parameters": 1,
+        "body": 1
+      },
+      "FunctionExpression": {
+        "parameters": 1,
+        "body": 1
+      },
+      "CallExpression": {
+        "arguments": 1
+      },
+      "ArrayExpression": 1,
+      "ObjectExpression": 1,
+      "ImportDeclaration": 1
     }],
     "no-console": ["warn",
       {
@@ -27,7 +42,6 @@
       }],
     "prefer-const": "error",
     "quotes": ["error", "single"],
-    "semi": ["error", "always"],
-    "sort-imports": ["error", { "ignoreCase": true }]
+    "semi": ["error", "always"]
   }
 }
