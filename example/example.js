@@ -445,7 +445,6 @@ module.exports = (() => {
       this._isSubscriberExist = false;
       this._wsProtocol = wsProtocol;
       this._wsHost = wsHost;
-      this._WEBSOCKET_RECONNECT_INTERVAL = 100;
       this._environment = environment;
       const protocolType = Enum.fromCode(ProtocolType, protocol.toUpperCase());
       let requestInterceptorToUse;
@@ -543,10 +542,11 @@ module.exports = (() => {
      * @public
      * @param {String} token
      * @param {Function} resolve
+     * @param {Function} refreshCallback - a callback function to refresh application state.
      */
 
 
-    connectWebsocket(token, resolve) {
+    connectWebsocket(token, resolve, refreshCallback) {
       let callback = null;
 
       if (this._websocket !== null && this._websocket.onmessage !== null) {
@@ -560,15 +560,15 @@ module.exports = (() => {
       }
 
       this._websocket.onopen = () => {
+        if (typeof refreshCallback === 'function') {
+          refreshCallback();
+        }
+
         resolve(true);
       };
 
       this._websocket.onclose = () => {
-        setTimeout(this.connectWebsocket.bind(this, token, resolve), this._WEBSOCKET_RECONNECT_INTERVAL);
-
-        if (this._WEBSOCKET_RECONNECT_INTERVAL < 10000) {
-          this._WEBSOCKET_RECONNECT_INTERVAL = this._WEBSOCKET_RECONNECT_INTERVAL * 2;
-        }
+        setTimeout(this.connectWebsocket.bind(this, token, resolve, refreshCallback), 1000);
       };
     }
     /**
@@ -576,31 +576,44 @@ module.exports = (() => {
      *
      * @public
      * @param {String} token
+     * @param {Function} refreshCallback
      * @returns {Promise}
      */
 
 
-    setupWebsocket(token) {
+    setupWebsocket(token, refreshCallback) {
       return promise.build((resolve, reject) => {
-        this.connectWebsocket(token, resolve);
+        this.connectWebsocket(token, resolve, refreshCallback);
       });
     }
     /**
      * Initializes the callback for onmessage event
      *
      * @public
-     * @param {Function} callback
+     * @param {Function} callback - on message callback function
+     * @param {Function} refreshCallback - a callback function to refresh application state
      * @returns {*}
      */
 
 
-    subscribe(callback) {
+    subscribe(callback, refreshCallback) {
       return Promise.resolve().then(() => {
         if (!this._isSubscriberExist && window.WebSocket) {
           return this._wsInterceptor().then(token => {
-            return this.setupWebsocket(token).then(() => {
+            return this.setupWebsocket(token, refreshCallback).then(() => {
               this._websocket.onmessage = event => {
                 const data = JSON.parse(event.data);
+
+                if (data.action) {
+                  if (data.action === 'PING') {
+                    const responseMessage = {
+                      action: 'PONG',
+                      response: ''
+                    };
+
+                    this._websocket.send(JSON.stringify(responseMessage));
+                  }
+                }
 
                 if (data.clientId !== this._clientId) {
                   callback(data);
@@ -863,7 +876,7 @@ module.exports = (() => {
    * @public
    * @typedef WatchlistServiceMetadata
    * @type {Object}
-   * @property {String} service.semver - The server version.
+   * @property {String} server.semver - The server version.
    * @property {String} user.id - The current user's identifier.
    * @property {String} user.permissions - The current user's permission level.
    */
@@ -1132,7 +1145,7 @@ module.exports = (() => {
     JwtEndpoint: JwtEndpoint,
     JwtGateway: JwtGateway,
     WatchlistGateway: WatchlistGateway,
-    version: '3.0.1'
+    version: '3.1.0'
   };
 })();
 
@@ -5702,8 +5715,11 @@ const moment = require('moment-timezone');
 
 module.exports = (() => {
   'use strict';
+
+  const MILLISECONDS_PER_SECOND = 1000;
   /**
-   * A data structure encapsulates (and lazy loads) a moment (see https://momentjs.com/).
+   * An immutable data structure that encapsulates (and lazy loads)
+   * a moment (see https://momentjs.com/).
    *
    * @public
    * @param {Number} timestamp
@@ -5719,7 +5735,7 @@ module.exports = (() => {
       this._moment = null;
     }
     /**
-     * The timestamp.
+     * The timestamp (milliseconds since epoch).
      *
      * @public
      * @returns {Number}
@@ -5747,6 +5763,34 @@ module.exports = (() => {
       }
 
       return this._moment;
+    }
+    /**
+     * Returns a new {@link Timestamp} instance shifted forward (or backward)
+     * by a specific number of seconds.
+     *
+     * @public
+     * @param {Number} milliseconds
+     * @returns {Timestamp}
+     */
+
+
+    add(milliseconds) {
+      assert.argumentIsRequired(milliseconds, 'seconds', Number);
+      return new Timestamp(this._timestamp + milliseconds, this._timezone);
+    }
+    /**
+     * Returns a new {@link Timestamp} instance shifted forward (or backward)
+     * by a specific number of seconds.
+     *
+     * @public
+     * @param {Number} seconds
+     * @returns {Timestamp}
+     */
+
+
+    addSeconds(seconds) {
+      assert.argumentIsRequired(seconds, 'seconds', Number);
+      return this.add(seconds * MILLISECONDS_PER_SECOND);
     }
     /**
      * Returns the JSON representation.
