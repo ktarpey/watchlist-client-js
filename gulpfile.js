@@ -85,14 +85,6 @@ gulp.task('create-tag', (cb) => {
 	});
 });
 
-gulp.task('build-example-bundle', () => {
-	return browserify([ './lib/index.js', './example/js/startup.js', ])
-		.bundle()
-		.pipe(source('example.js'))
-		.pipe(buffer())
-		.pipe(gulp.dest('./example'));
-});
-
 gulp.task('build-test-bundle', () => {
 	return browserify({ entries: glob.sync('test/specs/**/*.js') })
 		.bundle()
@@ -123,7 +115,6 @@ gulp.task('release', gulp.series(
 	'bump-choice',
 	'bump-version',
 	'embed-version',
-	'build-example-bundle',
 	'commit-changes',
 	'push-changes',
 	'create-tag'
