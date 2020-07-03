@@ -22,7 +22,6 @@
   ],
   "dependencies": {
     "@barchart/common-js": "^3.8.0",
-    "@barchart/watchlist-api-common": "^3.0.0",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
