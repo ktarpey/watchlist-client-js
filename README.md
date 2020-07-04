@@ -6,7 +6,7 @@ A JavaScript SDK for Barchart's Watchlist System.
 
 ### Overview
 
-[Barchart](https://www.barchart.com) offers an exhaustive array of market data for multiple asset classes from exchanges around the world. **This SDK enables your applications create and track lists of investments*, as follows:
+[Barchart](https://www.barchart.com) offers an exhaustive array of market data for multiple asset classes from exchanges around the world. **This SDK enables your applications create and track lists of investments**, as follows:
 
 * {{{TODO}}}
 
