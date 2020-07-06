@@ -1,5 +1,3 @@
-## Purpose
-
 **This SDK connects your applications to the _Barchart Watchlist Service_ — a simple tool for building lists of investments.**
 
 You can _quickly_ build an application that allows your users to:
