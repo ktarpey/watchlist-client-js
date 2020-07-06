@@ -1,6 +1,6 @@
 # @barchart/watchlist-client-js <small>3.1.0</small>
 
-> SDK for the Watchlist Service from Barchart.com
+> Build and manage lists of investments
 
 [Product Overview](/content/product_overview)
 [Quick Start](/content/quick_start)
