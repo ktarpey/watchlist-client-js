@@ -2,7 +2,7 @@
 
 [![AWS CodeBuild](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiUHlZU3ZxOHdDWHprRzNEMXhoUGhTUHlOc1hGM3pEMnFhVG1UekdCWEN1K1hvWEFnTTcxWnhGYjZuUFpuUnl4QVhvVWFVMUQ4Rkx3TGFpaFhFQzBLUm1JPSIsIml2UGFyYW1ldGVyU3BlYyI6ImN3Y1RhZnV1ais3VXZ2WlgiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)](https://github.com/barchart/watchlist-client-js)
 
-A JavaScript **SDK that connects your applications to [Barchart's](https://www.barchart.com/solutions) Watchlist system** — a simple tool for tracking lists of investments. IF you prefer direct access to the Watchlist system, a **simple REST API** is available too.
+A JavaScript **SDK that connects your applications to [Barchart's](https://www.barchart.com/solutions) Watchlist system** — a simple tool for tracking lists of investments. If you prefer direct access, a **simple REST API** is available too.
 
 ### Documentation
 
