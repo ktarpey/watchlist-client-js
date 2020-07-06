@@ -14,7 +14,7 @@ components:
 
   responses:
     Unauthorized:
-      description: User not authorized
+      description: Authorization failure
       content:
         application/json:
           schema:
@@ -93,43 +93,35 @@ components:
           type: object
           additionalProperties: {}
           
-
 servers:
-  - url: https://dev.watchlist.aws.barchart.com/v1
-    description: Development server
+  - url: https://test.watchlist.aws.barchart.com/v1
+    description: Test hostname
   - url: https://watchlist.aws.barchart.com/v1
-    description: Production server
+    description: Production hostname
 
 tags:
   - name: Watchlist
   - name: Symbols
 
 paths:
-  /watchlist:
+  /watchlists:
     get:
-      summary: Returns watchlists of user.
-      description: Reads all user watchlists and returns as an array. If you do not have watchlists, an empty array will be returned.
+      summary: Returns watchlists owned by the current user.
+      description: Returns watchlists owned by the current user. If the user has not watchlists, an empty array is returned.
       tags:
         - Watchlist
       security:
         - JWT: []
       parameters:
-        - name: context
-          in: query
-          required: true
-          description: The company shortcut code.
-          schema:
-            type: string
-            minimum: 1
         - name: X-BARCHART-CLIENT-ID
           in: header
-          description: The ID of the client who sent the request.
+          description: An identifier for the connection (used to suppress WebSocket echo).
           schema:
             type: string
             format: uuid
       responses:
         '200':
-          description: A JSON array of user watchlists.
+          description: An array of watchlists.
           content:
             application/json:
               schema:
@@ -149,7 +141,7 @@ paths:
       parameters:
         - name: X-BARCHART-CLIENT-ID
           in: header
-          description: The ID of the client who sent the request.
+          description: An identifier for the connection (used to suppress WebSocket echo).
           schema:
             type: string
             format: uuid
@@ -178,14 +170,13 @@ paths:
                 - name
       responses:
         '200':
-          description: A JSON object of the created watchlist.
+          description: The newly created watchlist.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/watchlist'
-
         '500':
-          description: A JSON object of the error.
+          description: A JSON representatin of the error.
           content:
             application/json:
               schema:
@@ -206,14 +197,13 @@ paths:
                       type: array
                       example: []
                       items: {}
-
         '401':
           $ref: '#/components/responses/Unauthorized'
 
-  /watchlist/{watchlist}:
+  /watchlists/{watchlist}:
     delete:
-      summary: Deletes a user watchlist.
-      description: Deletes a user watchlist by watchlist ID.
+      summary: Deletes a watchlist.
+      description: Deletes a watchlist, given the watchlist identitifer.
       tags:
         - Watchlist
       security:
@@ -222,20 +212,20 @@ paths:
         - name: watchlist
           in: path
           required: true
-          description: The ID of the watchlist.
+          description: The identifier of the watchlist.
           schema:
             type: string
             format: uuid
             minimum: 1
         - name: X-BARCHART-CLIENT-ID
           in: header
-          description: The ID of the client who sent the request .
+          description: An identifier for the connection (used to suppress WebSocket echo).
           schema:
             type: string
             format: uuid
       responses:
         '200':
-          description: The ID of deleted watchlist.
+          description: The identitifer of deleted watchlist.
           content:
             application/json:
               schema:
@@ -246,7 +236,7 @@ paths:
                     format: uuid
                     example: 81b2d6fa-bb7e-485b-8670-6d0c9330aa21
         '500':
-          description: A JSON object of the error.
+          description: A JSON representatin of the error.
           content:
             application/json:
               schema:
@@ -271,8 +261,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 
     put:
-      summary: Edits a user watchlist.
-      description: Edits a user watchlist by watchlist ID.
+      summary: Edits a watchlist.
+      description: Edits a watchlist, given the watchlist identitifer.
       tags:
         - Watchlist
       security:
@@ -281,14 +271,14 @@ paths:
         - name: watchlist
           in: path
           required: true
-          description: The ID of the watchlist.
+          description: The identifier of the watchlist.
           schema:
             type: string
             format: uuid
             minimum: 1
         - name: X-BARCHART-CLIENT-ID
           in: header
-          description: The ID of the client who sent the request .
+          description: An identifier for the connection (used to suppress WebSocket echo).
           schema:
             type: string
             format: uuid
@@ -315,16 +305,15 @@ paths:
                 - entries
       responses:
         '200':
-          description: A JSON of user watchlist.
+          description: The newly edited watchlist.
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/watchlist'
-
         '500':
-          description: A JSON object of the error.
+          description: A JSON representatin of the error.
           content:
             application/json:
               schema:
@@ -348,10 +337,10 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
-  /watchlist/{watchlist}/preferences:
+  /watchlists/{watchlist}/preferences:
     put:
-      summary: Edit watchlist preferences.
-      description: Edit watchlist preferences.
+      summary: Edit preferences for a watchlist.
+      description: Edit watchlist preferences, given the watchlist identitifer.
       tags:
         - Watchlist
       security:
@@ -360,7 +349,7 @@ paths:
         - name: watchlist
           in: path
           required: true
-          description: The ID of the watchlist.
+          description: The identifier of the watchlist.
           schema:
             type: string
             format: uuid
@@ -370,10 +359,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/preferences'
-
       responses:
         '200':
-          description: A JSON object of edited watchlist.
+          description: The edited watchlist.
           content:
             application/json:
               schema:
@@ -381,7 +369,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/watchlist'
         '500':
-          description: A JSON object of the error.
+          description: A JSON representatin of the error.
           content:
             application/json:
               schema:
@@ -405,10 +393,10 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
-  /watchlist/{watchlist}/symbol:
+  /watchlists/{watchlist}/symbols:
     put:
-      summary: Adds a symbol to the watchlist.
-      description: Adds a symbol to the watchlist by index.
+      summary: Adds a symbol to a watchlist.
+      description: Adds a symbol a watchlist.
       tags:
         - Watchlist
       security:
@@ -417,7 +405,7 @@ paths:
         - name: watchlist
           in: path
           required: true
-          description: The ID of the watchlist.
+          description: The identifier of the watchlist.
           schema:
             type: string
             format: uuid
@@ -438,7 +426,7 @@ paths:
                 - symbol
       responses:
         '200':
-          description: A JSON object of edited watchlist.
+          description: The newly edited watchlist.
           content:
             application/json:
               schema:
@@ -446,7 +434,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/watchlist'
         '500':
-          description: A JSON object of the error.
+          description: A JSON representatin of the error.
           content:
             application/json:
               schema:
@@ -470,10 +458,10 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
-  /watchlist/{watchlist}/symbol/{symbol}:
+  /watchlists/{watchlist}/symbols/{symbol}:
     delete:
-      summary: Deletes a symbol from the watchlist.
-      description: Deletes a symbol from the watchlist by symbol name.
+      summary: Deletes a symbol a watchlist.
+      description: Deletes a symbol a watchlist.
       tags:
         - Watchlist
       security:
@@ -482,7 +470,7 @@ paths:
         - name: watchlist
           in: path
           required: true
-          description: The ID of the watchlist.
+          description: The identifier of the watchlist.
           schema:
             type: string
             format: uuid
@@ -490,13 +478,13 @@ paths:
         - name: symbol
           in: path
           required: true
-          description: A name of the symbol.
+          description: A symbol to delete.
           schema:
             type: string
             minimum: 1
         - name: X-BARCHART-CLIENT-ID
           in: header
-          description: The ID of the client who sent the request.
+          description: An identifier for the connection (used to suppress WebSocket echo).
           schema:
             type: string
             format: uuid
@@ -510,7 +498,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/watchlist'
         '500':
-          description: A JSON object of the error.
+          description: A JSON representatin of the error.
           content:
             application/json:
               schema:
@@ -535,8 +523,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 
     put:
-      summary: Change the index of the symbol.
-      description: Change position of the symbol inside the watchlist.
+      summary: Changes the relative position of a symbol on a watchlist.
+      description: Changes the relative position of a symbol on a watchlist.
       tags:
         - Watchlist
       security:
@@ -545,7 +533,7 @@ paths:
         - name: watchlist
           in: path
           required: true
-          description: The ID of the watchlist.
+          description: The identifier of the watchlist.
           schema:
             type: string
             format: uuid
@@ -553,7 +541,7 @@ paths:
         - name: symbol
           in: path
           required: true
-          description: A name of the symbol.
+          description: The symbol to move.
           schema:
             type: string
             minimum: 1
@@ -576,13 +564,13 @@ paths:
                 - to
       responses:
         '200':
-          description: A JSON object of edited watchlist.
+          description: The newly edited watchlist.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/watchlist'
         '500':
-          description: A JSON object of the error.
+          description: A JSON representatin of the error.
           content:
             application/json:
               schema:
@@ -604,48 +592,4 @@ paths:
                       items: {}
                       example: []
         '401':
-          $ref: '#/components/responses/Unauthorized'
-          
-  
-  /symbols/{symbol}:
-    get:
-      summary: Returns a list of watchlists and information on whether they contain a symbol.
-      description: Returns a list of watchlists and information on whether they contain a symbol. If you do not have watchlists, an empty array will be returned.
-      tags:
-        - Symbols
-      security:
-        - JWT: []
-      parameters:
-        - name: context
-          in: query
-          required: true
-          description: The company shortcut code.
-          schema:
-            type: string
-            minimum: 1
-        - name: symbol
-          in: path
-          required: true
-          description: A symbol to search
-          schema:
-            type: string
-      responses:
-        '200':
-          description: A JSON array of user watchlists.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties: 
-                    id: 
-                      type: string 
-                      format: uuid
-                    name: 
-                      type: string
-                    hasSymbol:
-                      type: boolean
-                      description: Does a watchlist contain a symbol
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+          $ref: '#/components/responses/
