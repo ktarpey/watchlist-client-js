@@ -10,7 +10,7 @@ You can _quickly_ build an application that allows your users to:
 * Sort investments watchlists
 * Delete watchlists
 
-## Rich User Experience
+## Rich User Experiences
 
 You can combine the Watchlist Service with additional [Barchart Solutions](https://www.barchart.com/solutions) to build powerful and engaging products:
 
