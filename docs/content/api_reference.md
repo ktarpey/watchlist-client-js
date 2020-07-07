@@ -32,7 +32,7 @@
 * [preferences](/content/api/components?id=schemaspreferences)
 * [system](/content/api/components?id=schemassystem)
 * [entries](/content/api/components?id=schemasentries)
-* [symbol](/content/api/components?id=schemassymbol)
+* [entry](/content/api/components?id=schemasentry)
 
 ### Security 
 

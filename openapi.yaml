@@ -78,17 +78,14 @@ components:
     entries:
       type: array
       items:
-        $ref: '#/components/schemas/symbol'
+        $ref: '#/components/schemas/entry'
 
-    symbol:
+    entry:
       type: object
       properties:
         symbol:
           type: string
           example: TSLA
-        tgam_symbol:
-          type: string
-          example: TSLA-Q
         notes:
           type: object
           additionalProperties: {}
@@ -416,8 +413,8 @@ paths:
             schema:
               type: object
               properties:
-                symbol:
-                  $ref: '#/components/schemas/symbol'
+                entry:
+                  $ref: '#/components/schemas/entry'
                 index:
                   type: integer
                   example: 3

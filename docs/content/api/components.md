@@ -50,7 +50,6 @@
   "entries": [
     {
       "symbol": "TSLA",
-      "tgam_symbol": "TSLA-Q",
       "notes": {
         "property1": null,
         "property2": null
@@ -115,17 +114,16 @@
 * * *
 
 ### entries :id=schemasentries
-**Type**: [<code>Array&lt;Symbol&gt;</code>](#schemassymbol)
+**Type**: [<code>Array&lt;Entry&gt;</code>](#schemasentry)
 
 * * *
 
-### symbol :id=schemassymbol
+### entry :id=schemasentry
 **Type**: <code>Object</code>
     
 | Name | Type | Required | Nullable | Description |
 | ---- | ---- | -------- | -------- | ----------- |
 | symbol | <code>String</code> | false | false |  |
-| tgam_symbol | <code>String</code> | false | false |  |
 | notes | <code>Object</code> | false | false |  |
 
 **Example**:
@@ -133,7 +131,6 @@
 ```json
 {
   "symbol": "TSLA",
-  "tgam_symbol": "TSLA-Q",
   "notes": {
     "property1": null,
     "property2": null

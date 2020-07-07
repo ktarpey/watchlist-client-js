@@ -68,7 +68,6 @@
   "entries": [
     {
       "symbol": "TSLA",
-      "tgam_symbol": "TSLA-Q",
       "notes": {
         "property1": null,
         "property2": null
@@ -253,7 +252,6 @@
   "entries": [
     {
       "symbol": "TSLA",
-      "tgam_symbol": "TSLA-Q",
       "notes": {
         "property1": null,
         "property2": null
@@ -410,16 +408,15 @@
 
 | Name | Type | Required | Nullable | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| symbol | [<code>Symbol</code>](/content/api/components?id=schemassymbol) |  | false |  |
+| entry | [<code>Entry</code>](/content/api/components?id=schemasentry) |  | false |  |
 | index | <code>Integer</code> | false | false | The index at which the symbol will be inserted |
 
 **Example**:
 
 ```json
 {
-  "symbol": {
+  "entry": {
     "symbol": "TSLA",
-    "tgam_symbol": "TSLA-Q",
     "notes": {
       "property1": null,
       "property2": null
