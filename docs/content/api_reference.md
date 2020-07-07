@@ -1,6 +1,6 @@
 # API Reference
 
-## Watchlist API 3.0.12 {docsify-ignore}
+## Watchlist API 4.0.0 {docsify-ignore}
     
 > Watchlist API
 
@@ -13,7 +13,7 @@
 * [Servers](#Servers)
 * [Components](#Components)
 * [Paths](#Paths)
-* [Try Me](#tryme)
+
 
 ## Servers {docsify-ignore}
 
@@ -48,9 +48,3 @@
 * [PUT /watchlists/{watchlist}/symbols](/content/api/paths?id=put-watchlistswatchlistsymbols)
 * [DELETE /watchlists/{watchlist}/symbols/{symbol}](/content/api/paths?id=delete-watchlistswatchlistsymbolssymbol)
 * [PUT /watchlists/{watchlist}/symbols/{symbol}](/content/api/paths?id=put-watchlistswatchlistsymbolssymbol)
-
-## Try Me :id=tryme {docsify-ignore}
-
-**Try Me** page allows anyone to interact with the API’s resources without having any of the implementation logic in place. It’s automatically generated from a OpenAPI Specification, with the visual documentation making it easy for back end implementation and client side consumption.
-
-> You can test the API by following link: [Try Me](content/api/try)

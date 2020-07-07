@@ -3,7 +3,7 @@ openapi: 3.0.0
 info:
   title: Watchlist API
   description: Watchlist API
-  version: 3.0.12
+  version: 4.0.0
 
 components:
   securitySchemes:
