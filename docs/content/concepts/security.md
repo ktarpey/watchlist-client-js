@@ -94,7 +94,7 @@ curl 'https://watchlist-test.aws.barchart.com/v1/watchlists' \
   -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb250ZXh0SWQiOiJiYXJjaGFydCIsInVzZXJJZCI6Im1lIiwianRpIjoiOThjMjdjNmMtN2RlNS00MTQ4LTg4ZDgtNzgxN2M5M2E1OGE4IiwiaWF0IjoxNTk0MDcwNzgyLCJleHAiOjE1OTQwNzQzODJ9.Pm8O_SG-KBqj_BibPdKIwTIj4zmbIJ9v5MqJbqdgBfw'
 ```
 
-If we decode the token — try [this tool](https://jwt.io/) — you'll see the token payload refers to ```me@barchart.com```:
+If we decode the token — try [this tool](https://jwt.io/) — you'll see the token payload refers to ```me@barchart```:
 
 ```json
 {
@@ -106,7 +106,7 @@ If we decode the token — try [this tool](https://jwt.io/) — you'll see the t
 }
 ```
 
-When using this token, we can only interact with watchlists owned by ```me@barchart.com```.
+When using this token, we can only interact with watchlists owned by ```me@barchart```.
 
 ## Best Practices
 

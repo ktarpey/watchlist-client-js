@@ -76,7 +76,7 @@ First, we must construct an object which conforms to the ```Watchlist``` schema.
 
 ## Saving a Watchlist
 
-Assuming we've defined a watchlist (see above), the first thing we need to do is save it. The backend will assign an ```id``` and return a _complete_ ```Watchlist``` object to you.
+Once you've constructed a ```Watchlist``` object, you need to save it. The backend will assign an ```id``` and return a _complete_ ```Watchlist``` object to you.
 
 #### Using the SDK
 
@@ -113,6 +113,20 @@ curl 'https://watchlist-test.aws.barchart.com/v1/watchlists' \
 ## Adding a Symbol
 
 After a ```Watchlist``` has been saved, additional symbols can be added.
+
+#### Using the SDK
+
+_SDK documentation will be added soon._
+
+#### Using the API
+
+```shell
+
+```
+
+## Removing a Symbol
+
+After a ```Watchlist``` has been saved, you can remove symbols.
 
 #### Using the SDK
 
