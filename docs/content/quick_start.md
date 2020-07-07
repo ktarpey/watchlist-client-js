@@ -152,7 +152,7 @@ _SDK documentation will be added soon._
 #### Using the API
 
 ```shell
-curl 'https://watchlist-test.aws.barchart.com/v1/watchlists/c1d036c9-6144-4451-91ee-68b9a1d215fb/symbols' \
+curl 'https://watchlist-test.aws.barchart.com/v1/watchlists/227a251f-0e44-4ae8-991c-38701ba6afa9/symbols' \
   -X 'PUT' \
   -H 'Accept: application/json' \
   -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb250ZXh0SWQiOiJiYXJjaGFydCIsInVzZXJJZCI6Im1lIiwianRpIjoiOThjMjdjNmMtN2RlNS00MTQ4LTg4ZDgtNzgxN2M5M2E1OGE4IiwiaWF0IjoxNTk0MDcwNzgyLCJleHAiOjE1OTQwNzQzODJ9.Pm8O_SG-KBqj_BibPdKIwTIj4zmbIJ9v5MqJbqdgBfw' \
@@ -185,7 +185,7 @@ _SDK documentation will be added soon._
 #### Using the API
 
 ```shell
-curl 'https://watchlist-test.aws.barchart.com/v1/watchlists/69a981d0-f966-413a-ac58-3d5dc74b6c4f' \
+curl 'https://watchlist-test.aws.barchart.com/v1/watchlists/227a251f-0e44-4ae8-991c-38701ba6afa9' \
   -X 'DELETE' \
   -H 'Accept: application/json' \
   -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb250ZXh0SWQiOiJiYXJjaGFydCIsInVzZXJJZCI6Im1lIiwianRpIjoiOThjMjdjNmMtN2RlNS00MTQ4LTg4ZDgtNzgxN2M5M2E1OGE4IiwiaWF0IjoxNTk0MDcwNzgyLCJleHAiOjE1OTQwNzQzODJ9.Pm8O_SG-KBqj_BibPdKIwTIj4zmbIJ9v5MqJbqdgBfw'
