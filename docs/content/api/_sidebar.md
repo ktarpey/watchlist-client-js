@@ -4,6 +4,9 @@
 	* [Security](/content/concepts/security)
 <!-- api_open -->
 * [API Reference](/content/api_reference)
+	* [Components](/content/api/components)
+	* [Paths](/content/api/paths)
+	* [Try Me](/content/api/try)
 <!-- api_close -->
 <!-- sdk_open -->
 <!-- sdk_close -->
