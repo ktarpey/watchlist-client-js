@@ -94,10 +94,10 @@ components:
           additionalProperties: {}
           
 servers:
-  - url: https://test.watchlist.aws.barchart.com/v1
-    description: Test hostname
+  - url: https://watchlist-test.aws.barchart.com/v1
+    description: Hostname for test environment.
   - url: https://watchlist.aws.barchart.com/v1
-    description: Production hostname
+    description: Hostname for production environment.
 
 tags:
   - name: Watchlist
