@@ -44,7 +44,7 @@ In the the _production_ environment, you must exchange a _"secret"_  with Barcha
 Regardless of environment, the token payload uses two fields:
 
 * ```userId``` is the unique identifier of the current user
-* ```contextId``` is a unique identifier for your organization (use "barchart" in the _test_ environment).
+* ```contextId``` is a unique identifier for your organization (use ````"BARCHART"``` in the _test_ environment).
 
 ## Connecting
 
@@ -61,7 +61,17 @@ If you choose to work directly with the REST interface, you won't need to perfor
 First, we must construct an object which conforms to the ```Watchlist``` schema. Here is simple ```Watchlist``` object:
 
 ```json
-
+{
+	"name": "Notable Tech Stocks",
+	"entries": [
+		{
+			"symbol": "TSLA"
+		},
+		{
+			"symbol": "AAPL"
+		}
+	]
+}
 ```
 
 ## Saving a Watchlist
@@ -75,7 +85,12 @@ _SDK documentation will be added soon._
 #### Using the API
 
 ```shell
-
+curl 'https://watchlist-test.aws.barchart.com/v1/watchlists' \
+  -X 'POST' \
+  -H 'Accept: application/json' \
+  -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb250ZXh0SWQiOiJiYXJjaGFydCIsInVzZXJJZCI6Im1lIiwianRpIjoiOThjMjdjNmMtN2RlNS00MTQ4LTg4ZDgtNzgxN2M5M2E1OGE4IiwiaWF0IjoxNTk0MDcwNzgyLCJleHAiOjE1OTQwNzQzODJ9.Pm8O_SG-KBqj_BibPdKIwTIj4zmbIJ9v5MqJbqdgBfw' \
+  -H 'Content-Type: application/json;charset=UTF-8' \
+  --data-binary '{"name":"Notable Tech Stocks","entries":[{"symbol":"TSLA"},{"symbol":"AAPL"}]}'
 ```
 
 ## Adding a Symbol
