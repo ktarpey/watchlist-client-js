@@ -24,8 +24,8 @@ The token payload must include the following claims:
 
 ```json
 {
-	"context": "picked-by-barchart",
-	"user": "picked-by-you"
+	"contextId": "picked-by-barchart",
+	"userId": "picked-by-you"
 }
 ```
 

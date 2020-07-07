@@ -76,7 +76,7 @@ First, we must construct an object which conforms to the ```Watchlist``` schema.
 
 ## Saving a Watchlist
 
-Assuming we've defined an watchlist (see above), the first thing we need to do is save it. The backend will assign an ```id``` and return a _complete_ ```Watchlist``` object to you.
+Assuming we've defined a watchlist (see above), the first thing we need to do is save it. The backend will assign an ```id``` and return a _complete_ ```Watchlist``` object to you.
 
 #### Using the SDK
 
@@ -91,6 +91,23 @@ curl 'https://watchlist-test.aws.barchart.com/v1/watchlists' \
   -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb250ZXh0SWQiOiJiYXJjaGFydCIsInVzZXJJZCI6Im1lIiwianRpIjoiOThjMjdjNmMtN2RlNS00MTQ4LTg4ZDgtNzgxN2M5M2E1OGE4IiwiaWF0IjoxNTk0MDcwNzgyLCJleHAiOjE1OTQwNzQzODJ9.Pm8O_SG-KBqj_BibPdKIwTIj4zmbIJ9v5MqJbqdgBfw' \
   -H 'Content-Type: application/json;charset=UTF-8' \
   --data-binary '{"name":"Notable Tech Stocks","entries":[{"symbol":"TSLA"},{"symbol":"AAPL"}]}'
+```
+
+## Retrieving Your Watchlists
+
+Once you've saved a watchlist, you can retrieve all watchlists (for the current user).
+
+#### Using the SDK
+
+_SDK documentation will be added soon._
+
+#### Using the API
+
+```shell
+curl 'https://watchlist-test.aws.barchart.com/v1/watchlists' \
+  -X 'GET' \
+  -H 'Accept: application/json' \
+  -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb250ZXh0SWQiOiJiYXJjaGFydCIsInVzZXJJZCI6Im1lIiwianRpIjoiOThjMjdjNmMtN2RlNS00MTQ4LTg4ZDgtNzgxN2M5M2E1OGE4IiwiaWF0IjoxNTk0MDcwNzgyLCJleHAiOjE1OTQwNzQzODJ9.Pm8O_SG-KBqj_BibPdKIwTIj4zmbIJ9v5MqJbqdgBfw'
 ```
 
 ## Adding a Symbol
@@ -118,5 +135,10 @@ _SDK documentation will be added soon._
 #### Using the API
 
 ```shell
-
+curl 'https://watchlist-test.aws.barchart.com/v1/watchlists' \
+  -X 'DELETE' \
+  -H 'Accept: application/json' \
+  -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb250ZXh0SWQiOiJiYXJjaGFydCIsInVzZXJJZCI6Im1lIiwianRpIjoiOThjMjdjNmMtN2RlNS00MTQ4LTg4ZDgtNzgxN2M5M2E1OGE4IiwiaWF0IjoxNTk0MDcwNzgyLCJleHAiOjE1OTQwNzQzODJ9.Pm8O_SG-KBqj_BibPdKIwTIj4zmbIJ9v5MqJbqdgBfw' \
+  -H 'Content-Type: application/json;charset=UTF-8' \
+  --data-binary '{"name":"Notable Tech Stocks","entries":[{"symbol":"TSLA"},{"symbol":"AAPL"}]}'
 ```
