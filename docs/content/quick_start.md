@@ -93,6 +93,29 @@ curl 'https://watchlist-test.aws.barchart.com/v1/watchlists' \
   --data-binary '{"name":"Notable Tech Stocks","entries":[{"symbol":"TSLA"},{"symbol":"AAPL"}]}'
 ```
 
+The result will be a complete ```Watchlist``` object, similar to the example below. Obviously, the ```id``` value will differ for each watchlist created. However, we'll use this ```id``` value in subsequent examples.
+
+```json
+{
+	"id":"227a251f-0e44-4ae8-991c-38701ba6afa9",
+	"name":"Notable Tech Stocks",
+	"user":"me",
+	"context":"BARCHART",
+	"entries":[
+		{
+			"symbol":"TSLA"
+		},
+		{
+			"symbol":"AAPL"
+		}
+	],
+	"system":{
+		"sequence":1,
+		"timestamp":1594144716779
+	}
+}
+```
+
 ## Retrieving Your Watchlists
 
 Once you've saved a watchlist, you can retrieve all watchlists (for the current user).
