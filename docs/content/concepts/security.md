@@ -79,7 +79,7 @@ Once you're ready to move to production, you'll need to exchange a public/privat
 
 ## Token Usage
 
-#### Using the SDK
+### Using the SDK
 
 _SDK documentation will be added soon._
 
