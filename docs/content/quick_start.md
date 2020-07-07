@@ -93,6 +93,8 @@ curl 'https://watchlist-test.aws.barchart.com/v1/watchlists' \
   --data-binary '{"name":"Notable Tech Stocks","entries":[{"symbol":"TSLA"},{"symbol":"AAPL"}]}'
 ```
 
+#### Example Output
+
 The result will be a complete ```Watchlist``` object, similar to the example below. Obviously, the ```id``` value will differ for each watchlist created. However, we'll use this ```id``` value in subsequent examples.
 
 ```json
