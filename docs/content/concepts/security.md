@@ -79,6 +79,10 @@ Once you're ready to move to production, you'll need to exchange a public/privat
 
 ## Token Usage
 
+#### Using the SDK
+
+_SDK documentation will be added soon._
+
 ### Using the API
 
 Each HTTP request must include a token. After you generate the token, add it to the ```Authorization``` header of your HTTP request. For example, here is the cURL command to get for all watchlists owned by ```me@barchart.com```:
