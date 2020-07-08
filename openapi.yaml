@@ -34,7 +34,7 @@ components:
           example: 81b2d6fa-bb7e-485b-8670-6d0c9330aa21
         context:
           type: string
-          example: TGAM
+          example: BARCHART
         name:
           type: string
           example: Watchlist name
@@ -89,7 +89,7 @@ components:
         notes:
           type: object
           additionalProperties: {}
-          
+
 servers:
   - url: https://watchlist-test.aws.barchart.com/v1
     description: Hostname for test environment.
@@ -153,7 +153,7 @@ paths:
                   example: Watchlist name
                 context:
                   type: string
-                  example: TGAM
+                  example: BARCHART
                 view:
                   type: string
                   example: main
@@ -290,7 +290,7 @@ paths:
                   example: Watchlist name
                 context:
                   type: string
-                  example: TGAM
+                  example: BARCHART
                 view:
                   type: string
                   example: main
