@@ -44,7 +44,7 @@ In the the _production_ environment, you must exchange a _"secret"_  with Barcha
 Regardless of environment, the token payload uses two fields:
 
 * ```userId``` is the unique identifier of the current user
-* ```contextId``` is a unique identifier for your organization (use ````"BARCHART"``` in the _test_ environment).
+* ```contextId``` is a unique identifier for your organization (use ```"BARCHART"``` in the _test_ environment).
 
 ## Connecting
 
