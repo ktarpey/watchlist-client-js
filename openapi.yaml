@@ -348,14 +348,13 @@ paths:
                 name:
                   type: string
                   example: Watchlist name
-                context:
-                  type: string
-                  example: BARCHART
                 view:
                   type: string
                   example: main
                 entries:
                   $ref: '#/components/schemas/entries'
+                schema:
+                  $ref: '#/components/schemas/preferences'
               required:
                 - name
                 - context
