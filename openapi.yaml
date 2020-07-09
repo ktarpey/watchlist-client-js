@@ -14,7 +14,7 @@ components:
 
   responses:
     Unauthorized:
-      description: Authorization failure
+      description: Authorization failure.
       content:
         application/json:
           schema:
@@ -25,7 +25,7 @@ components:
                 example: Unauthorized
 
     BadRequest:
-      description: Bad request
+      description: Bad request.
       content:
         application/json:
           schema:
@@ -48,7 +48,7 @@ components:
                   items: {}
 
     Forbidden:
-      description: User is not authorized to use resource
+      description: User is not authorized to use resource.
       content:
         application/json:
           schema:
@@ -71,7 +71,7 @@ components:
                   items: {}
 
     NotFound:
-      description: Requested resource not found
+      description: Requested resource not found.
       content:
         application/json:
           schema:
@@ -94,7 +94,7 @@ components:
                   items: {}
 
     ServerError:
-      description: A JSON representatin of the error.
+      description: Server error.
       content:
         application/json:
           schema:
