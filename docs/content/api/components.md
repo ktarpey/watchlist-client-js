@@ -3,7 +3,7 @@
 ## Responses 
 
 ### Unauthorized :id=responsesunauthorized
-> Authorization failure
+> Authorization failure.
 
 **Content Type**: <code>application/json</code>
 
@@ -24,7 +24,7 @@
 * * *
 
 ### BadRequest :id=responsesbadrequest
-> Bad request
+> Bad request.
 
 **Content Type**: <code>application/json</code>
 
@@ -54,7 +54,7 @@
 * * *
 
 ### Forbidden :id=responsesforbidden
-> User is not authorized to use resource
+> User is not authorized to use resource.
 
 **Content Type**: <code>application/json</code>
 
@@ -84,7 +84,7 @@
 * * *
 
 ### NotFound :id=responsesnotfound
-> Requested resource not found
+> Requested resource not found.
 
 **Content Type**: <code>application/json</code>
 
@@ -114,7 +114,7 @@
 * * *
 
 ### ServerError :id=responsesservererror
-> A JSON representatin of the error.
+> Server error.
 
 **Content Type**: <code>application/json</code>
 
