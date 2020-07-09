@@ -30,6 +30,10 @@
 
 * * *
 
+**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
+
+* * *
+
 ## POST /watchlists 
 
 > Creates a new watchlist for the current user.
@@ -55,7 +59,7 @@
 | name | <code>String</code> | false | false |  |
 | context | <code>String</code> | false | false |  |
 | view | <code>String</code> | false | false |  |
-| entries | [<code>Entries</code>](/content/api/components?id=schemasentries) | true | false |  |
+| entries | [<code>Entries</code>](/content/api/components?id=schemasentries) | false | false |  |
 | preferences | [<code>Preferences</code>](/content/api/components?id=schemaspreferences) | false | false |  |
 
 **Example**:
@@ -63,7 +67,7 @@
 ```json
 {
   "name": "Watchlist name",
-  "context": "TGAM",
+  "context": "BARCHART",
   "view": "main",
   "entries": [
     {
@@ -95,38 +99,19 @@
 
 * * *
 
+**Status Code**: 400 - [BadRequest](/content/api/components?id&#x3D;responsesbadrequest)
+
+* * *
+
 **Status Code**: 401 - [Unauthorized](/content/api/components?id&#x3D;responsesunauthorized)
 
 * * *
 
-**Status Code**: 500
+**Status Code**: 403 - [Forbidden](/content/api/components?id&#x3D;responsesforbidden)
 
-> A JSON representatin of the error.
+* * *
 
-**Content Type**: <code>application/json</code>
-
-**Response Type:** <code>Array&lt;Object&gt;</code>
-    
-| Name | Type | Required | Nullable | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| value | <code>Object</code> |  | false |  |
-| value.code | <code>String</code> | false | false |  |
-| value.message | <code>String</code> | false | false |  |
-| children | <code>Array</code> | false | false |  |
-
-**Example**:
-
-```json
-[
-  {
-    "value": {
-      "code": "REQUEST_GENERAL_FAILURE",
-      "message": "An attempt to create watchlist failed for unspecified reason(s)."
-    },
-    "children": []
-  }
-]
-```
+**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
 
 * * *
 
@@ -178,34 +163,11 @@
 
 * * *
 
-**Status Code**: 500
+**Status Code**: 404 - [NotFound](/content/api/components?id&#x3D;responsesnotfound)
 
-> A JSON representatin of the error.
+* * *
 
-**Content Type**: <code>application/json</code>
-
-**Response Type:** <code>Array&lt;Object&gt;</code>
-    
-| Name | Type | Required | Nullable | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| value | <code>Object</code> |  | false |  |
-| value.code | <code>String</code> | false | false |  |
-| value.message | <code>String</code> | false | false |  |
-| children | <code>Array</code> | false | false |  |
-
-**Example**:
-
-```json
-[
-  {
-    "value": {
-      "code": "REQUEST_GENERAL_FAILURE",
-      "message": "An attempt to delete watchlist failed for unspecified reason(s)."
-    },
-    "children": []
-  }
-]
-```
+**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
 
 * * *
 
@@ -237,17 +199,16 @@
 
 | Name | Type | Required | Nullable | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| name | <code>String</code> | true | false |  |
-| context | <code>String</code> | true | false |  |
+| name | <code>String</code> | false | false |  |
 | view | <code>String</code> | false | false |  |
-| entries | [<code>Entries</code>](/content/api/components?id=schemasentries) | true | false |  |
+| entries | [<code>Entries</code>](/content/api/components?id=schemasentries) | false | false |  |
+| preferences | [<code>Preferences</code>](/content/api/components?id=schemaspreferences) | false | false |  |
 
 **Example**:
 
 ```json
 {
   "name": "Watchlist name",
-  "context": "TGAM",
   "view": "main",
   "entries": [
     {
@@ -257,7 +218,13 @@
         "property2": null
       }
     }
-  ]
+  ],
+  "preferences": {
+    "sorting": {
+      "column": "symbol",
+      "desc": false
+    }
+  }
 }
 ```
 
@@ -273,38 +240,19 @@
 
 * * *
 
+**Status Code**: 400 - [BadRequest](/content/api/components?id&#x3D;responsesbadrequest)
+
+* * *
+
 **Status Code**: 401 - [Unauthorized](/content/api/components?id&#x3D;responsesunauthorized)
 
 * * *
 
-**Status Code**: 500
+**Status Code**: 404 - [NotFound](/content/api/components?id&#x3D;responsesnotfound)
 
-> A JSON representatin of the error.
+* * *
 
-**Content Type**: <code>application/json</code>
-
-**Response Type:** <code>Array&lt;Object&gt;</code>
-    
-| Name | Type | Required | Nullable | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| value | <code>Object</code> |  | false |  |
-| value.code | <code>String</code> | false | false |  |
-| value.message | <code>String</code> | false | false |  |
-| children | <code>Array</code> | false | false |  |
-
-**Example**:
-
-```json
-[
-  {
-    "value": {
-      "code": "REQUEST_GENERAL_FAILURE",
-      "message": "An attempt to edit watchlist failed for unspecified reason(s)."
-    },
-    "children": []
-  }
-]
-```
+**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
 
 * * *
 
@@ -355,34 +303,11 @@
 
 * * *
 
-**Status Code**: 500
+**Status Code**: 404 - [NotFound](/content/api/components?id&#x3D;responsesnotfound)
 
-> A JSON representatin of the error.
+* * *
 
-**Content Type**: <code>application/json</code>
-
-**Response Type:** <code>Array&lt;Object&gt;</code>
-    
-| Name | Type | Required | Nullable | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| value | <code>Object</code> |  | false |  |
-| value.code | <code>String</code> | false | false |  |
-| value.message | <code>String</code> | false | false |  |
-| children | <code>Array</code> | false | false |  |
-
-**Example**:
-
-```json
-[
-  {
-    "value": {
-      "code": "REQUEST_GENERAL_FAILURE",
-      "message": "An attempt to edit preferences failed for unspecified reason(s)."
-    },
-    "children": []
-  }
-]
-```
+**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
 
 * * *
 
@@ -438,38 +363,19 @@
 
 * * *
 
+**Status Code**: 400 - [BadRequest](/content/api/components?id&#x3D;responsesbadrequest)
+
+* * *
+
 **Status Code**: 401 - [Unauthorized](/content/api/components?id&#x3D;responsesunauthorized)
 
 * * *
 
-**Status Code**: 500
+**Status Code**: 404 - [NotFound](/content/api/components?id&#x3D;responsesnotfound)
 
-> A JSON representatin of the error.
+* * *
 
-**Content Type**: <code>application/json</code>
-
-**Response Type:** <code>Array&lt;Object&gt;</code>
-    
-| Name | Type | Required | Nullable | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| value | <code>Object</code> |  | false |  |
-| value.code | <code>String</code> | false | false |  |
-| value.message | <code>String</code> | false | false |  |
-| children | <code>Array</code> | false | false |  |
-
-**Example**:
-
-```json
-[
-  {
-    "value": {
-      "code": "REQUEST_GENERAL_FAILURE",
-      "message": "An attempt to add symbols failed for unspecified reason(s)."
-    },
-    "children": []
-  }
-]
-```
+**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
 
 * * *
 
@@ -510,34 +416,11 @@
 
 * * *
 
-**Status Code**: 500
+**Status Code**: 404 - [NotFound](/content/api/components?id&#x3D;responsesnotfound)
 
-> A JSON representatin of the error.
+* * *
 
-**Content Type**: <code>application/json</code>
-
-**Response Type:** <code>Array&lt;Object&gt;</code>
-    
-| Name | Type | Required | Nullable | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| value | <code>Object</code> |  | false |  |
-| value.code | <code>String</code> | false | false |  |
-| value.message | <code>String</code> | false | false |  |
-| children | <code>Array</code> | false | false |  |
-
-**Example**:
-
-```json
-[
-  {
-    "value": {
-      "code": "REQUEST_GENERAL_FAILURE",
-      "message": "An attempt to delete symbol failed for unspecified reason(s)."
-    },
-    "children": []
-  }
-]
-```
+**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
 
 * * *
 
@@ -588,38 +471,19 @@
 
 * * *
 
+**Status Code**: 400 - [BadRequest](/content/api/components?id&#x3D;responsesbadrequest)
+
+* * *
+
 **Status Code**: 401 - [Unauthorized](/content/api/components?id&#x3D;responsesunauthorized)
 
 * * *
 
-**Status Code**: 500
+**Status Code**: 404 - [NotFound](/content/api/components?id&#x3D;responsesnotfound)
 
-> A JSON representatin of the error.
+* * *
 
-**Content Type**: <code>application/json</code>
-
-**Response Type:** <code>Array&lt;Object&gt;</code>
-    
-| Name | Type | Required | Nullable | Description |
-| ---- | ---- | -------- | -------- | ----------- |
-| value | <code>Object</code> |  | false |  |
-| value.code | <code>String</code> | false | false |  |
-| value.message | <code>String</code> | false | false |  |
-| children | <code>Array</code> | false | false |  |
-
-**Example**:
-
-```json
-[
-  {
-    "value": {
-      "code": "REQUEST_GENERAL_FAILURE",
-      "message": "An attempt to change index failed for unspecified reason(s)."
-    },
-    "children": []
-  }
-]
-```
+**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
 
 * * *
 

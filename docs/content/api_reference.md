@@ -25,6 +25,10 @@
 ### Responses 
 
 * [Unauthorized](/content/api/components?id=responsesUnauthorized)
+* [BadRequest](/content/api/components?id=responsesBadRequest)
+* [Forbidden](/content/api/components?id=responsesForbidden)
+* [NotFound](/content/api/components?id=responsesNotFound)
+* [ServerError](/content/api/components?id=responsesServerError)
 
 ### Schemas 
 

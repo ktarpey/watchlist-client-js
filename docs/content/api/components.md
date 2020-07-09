@@ -23,6 +23,126 @@
 
 * * *
 
+### BadRequest :id=responsesbadrequest
+> Bad request
+
+**Content Type**: <code>application/json</code>
+
+**Response Type:** <code><code>Array&lt;Object&gt;</code></code>
+
+| Name | Type | Required | Nullable | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| value | <code>Object</code> |  | false |  |
+| value.code | <code>String</code> | false | false |  |
+| value.message | <code>String</code> | false | false |  |
+| children | <code>Array</code> | false | false |  |
+
+**Example**:
+
+```json
+[
+  {
+    "value": {
+      "code": "WATCHLIST_CREATE_FAILED_SYMBOL_MISSING",
+      "message": "Unable to create watchlist, the symbol is missing from at least one entry."
+    },
+    "children": []
+  }
+]
+```
+
+* * *
+
+### Forbidden :id=responsesforbidden
+> User is not authorized to use resource
+
+**Content Type**: <code>application/json</code>
+
+**Response Type:** <code><code>Array&lt;Object&gt;</code></code>
+
+| Name | Type | Required | Nullable | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| value | <code>Object</code> |  | false |  |
+| value.code | <code>String</code> | false | false |  |
+| value.message | <code>String</code> | false | false |  |
+| children | <code>Array</code> | false | false |  |
+
+**Example**:
+
+```json
+[
+  {
+    "value": {
+      "code": "WATCHLIST_CREATE_FAILED_USER_FORBIDDEN",
+      "message": "Unable to create watchlist for another user (watchlist user does not match authorized user)."
+    },
+    "children": []
+  }
+]
+```
+
+* * *
+
+### NotFound :id=responsesnotfound
+> Requested resource not found
+
+**Content Type**: <code>application/json</code>
+
+**Response Type:** <code><code>Array&lt;Object&gt;</code></code>
+
+| Name | Type | Required | Nullable | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| value | <code>Object</code> |  | false |  |
+| value.code | <code>String</code> | false | false |  |
+| value.message | <code>String</code> | false | false |  |
+| children | <code>Array</code> | false | false |  |
+
+**Example**:
+
+```json
+[
+  {
+    "value": {
+      "code": "WATCHLIST_EDIT_FAILED_NO_WATCHLIST",
+      "message": "Unable to edit watchlist, watchlist does not exist."
+    },
+    "children": []
+  }
+]
+```
+
+* * *
+
+### ServerError :id=responsesservererror
+> A JSON representatin of the error.
+
+**Content Type**: <code>application/json</code>
+
+**Response Type:** <code><code>Array&lt;Object&gt;</code></code>
+
+| Name | Type | Required | Nullable | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| value | <code>Object</code> |  | false |  |
+| value.code | <code>String</code> | false | false |  |
+| value.message | <code>String</code> | false | false |  |
+| children | <code>Array</code> | false | false |  |
+
+**Example**:
+
+```json
+[
+  {
+    "value": {
+      "code": "REQUEST_GENERAL_FAILURE",
+      "message": "An attempt to create watchlist failed for unspecified reason(s)."
+    },
+    "children": []
+  }
+]
+```
+
+* * *
+
 ## Schemas 
 
 ### watchlist :id=schemaswatchlist
@@ -44,7 +164,7 @@
 ```json
 {
   "id": "81b2d6fa-bb7e-485b-8670-6d0c9330aa21",
-  "context": "TGAM",
+  "context": "BARCHART",
   "name": "Watchlist name",
   "view": "main",
   "entries": [
