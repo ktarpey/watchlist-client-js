@@ -24,6 +24,98 @@ components:
                 type: string
                 example: Unauthorized
 
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                value:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      example: WATCHLIST_CREATE_FAILED_SYMBOL_MISSING
+                    message:
+                      type: string
+                      example: Unable to create watchlist, the symbol is missing from at least one entry.
+                children:
+                  type: array
+                  example: []
+                  items: {}
+
+    Forbidden:
+      description: User is not authorized to use resource
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                value:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      example: WATCHLIST_CREATE_FAILED_USER_FORBIDDEN
+                    message:
+                      type: string
+                      example: Unable to create watchlist for another user (watchlist user does not match authorized user).
+                children:
+                  type: array
+                  example: []
+                  items: {}
+
+    NotFound:
+      description: Requested resource not found
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                value:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      example: WATCHLIST_EDIT_FAILED_NO_WATCHLIST
+                    message:
+                      type: string
+                      example: Unable to edit watchlist, watchlist does not exist.
+                children:
+                  type: array
+                  example: []
+                  items: {}
+
+    ServerError:
+      description: A JSON representatin of the error.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                value:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      example: REQUEST_GENERAL_FAILURE
+                    message:
+                      type: string
+                      example: An attempt to create watchlist failed for unspecified reason(s).
+                children:
+                  type: array
+                  example: []
+                  items: {}
+
   schemas:
     watchlist:
       type: object
@@ -127,6 +219,8 @@ paths:
                   $ref: '#/components/schemas/watchlist'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
 
     post:
       summary: Creates a new watchlist.
@@ -172,30 +266,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/watchlist'
-        '500':
-          description: A JSON representatin of the error.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    value:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                          example: REQUEST_GENERAL_FAILURE
-                        message:
-                          type: string
-                          example: An attempt to create watchlist failed for unspecified reason(s).
-                    children:
-                      type: array
-                      example: []
-                      items: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
 
   /watchlists/{watchlist}:
     delete:
@@ -232,30 +310,12 @@ paths:
                     type: string
                     format: uuid
                     example: 81b2d6fa-bb7e-485b-8670-6d0c9330aa21
-        '500':
-          description: A JSON representatin of the error.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    value:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                          example: REQUEST_GENERAL_FAILURE
-                        message:
-                          type: string
-                          example: An attempt to delete watchlist failed for unspecified reason(s).
-                    children:
-                      type: array
-                      items: {}
-                      example: []
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
 
     put:
       summary: Edits a watchlist.
@@ -309,30 +369,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/watchlist'
-        '500':
-          description: A JSON representatin of the error.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    value:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                          example: REQUEST_GENERAL_FAILURE
-                        message:
-                          type: string
-                          example: An attempt to edit watchlist failed for unspecified reason(s).
-                    children:
-                      type: array
-                      items: {}
-                      example: []
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
 
   /watchlists/{watchlist}/preferences:
     put:
@@ -365,30 +409,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/watchlist'
-        '500':
-          description: A JSON representatin of the error.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    value:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                          example: REQUEST_GENERAL_FAILURE
-                        message:
-                          type: string
-                          example: An attempt to edit preferences failed for unspecified reason(s).
-                    children:
-                      type: array
-                      items: {}
-                      example: []
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
 
   /watchlists/{watchlist}/symbols:
     put:
@@ -430,30 +456,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/watchlist'
-        '500':
-          description: A JSON representatin of the error.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    value:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                          example: REQUEST_GENERAL_FAILURE
-                        message:
-                          type: string
-                          example: An attempt to add symbols failed for unspecified reason(s).
-                    children:
-                      type: array
-                      items: {}
-                      example: []
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
 
   /watchlists/{watchlist}/symbols/{symbol}:
     delete:
@@ -494,30 +504,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/watchlist'
-        '500':
-          description: A JSON representatin of the error.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    value:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                          example: REQUEST_GENERAL_FAILURE
-                        message:
-                          type: string
-                          example: An attempt to delete symbol failed for unspecified reason(s).
-                    children:
-                      type: array
-                      items: {}
-                      example: []
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
 
     put:
       summary: Changes the relative position of a symbol on a watchlist.
@@ -566,27 +558,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/watchlist'
-        '500':
-          description: A JSON representatin of the error.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    value:
-                      type: object
-                      properties:
-                        code:
-                          type: string
-                          example: REQUEST_GENERAL_FAILURE
-                        message:
-                          type: string
-                          example: An attempt to change index failed for unspecified reason(s).
-                    children:
-                      type: array
-                      items: {}
-                      example: []
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
