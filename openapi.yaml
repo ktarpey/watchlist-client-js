@@ -353,7 +353,7 @@ paths:
                   example: main
                 entries:
                   $ref: '#/components/schemas/entries'
-                schema:
+                preferences:
                   $ref: '#/components/schemas/preferences'
               required:
                 - name
