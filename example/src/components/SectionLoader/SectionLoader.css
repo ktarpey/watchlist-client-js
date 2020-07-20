@@ -1,0 +1,21 @@
+.wrapper {
+  background-color: rgba(229, 237, 240, 1);
+  position: absolute;
+  top: 140px;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 180px);
+  z-index: 10;
+}
+
+.box {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  height: calc(100% - 50px);
+}
+
+.loader {
+  height: 100px;
+  width: auto;
+}

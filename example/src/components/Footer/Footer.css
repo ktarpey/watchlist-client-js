@@ -1,0 +1,10 @@
+.wrapper {
+  align-items: center;
+  background-color: var(--main-dark-bg-color);
+  color: var(--main-light-font-color);
+  display: flex;
+  font-size: 14px;
+  height: 40px;
+  justify-content: space-between;
+  padding: 0 20px;
+}

@@ -3,7 +3,9 @@ const gulp = require('gulp');
 const exec = require('child_process').exec,
 	fs = require('fs');
 
-const browserify = require('browserify'),
+const AWS = require('aws-sdk'),
+	awspublish = require('gulp-awspublish'),
+	browserify = require('browserify'),
 	buffer = require('vinyl-buffer'),
 	git = require('gulp-git'),
 	gitStatus = require('git-get-status'),
@@ -11,7 +13,9 @@ const browserify = require('browserify'),
 	jasmine = require('gulp-jasmine'),
 	jshint = require('gulp-jshint'),
 	prompt = require('gulp-prompt'),
+	rename = require('gulp-rename'),
 	replace = require('gulp-replace'),
+	run = require('gulp-run-command').default,
 	source = require('vinyl-source-stream');
 
 function getVersionFromPackage() {
@@ -62,6 +66,8 @@ gulp.task('embed-version', () => {
 		.pipe(replace(/(version:\s*')([0-9]+\.[0-9]+\.[0-9]+)(')/g, '$1' + version + '$3'))
 		.pipe(gulp.dest('./lib/'));
 });
+
+gulp.task('build-example-bundle', run('npm run build'));
 
 gulp.task('commit-changes', () => {
 	return gulp.src([ './', './test/', './package.json', './lib/index.js', './test/SpecRunner.js' ])
@@ -115,13 +121,14 @@ gulp.task('release', gulp.series(
 	'bump-choice',
 	'bump-version',
 	'embed-version',
+	'build-example-bundle',
 	'commit-changes',
 	'push-changes',
 	'create-tag'
 ));
 
 gulp.task('lint', () => {
-	return gulp.src([ './**/*.js', './test/specs/**/*.js', '!./node_modules/**', '!./test/SpecRunner.js', '!./example/example.js', '!./docs/**'])
+	return gulp.src([ './**/*.js', './test/specs/**/*.js', '!./node_modules/**', '!./test/SpecRunner.js', '!./example/bundle.js', '!./docs/**', '!./webpack.config.js'])
 		.pipe(jshint({ esversion: 9 }))
 		.pipe(jshint.reporter('default'))
 		.pipe(jshint.reporter('fail'));
@@ -129,5 +136,26 @@ gulp.task('lint', () => {
 
 
 gulp.task('test', gulp.series('execute-tests'));
+
+gulp.task('deploy-example', () => {
+	const publisher = awspublish.create({
+		region: 'us-east-1',
+		params: {
+			Bucket: 'barchart-examples'
+		},
+		credentials: new AWS.SharedIniFileCredentials({ profile: 'default' })
+	});
+
+	const headers = { 'Cache-Control': 'no-cache' };
+	const options = { };
+
+	return gulp.src(['./example/index.html', './example/bundle.js'])
+		.pipe(rename((path) => {
+			path.dirname = 'watchlist-client-js';
+		}))
+		.pipe(publisher.publish(headers, options))
+		.pipe(publisher.cache())
+		.pipe(awspublish.reporter());
+});
 
 gulp.task('default', gulp.series('lint'));

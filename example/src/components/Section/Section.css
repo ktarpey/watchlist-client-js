@@ -1,0 +1,37 @@
+.wrapper {
+
+}
+
+.header {
+  border-bottom: 1px solid #ced4da;
+  border-top: 1px solid #ced4da;
+  margin-top: 20px;
+  padding: 15px 0;
+}
+
+.header .header-controls {
+  align-items: center;
+  display: flex;
+  padding: 0 30px;
+}
+
+.header .header-controls select {
+  flex-basis: 250px;
+}
+
+.header .header-controls .input-container {
+  align-items: center;
+  display: flex;
+}
+
+.header .header-controls .input-container .custom-input {
+  margin-left: 20px;
+}
+
+.header .header-controls .header-btn {
+  margin-left: 20px;
+}
+
+.response {
+  padding: 20px;
+}

@@ -1,0 +1,20 @@
+.btn {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.light {
+  background-color: var(--main-light-bg-color);
+  border: 1px solid var(--main-dark-bg-color);
+  color: var(--main-dark-bg-color);
+}
+
+.light:hover {
+  background-color: var(--main-dark-bg-color);
+  color: var(--main-light-font-color);
+}
+
+.btn-active {
+  background-color: var(--main-dark-bg-color);
+  color: var(--main-light-font-color);
+}
