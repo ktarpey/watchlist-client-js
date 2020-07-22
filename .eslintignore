@@ -1,3 +1,5 @@
 test/SpecRunner.js
 example
 gulpfile.js
+node_modules
+docs
