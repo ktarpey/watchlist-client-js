@@ -28,6 +28,7 @@ export default {
 				{ key: 'deleteWatchlist', label: 'Delete Watchlist', inputs: ['watchlistId'], method: ({ watchlistId }) => window.Barchart.gateway.deleteWatchlist(watchlistId) },
 				{ key: 'addSymbol', label: 'Add Symbol', inputs: ['watchlistId', 'symbol'], method: ({ watchlistId, symbol }) => window.Barchart.gateway.addSymbol(watchlistId, generator.entry(symbol)) },
 				{ key: 'deleteSymbol', label: 'Delete Symbol', inputs: ['watchlistId', 'symbol'], method: ({ watchlistId, symbol }) => window.Barchart.gateway.deleteSymbol(watchlistId, symbol) },
+				{ key: 'querySymbol', label: 'Query Symbol', inputs: ['symbol'], method: ({ symbol }) => window.Barchart.gateway.querySymbol(symbol) },
 				{ key: 'editPreferences', label: 'Edit Preferences', inputs: ['watchlistId'], method: ({ watchlistId }) => window.Barchart.gateway.editPreferences(watchlistId, generator.preferences()) }
 			],
 			response: null,
