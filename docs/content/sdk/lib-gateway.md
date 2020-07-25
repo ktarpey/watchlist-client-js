@@ -193,8 +193,8 @@
 
 | Param | Type |
 | --- | --- |
-| messageCallback | [<code>WebSocketMessageCallback</code>](#CallbacksWebSocketMessageCallback) | 
-| statusCallback | [<code>WebSocketStatusCallback</code>](#CallbacksWebSocketStatusCallback) | 
+| messageCallback | [<code>SubscriptionMessageCallback</code>](#CallbacksSubscriptionMessageCallback) | 
+| statusCallback | [<code>SubscriptionStatusCallback</code>](#CallbacksSubscriptionStatusCallback) | 
 
 
 * * *
@@ -299,15 +299,14 @@
 
 * [Callbacks](#Callbacks) : <code>object</code>
     * _static_
-        * [.WebSocketMessageCallback](#CallbacksWebSocketMessageCallback) : <code>function</code>
-        * [.WebSocketStatusCallback](#CallbacksWebSocketStatusCallback) : <code>function</code>
+        * [.SubscriptionMessageCallback](#CallbacksSubscriptionMessageCallback) : <code>function</code>
+        * [.SubscriptionStatusCallback](#CallbacksSubscriptionStatusCallback) : <code>function</code>
 
 
 * * *
 
-### Callbacks.WebSocketMessageCallback :id=callbackswebsocketmessagecallback
-> <p>The function signature of a callback that is invoked when data is received from
-> the WebSocket connection.</p>
+### Callbacks.SubscriptionMessageCallback :id=callbackssubscriptionmessagecallback
+> <p>The function signature for a callback which is invoked when watchlists change.</p>
 
 **Kind**: static typedef of [<code>Callbacks</code>](#Callbacks)  
 **Access**: public  
@@ -319,16 +318,16 @@
 
 * * *
 
-### Callbacks.WebSocketStatusCallback :id=callbackswebsocketstatuscallback
-> <p>The function signature of a callback that is invoked when the status
-> of a WebSocket changes (e.g. connect, disconnect).</p>
+### Callbacks.SubscriptionStatusCallback :id=callbackssubscriptionstatuscallback
+> <p>The function signature for a callback that is invoked when subscription
+> status changes.</p>
 
 **Kind**: static typedef of [<code>Callbacks</code>](#Callbacks)  
 **Access**: public  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| status | [<code>WebSocketStatus</code>](#EnumsWebSocketStatus) | <p>The current status.</p> |
+| status | [<code>SubscriptionStatus</code>](#EnumsSubscriptionStatus) | <p>The current status.</p> |
 
 
 * * *
@@ -340,8 +339,8 @@
 
 * * *
 
-### Enums.WebSocketStatus :id=enumswebsocketstatus
-> <p>The mutually-exclusive states for a WebSocket connection.</p>
+### Enums.SubscriptionStatus :id=enumssubscriptionstatus
+> <p>The mutually-exclusive states for a Subscription connection.</p>
 
 **Kind**: static enum of [<code>Enums</code>](#Enums)  
 **Properties**
