@@ -10,7 +10,8 @@
 * * *
 
 ## WatchlistGateway :id=watchlistgateway
-> <p>Web service gateway for invoking the Watchlist API.</p>
+> <p>The <strong>central component of the SDK</strong>. It is responsible for connecting to Barchart's
+> Watchlist Service. It can be used to query, edit, and delete watchlists.</p>
 
 **Kind**: global class  
 **Extends**: <code>Disposable</code>  
@@ -21,19 +22,19 @@
         * [.environment](#WatchlistGatewayenvironment) ⇒ <code>String</code>
         * [.clientId](#WatchlistGatewayclientId) ⇒ <code>String</code>
         * [.start()](#WatchlistGatewaystart) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
-        * [.subscribe(messageCallback, statusCallback)](#WatchlistGatewaysubscribe) ⇒ <code>Promise</code>
-        * [.readServiceMetadata()](#WatchlistGatewayreadServiceMetadata) ⇒ [<code>Promise.&lt;Schema.WatchlistServiceMetadata&gt;</code>](/content/sdk/lib-data?id=schemawatchlistservicemetadata)
         * [.readWatchlists()](#WatchlistGatewayreadWatchlists) ⇒ <code>Promise.&lt;Object&gt;</code>
-        * [.editWatchlist(watchlistId, watchlist)](#WatchlistGatewayeditWatchlist) ⇒ <code>Promise.&lt;Object&gt;</code>
         * [.createWatchlist(watchlist)](#WatchlistGatewaycreateWatchlist) ⇒ <code>Promise.&lt;Object&gt;</code>
+        * [.editWatchlist(watchlistId, watchlist)](#WatchlistGatewayeditWatchlist) ⇒ <code>Promise.&lt;Object&gt;</code>
+        * [.editPreferences(watchlist, preferences)](#WatchlistGatewayeditPreferences) ⇒ <code>Promise.&lt;Object&gt;</code>
         * [.deleteWatchlist(watchlist)](#WatchlistGatewaydeleteWatchlist) ⇒ <code>Promise.&lt;Object&gt;</code>
         * [.addSymbol(watchlist, entry)](#WatchlistGatewayaddSymbol) ⇒ <code>Promise.&lt;Object&gt;</code>
         * [.deleteSymbol(watchlist, symbol)](#WatchlistGatewaydeleteSymbol) ⇒ <code>Promise.&lt;Object&gt;</code>
-        * [.editPreferences(watchlist, preferences)](#WatchlistGatewayeditPreferences) ⇒ <code>Promise.&lt;Object&gt;</code>
         * [.querySymbol(symbol)](#WatchlistGatewayquerySymbol) ⇒ [<code>Promise.&lt;Array.&lt;Schema.WatchlistSymbolQueryResult&gt;&gt;</code>](/content/sdk/lib-data?id=schemawatchlistsymbolqueryresult)
+        * [.subscribe(messageCallback, statusCallback)](#WatchlistGatewaysubscribe) ⇒ <code>Promise</code>
+        * [.readServiceMetadata()](#WatchlistGatewayreadServiceMetadata) ⇒ [<code>Promise.&lt;Schema.WatchlistServiceMetadata&gt;</code>](/content/sdk/lib-data?id=schemawatchlistservicemetadata)
     * _static_
-        * [.forDevelopment(requestInterceptor)](#WatchlistGatewayforDevelopment) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
         * [.forTest(requestInterceptor)](#WatchlistGatewayforTest) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
+        * [.forDevelopment(requestInterceptor)](#WatchlistGatewayforDevelopment) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
         * [.forStaging(requestInterceptor)](#WatchlistGatewayforStaging) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
         * [.forDemo(requestInterceptor)](#WatchlistGatewayforDemo) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
         * [.forProduction(requestInterceptor)](#WatchlistGatewayforProduction) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
@@ -44,7 +45,7 @@
 * * *
 
 ### watchlistGateway.environment :id=watchlistgatewayenvironment
-> <p>Returns a description of the environment (e.g. development or production).</p>
+> <p>A description of the environment (e.g. development, production, etc).</p>
 
 **Kind**: instance property of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: <code>String</code>  
@@ -62,12 +63,124 @@
 * * *
 
 ### watchlistGateway.start() :id=watchlistgatewaystart
-> <p>Initializes the connection to the remote server and returns a promise
-> containing the current instance.</p>
+> <p>Attempts to establish a connection to the backend. This function should be invoked
+> immediately following instantiation. Once the resulting promise resolves, a
+> connection has been established and other instance methods can be used.</p>
 
 **Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)  
 **Access**: public  
+
+* * *
+
+### watchlistGateway.readWatchlists() :id=watchlistgatewayreadwatchlists
+> <p>Retrieves all watchlists for the current user.</p>
+
+**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
+**Returns**: <code>Promise.&lt;Object&gt;</code>  
+**Access**: public  
+
+* * *
+
+### watchlistGateway.createWatchlist(watchlist) :id=watchlistgatewaycreatewatchlist
+> <p>Saves a new watchlist.</p>
+
+**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
+**Returns**: <code>Promise.&lt;Object&gt;</code>  
+**Access**: public  
+
+| Param | Type |
+| --- | --- |
+| watchlist | <code>Object</code> | 
+
+
+* * *
+
+### watchlistGateway.editWatchlist(watchlistId, watchlist) :id=watchlistgatewayeditwatchlist
+> <p>Saves an existing watchlist.</p>
+
+**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
+**Returns**: <code>Promise.&lt;Object&gt;</code>  
+**Access**: public  
+
+| Param | Type |
+| --- | --- |
+| watchlistId | <code>String</code> | 
+| watchlist | <code>Object</code> | 
+
+
+* * *
+
+### watchlistGateway.editPreferences(watchlist, preferences) :id=watchlistgatewayeditpreferences
+> <p>Updates the preference data for an existing watchlist.</p>
+
+**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
+**Returns**: <code>Promise.&lt;Object&gt;</code>  
+**Access**: public  
+
+| Param | Type |
+| --- | --- |
+| watchlist | <code>String</code> | 
+| preferences | <code>Object</code> | 
+
+
+* * *
+
+### watchlistGateway.deleteWatchlist(watchlist) :id=watchlistgatewaydeletewatchlist
+> <p>Deletes an existing watchlist.</p>
+
+**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
+**Returns**: <code>Promise.&lt;Object&gt;</code>  
+**Access**: public  
+
+| Param | Type |
+| --- | --- |
+| watchlist | <code>String</code> | 
+
+
+* * *
+
+### watchlistGateway.addSymbol(watchlist, entry) :id=watchlistgatewayaddsymbol
+> <p>Adds a new entry (i.e. symbol) to an existing watchlist.</p>
+
+**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
+**Returns**: <code>Promise.&lt;Object&gt;</code>  
+**Access**: public  
+
+| Param | Type |
+| --- | --- |
+| watchlist | <code>String</code> | 
+| entry | <code>Object</code> | 
+
+
+* * *
+
+### watchlistGateway.deleteSymbol(watchlist, symbol) :id=watchlistgatewaydeletesymbol
+> <p>Deletes an existing entry (i.e. symbol) from an existing watchlist.</p>
+
+**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
+**Returns**: <code>Promise.&lt;Object&gt;</code>  
+**Access**: public  
+
+| Param | Type |
+| --- | --- |
+| watchlist | <code>String</code> | 
+| symbol | <code>String</code> | 
+
+
+* * *
+
+### watchlistGateway.querySymbol(symbol) :id=watchlistgatewayquerysymbol
+> <p>Queries existing watchlists for a specific symbol.</p>
+
+**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
+**Returns**: [<code>Promise.&lt;Array.&lt;Schema.WatchlistSymbolQueryResult&gt;&gt;</code>](/content/sdk/lib-data?id=schemawatchlistsymbolqueryresult)  
+**Access**: public  
+
+| Param | Type |
+| --- | --- |
+| symbol | <code>String</code> | 
+
 
 * * *
 
@@ -87,7 +200,7 @@
 * * *
 
 ### watchlistGateway.readServiceMetadata() :id=watchlistgatewayreadservicemetadata
-> <p>Retrieves the [Schema.WatchlistServiceMetadata](/content/sdk/lib-data?id=schemawatchlistservicemetadata) from the remote server.</p>
+> <p>Retrieves infomration regarding the remote service (e.g. version number, current user identifier, etc).</p>
 
 **Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;Schema.WatchlistServiceMetadata&gt;</code>](/content/sdk/lib-data?id=schemawatchlistservicemetadata)  
@@ -95,120 +208,8 @@
 
 * * *
 
-### watchlistGateway.readWatchlists() :id=watchlistgatewayreadwatchlists
-> <p>Retrieves the watchlists from the remote server.</p>
-
-**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: <code>Promise.&lt;Object&gt;</code>  
-**Access**: public  
-
-* * *
-
-### watchlistGateway.editWatchlist(watchlistId, watchlist) :id=watchlistgatewayeditwatchlist
-> <p>Edits the watchlist in the remote server.</p>
-
-**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: <code>Promise.&lt;Object&gt;</code>  
-**Access**: public  
-
-| Param | Type |
-| --- | --- |
-| watchlistId | <code>String</code> | 
-| watchlist | <code>Object</code> | 
-
-
-* * *
-
-### watchlistGateway.createWatchlist(watchlist) :id=watchlistgatewaycreatewatchlist
-> <p>Creates the watchlist in the remote server.</p>
-
-**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: <code>Promise.&lt;Object&gt;</code>  
-**Access**: public  
-
-| Param | Type |
-| --- | --- |
-| watchlist | <code>Object</code> | 
-
-
-* * *
-
-### watchlistGateway.deleteWatchlist(watchlist) :id=watchlistgatewaydeletewatchlist
-> <p>Deletes the watchlist in the remote server.</p>
-
-**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: <code>Promise.&lt;Object&gt;</code>  
-**Access**: public  
-
-| Param | Type |
-| --- | --- |
-| watchlist | <code>String</code> | 
-
-
-* * *
-
-### watchlistGateway.addSymbol(watchlist, entry) :id=watchlistgatewayaddsymbol
-> <p>Adds the symbol in the remote server.</p>
-
-**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: <code>Promise.&lt;Object&gt;</code>  
-**Access**: public  
-
-| Param | Type |
-| --- | --- |
-| watchlist | <code>String</code> | 
-| entry | <code>Object</code> | 
-
-
-* * *
-
-### watchlistGateway.deleteSymbol(watchlist, symbol) :id=watchlistgatewaydeletesymbol
-> <p>Deletes the symbol in the remote server.</p>
-
-**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: <code>Promise.&lt;Object&gt;</code>  
-**Access**: public  
-
-| Param | Type |
-| --- | --- |
-| watchlist | <code>String</code> | 
-| symbol | <code>String</code> | 
-
-
-* * *
-
-### watchlistGateway.editPreferences(watchlist, preferences) :id=watchlistgatewayeditpreferences
-> <p>Edit watchlist preferences in the remote server.</p>
-
-**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: <code>Promise.&lt;Object&gt;</code>  
-**Access**: public  
-
-| Param | Type |
-| --- | --- |
-| watchlist | <code>String</code> | 
-| preferences | <code>Object</code> | 
-
-
-* * *
-
-### watchlistGateway.querySymbol(symbol) :id=watchlistgatewayquerysymbol
-> <p>Returns the list of watchlists names and a flag indicating whether the specified
-> symbol is included in each watchlist.</p>
-
-**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: [<code>Promise.&lt;Array.&lt;Schema.WatchlistSymbolQueryResult&gt;&gt;</code>](/content/sdk/lib-data?id=schemawatchlistsymbolqueryresult)  
-**Access**: public  
-
-| Param | Type |
-| --- | --- |
-| symbol | <code>String</code> | 
-
-
-* * *
-
-### WatchlistGateway.forDevelopment(requestInterceptor) :id=watchlistgatewayfordevelopment
-> <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the development environment.</p>
+### WatchlistGateway.forTest(requestInterceptor) :id=watchlistgatewayfortest
+> <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the public test environment.</p>
 
 **Kind**: static method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)  
@@ -221,8 +222,8 @@
 
 * * *
 
-### WatchlistGateway.forTest(requestInterceptor) :id=watchlistgatewayfortest
-> <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the test environment.</p>
+### WatchlistGateway.forDevelopment(requestInterceptor) :id=watchlistgatewayfordevelopment
+> <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the private development environment.</p>
 
 **Kind**: static method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)  
@@ -236,7 +237,7 @@
 * * *
 
 ### WatchlistGateway.forStaging(requestInterceptor) :id=watchlistgatewayforstaging
-> <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the staging environment.</p>
+> <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the private staging environment.</p>
 
 **Kind**: static method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)  
@@ -250,7 +251,7 @@
 * * *
 
 ### WatchlistGateway.forDemo(requestInterceptor) :id=watchlistgatewayfordemo
-> <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the demo environment.</p>
+> <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the private demo environment.</p>
 
 **Kind**: static method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)  
@@ -264,7 +265,7 @@
 * * *
 
 ### WatchlistGateway.forProduction(requestInterceptor) :id=watchlistgatewayforproduction
-> <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the production environment.</p>
+> <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the public production environment.</p>
 
 **Kind**: static method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)  
