@@ -185,7 +185,10 @@
 * * *
 
 ### watchlistGateway.subscribe(messageCallback, statusCallback) :id=watchlistgatewaysubscribe
-> <p>Subscribes to remote changes to watchlists (requires native WebSocket support).</p>
+> <p>Subscribes to changes to watchlists (requires native WebSocket support). Notifications
+> will be generated if another application adds a new watchlist, modifies an existing watchlist,
+> or deletes an existing watchlist. Only one subscription is supported. Invoking this function
+> more than once will fail.</p>
 
 **Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: <code>Promise</code>  
@@ -340,17 +343,17 @@
 * * *
 
 ### Enums.SubscriptionStatus :id=enumssubscriptionstatus
-> <p>The mutually-exclusive states for a Subscription connection.</p>
+> <p>The mutually-exclusive states for a Subscription.</p>
 
 **Kind**: static enum of [<code>Enums</code>](#Enums)  
 **Properties**
 
 | Name | Description |
 | --- | --- |
-| IDLE | <p>The connection has not been initialized.</p> |
-| DISCONNECTED | <p>No connection is being negotiated.</p> |
-| CONNECTING | <p>The connection is being negotiated.</p> |
-| CONNECTED | <p>The connection is active.</p> |
+| IDLE | <p>The subscription has not been initialized.</p> |
+| DISCONNECTED | <p>No subscription is initialized (but inactive).</p> |
+| CONNECTING | <p>The subscription is attempting to activate.</p> |
+| CONNECTED | <p>The subscription is active.</p> |
 
 
 * * *
