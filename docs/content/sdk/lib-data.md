@@ -34,7 +34,7 @@
 
 | Name | Type | Description |
 | --- | --- | --- |
-| server.semver | <code>String</code> | <p>The version number of the remote service.</p> |
+| server.semver | <code>String</code> | <p>The remote service's software version number.</p> |
 | user.id | <code>String</code> | <p>The current user's identifier.</p> |
 | user.permissions | <code>String</code> | <p>The current user's permission level.</p> |
 
