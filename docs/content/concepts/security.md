@@ -41,7 +41,7 @@ A **context** is a container for users. Your **context identifier** will be prov
 │   │   └── watchlist 4
 ```
 
-Your **context identifier** and **user identiifers** are always ```String``` values.
+Your **context identifier** and **user identifiers** are always ```String``` values.
 
 ### JWT Signing
 
