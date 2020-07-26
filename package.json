@@ -45,6 +45,7 @@
     "gulp-rename": "^1.4.0",
     "gulp-run-command": "0.0.10",
     "gulp-replace": "^0.5.4",
+    "merge-stream": "^2.0.0",
     "jshint": "^2.10.3",
     "style-loader": "^1.2.1",
     "vinyl-buffer": "^1.0.1",
