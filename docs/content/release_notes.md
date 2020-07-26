@@ -3,10 +3,8 @@
 ## 4.0.0
 **Breaking Changes**
 
-* Renamed **WatchlistGateway.subscribe** function to **WatchlistGateway.subscribeWatchlists**.
+* Renamed ```WatchlistGateway.subscribe``` function to ```WatchlistGateway.subscribeWatchlists```.
 * Removed ```WatchlistGateway.clientId``` property.
-
-
 
 ## 3.3.2
 **Bug Fixes**
