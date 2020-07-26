@@ -41,15 +41,7 @@ A **context** is a container for users. Your **context identifier** will be prov
 │   │   └── watchlist 4
 ```
 
-Your **context identifier** is a ```String``` value, that must be:
-
-* assigned to the ```contextId``` property of each ```Watchlist``` you create, and
-* assigned to the ```contextId``` property of each JSON Web Token you create (see above).
-
-Each **user identifier** is ```String``` value, selected by you. These identifiers are:
-
-* assigned to the ```userId``` property of each ```Watchlist``` you create, and
-* assigned to the ```userId``` property of each JSON Web Token you create (see above).
+Your **context identifier** and **user identiifers** are always ```String``` values.
 
 ### JWT Signing
 
