@@ -20,9 +20,9 @@
 * [WatchlistGateway](#WatchlistGateway) ⇐ <code>Disposable</code>
     * _instance_
         * [.environment](#WatchlistGatewayenvironment) ⇒ <code>String</code>
-        * [.clientId](#WatchlistGatewayclientId) ⇒ <code>String</code>
         * [.start()](#WatchlistGatewaystart) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
         * [.readWatchlists()](#WatchlistGatewayreadWatchlists) ⇒ <code>Promise.&lt;Object&gt;</code>
+        * [.subscribeWatchlists(messageCallback, statusCallback, [echo])](#WatchlistGatewaysubscribeWatchlists) ⇒ <code>Promise</code>
         * [.createWatchlist(watchlist)](#WatchlistGatewaycreateWatchlist) ⇒ <code>Promise.&lt;Object&gt;</code>
         * [.editWatchlist(watchlistId, watchlist)](#WatchlistGatewayeditWatchlist) ⇒ <code>Promise.&lt;Object&gt;</code>
         * [.editPreferences(watchlist, preferences)](#WatchlistGatewayeditPreferences) ⇒ <code>Promise.&lt;Object&gt;</code>
@@ -30,7 +30,6 @@
         * [.addSymbol(watchlist, entry)](#WatchlistGatewayaddSymbol) ⇒ <code>Promise.&lt;Object&gt;</code>
         * [.deleteSymbol(watchlist, symbol)](#WatchlistGatewaydeleteSymbol) ⇒ <code>Promise.&lt;Object&gt;</code>
         * [.querySymbol(symbol)](#WatchlistGatewayquerySymbol) ⇒ [<code>Promise.&lt;Array.&lt;Schema.WatchlistSymbolQueryResult&gt;&gt;</code>](/content/sdk/lib-data?id=schemawatchlistsymbolqueryresult)
-        * [.subscribe(messageCallback, statusCallback)](#WatchlistGatewaysubscribe) ⇒ <code>Promise</code>
         * [.readServiceMetadata()](#WatchlistGatewayreadServiceMetadata) ⇒ [<code>Promise.&lt;Schema.WatchlistServiceMetadata&gt;</code>](/content/sdk/lib-data?id=schemawatchlistservicemetadata)
     * _static_
         * [.forTest(requestInterceptor)](#WatchlistGatewayforTest) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
@@ -46,15 +45,6 @@
 
 ### watchlistGateway.environment :id=watchlistgatewayenvironment
 > <p>A description of the environment (e.g. development, production, etc).</p>
-
-**Kind**: instance property of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: <code>String</code>  
-**Access**: public  
-
-* * *
-
-### watchlistGateway.clientId :id=watchlistgatewayclientid
-> <p>A unique identifier for the instance.</p>
 
 **Kind**: instance property of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: <code>String</code>  
@@ -79,6 +69,25 @@
 **Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: <code>Promise.&lt;Object&gt;</code>  
 **Access**: public  
+
+* * *
+
+### watchlistGateway.subscribeWatchlists(messageCallback, statusCallback, [echo]) :id=watchlistgatewaysubscribewatchlists
+> <p>Subscribes watchlists. The Only one subscription is supported. Invoking this
+> function more than once will fail. At present, a subscription requires native
+> WebSocket support (in a browser). This will be enhanced to work in Node.js
+> environments soon.</p>
+
+**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
+**Returns**: <code>Promise</code>  
+**Access**: public  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| messageCallback | [<code>SubscriptionMessageCallback</code>](#CallbacksSubscriptionMessageCallback) | <p>Invoked when a watchlist is added, changed, or removed.</p> |
+| statusCallback | [<code>SubscriptionStatusCallback</code>](#CallbacksSubscriptionStatusCallback) | <p>Invoked when the state of the subscription changes.</p> |
+| [echo] | <code>Boolean</code> | <p>If true, changes made by this instance will cause the <code>messageCallback</code> to be invoked.</p> |
+
 
 * * *
 
@@ -112,7 +121,8 @@
 * * *
 
 ### watchlistGateway.editPreferences(watchlist, preferences) :id=watchlistgatewayeditpreferences
-> <p>Updates the preference data for an existing watchlist.</p>
+> <p>Saves an existing watchlist -- specifically, the <code>preferences</code> property is
+> overwritten.</p>
 
 **Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: <code>Promise.&lt;Object&gt;</code>  
@@ -184,26 +194,8 @@
 
 * * *
 
-### watchlistGateway.subscribe(messageCallback, statusCallback) :id=watchlistgatewaysubscribe
-> <p>Subscribes to changes to watchlists (requires native WebSocket support). Notifications
-> will be generated if another application adds a new watchlist, modifies an existing watchlist,
-> or deletes an existing watchlist. Only one subscription is supported. Invoking this function
-> more than once will fail.</p>
-
-**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: <code>Promise</code>  
-**Access**: public  
-
-| Param | Type |
-| --- | --- |
-| messageCallback | [<code>SubscriptionMessageCallback</code>](#CallbacksSubscriptionMessageCallback) | 
-| statusCallback | [<code>SubscriptionStatusCallback</code>](#CallbacksSubscriptionStatusCallback) | 
-
-
-* * *
-
 ### watchlistGateway.readServiceMetadata() :id=watchlistgatewayreadservicemetadata
-> <p>Retrieves infomration regarding the remote service (e.g. version number, current user identifier, etc).</p>
+> <p>Retrieves information regarding the remote service (e.g. version number, current user identifier, etc).</p>
 
 **Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;Schema.WatchlistServiceMetadata&gt;</code>](/content/sdk/lib-data?id=schemawatchlistservicemetadata)  
