@@ -5,7 +5,6 @@ You can _quickly_ build an application that allows your users to:
 * Create and name new _watchlists_
 * Add investments to watchlists
 * Remove investments from watchlists
-* Sort investments watchlists
 * Delete watchlists
 
 ## Rich User Experiences
