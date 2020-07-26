@@ -34,7 +34,7 @@ This SDK is compatible with Node.js.
 
 #### Direct Access
 
-The Barchart Watchlist Service implements a REST interface via HTTP. You may choose to interact with the service directly, bypassing this SDK entirely. An [OpenAPI](https://www.openapis.org/) specification of the interface can be found in the [API Reference](/content/api_reference) section.
+The Barchart Watchlist Service implements a REST interface via HTTP. You may choose to interact with the remote service directly, bypassing this SDK entirely. An [OpenAPI](https://www.openapis.org/) specification of the interface can be found in the [API Reference](/content/api_reference) section.
 
 #### Other
 
