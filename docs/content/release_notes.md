@@ -1,5 +1,10 @@
 # Release Notes
 
+## 5.0.0
+**Breaking Changes**
+
+* The function signature of ```WatchlistGateway.edit``` changed. The ```watchlistId``` argument was removed. The watchlist identifier must be present on the ```watchlist``` argument as ```watchlist.id```.
+
 ## 4.0.0
 **Breaking Changes**
 

@@ -21,14 +21,14 @@
     * _instance_
         * [.environment](#WatchlistGatewayenvironment) ⇒ <code>String</code>
         * [.start()](#WatchlistGatewaystart) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
-        * [.readWatchlists()](#WatchlistGatewayreadWatchlists) ⇒ <code>Promise.&lt;Object&gt;</code>
+        * [.readWatchlists()](#WatchlistGatewayreadWatchlists) ⇒ [<code>Promise.&lt;Array.&lt;Schema.Watchlist&gt;&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)
         * [.subscribeWatchlists(messageCallback, statusCallback, [echo])](#WatchlistGatewaysubscribeWatchlists) ⇒ <code>Promise</code>
-        * [.createWatchlist(watchlist)](#WatchlistGatewaycreateWatchlist) ⇒ <code>Promise.&lt;Object&gt;</code>
-        * [.editWatchlist(watchlistId, watchlist)](#WatchlistGatewayeditWatchlist) ⇒ <code>Promise.&lt;Object&gt;</code>
-        * [.editPreferences(watchlist, preferences)](#WatchlistGatewayeditPreferences) ⇒ <code>Promise.&lt;Object&gt;</code>
-        * [.deleteWatchlist(watchlist)](#WatchlistGatewaydeleteWatchlist) ⇒ <code>Promise.&lt;Object&gt;</code>
-        * [.addSymbol(watchlist, entry)](#WatchlistGatewayaddSymbol) ⇒ <code>Promise.&lt;Object&gt;</code>
-        * [.deleteSymbol(watchlist, symbol)](#WatchlistGatewaydeleteSymbol) ⇒ <code>Promise.&lt;Object&gt;</code>
+        * [.createWatchlist(watchlist)](#WatchlistGatewaycreateWatchlist) ⇒ [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)
+        * [.editWatchlist(watchlist)](#WatchlistGatewayeditWatchlist) ⇒ [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)
+        * [.deleteWatchlist(id)](#WatchlistGatewaydeleteWatchlist) ⇒ <code>Promise.&lt;Object&gt;</code>
+        * [.editPreferences(id, preferences)](#WatchlistGatewayeditPreferences) ⇒ [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)
+        * [.addSymbol(id, entry)](#WatchlistGatewayaddSymbol) ⇒ [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)
+        * [.deleteSymbol(id, symbol)](#WatchlistGatewaydeleteSymbol) ⇒ [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)
         * [.querySymbol(symbol)](#WatchlistGatewayquerySymbol) ⇒ [<code>Promise.&lt;Array.&lt;Schema.WatchlistSymbolQueryResult&gt;&gt;</code>](/content/sdk/lib-data?id=schemawatchlistsymbolqueryresult)
         * [.readServiceMetadata()](#WatchlistGatewayreadServiceMetadata) ⇒ [<code>Promise.&lt;Schema.WatchlistServiceMetadata&gt;</code>](/content/sdk/lib-data?id=schemawatchlistservicemetadata)
     * _static_
@@ -67,7 +67,7 @@
 > <p>Retrieves all watchlists for the current user.</p>
 
 **Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: <code>Promise.&lt;Object&gt;</code>  
+**Returns**: [<code>Promise.&lt;Array.&lt;Schema.Watchlist&gt;&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)  
 **Access**: public  
 
 * * *
@@ -95,87 +95,85 @@
 > <p>Saves a new watchlist.</p>
 
 **Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: <code>Promise.&lt;Object&gt;</code>  
+**Returns**: [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)  
 **Access**: public  
 
-| Param | Type |
-| --- | --- |
-| watchlist | <code>Object</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| watchlist | [<code>Schema.Watchlist</code>](/content/sdk/lib-data?id=schemawatchlist) | <p>The watchlist to save.</p> |
 
 
 * * *
 
-### watchlistGateway.editWatchlist(watchlistId, watchlist) :id=watchlistgatewayeditwatchlist
+### watchlistGateway.editWatchlist(watchlist) :id=watchlistgatewayeditwatchlist
 > <p>Saves an existing watchlist.</p>
 
 **Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: <code>Promise.&lt;Object&gt;</code>  
+**Returns**: [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)  
 **Access**: public  
 
-| Param | Type |
-| --- | --- |
-| watchlistId | <code>String</code> | 
-| watchlist | <code>Object</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| watchlist | [<code>Schema.Watchlist</code>](/content/sdk/lib-data?id=schemawatchlist) | <p>The watchlist to save.</p> |
 
 
 * * *
 
-### watchlistGateway.editPreferences(watchlist, preferences) :id=watchlistgatewayeditpreferences
-> <p>Saves an existing watchlist -- specifically, the <code>preferences</code> property is
-> overwritten.</p>
-
-**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: <code>Promise.&lt;Object&gt;</code>  
-**Access**: public  
-
-| Param | Type |
-| --- | --- |
-| watchlist | <code>String</code> | 
-| preferences | <code>Object</code> | 
-
-
-* * *
-
-### watchlistGateway.deleteWatchlist(watchlist) :id=watchlistgatewaydeletewatchlist
+### watchlistGateway.deleteWatchlist(id) :id=watchlistgatewaydeletewatchlist
 > <p>Deletes an existing watchlist.</p>
 
 **Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: <code>Promise.&lt;Object&gt;</code>  
 **Access**: public  
 
-| Param | Type |
-| --- | --- |
-| watchlist | <code>String</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| id | <code>String</code> | <p>The identifier of the watchlist to delete.</p> |
 
 
 * * *
 
-### watchlistGateway.addSymbol(watchlist, entry) :id=watchlistgatewayaddsymbol
+### watchlistGateway.editPreferences(id, preferences) :id=watchlistgatewayeditpreferences
+> <p>Saves an existing watchlist - overwriting its <code>preferences</code> property.</p>
+
+**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
+**Returns**: [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)  
+**Access**: public  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| id | <code>String</code> | <p>The identifier of the watchlist to edit.</p> |
+| preferences | [<code>Schema.WatchlistPreferences</code>](/content/sdk/lib-data?id=schemawatchlistpreferences) | <p>The preferences object to save.</p> |
+
+
+* * *
+
+### watchlistGateway.addSymbol(id, entry) :id=watchlistgatewayaddsymbol
 > <p>Adds a new entry (i.e. symbol) to an existing watchlist.</p>
 
 **Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: <code>Promise.&lt;Object&gt;</code>  
+**Returns**: [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)  
 **Access**: public  
 
-| Param | Type |
-| --- | --- |
-| watchlist | <code>String</code> | 
-| entry | <code>Object</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| id | <code>String</code> | <p>The identifier of the watchlist to edit.</p> |
+| entry | [<code>Schema.WatchlistEntry</code>](/content/sdk/lib-data?id=schemawatchlistentry) | <p>The entry to add.</p> |
 
 
 * * *
 
-### watchlistGateway.deleteSymbol(watchlist, symbol) :id=watchlistgatewaydeletesymbol
+### watchlistGateway.deleteSymbol(id, symbol) :id=watchlistgatewaydeletesymbol
 > <p>Deletes an existing entry (i.e. symbol) from an existing watchlist.</p>
 
 **Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
-**Returns**: <code>Promise.&lt;Object&gt;</code>  
+**Returns**: [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)  
 **Access**: public  
 
-| Param | Type |
-| --- | --- |
-| watchlist | <code>String</code> | 
-| symbol | <code>String</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| id | <code>String</code> | <p>The identifier of the watchlist to edit.</p> |
+| symbol | <code>String</code> | <p>The symbol to remove.</p> |
 
 
 * * *
