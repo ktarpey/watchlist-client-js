@@ -58,7 +58,7 @@ If you choose to work directly with the REST interface, you won't need to perfor
 
 ## Creating a Watchlist
 
-First, we must construct an object which conforms to the ```Watchlist``` schema. Here is simple ```Watchlist``` object:
+First, we must construct an object which conforms to the [```Watchlist```](content/sdk/lib-data?id=schemawatchlist) schema. Here is a simple example:
 
 ```json
 {
@@ -76,11 +76,24 @@ First, we must construct an object which conforms to the ```Watchlist``` schema.
 
 ## Saving a Watchlist
 
-Once you've constructed a ```Watchlist``` object, you need to save it. The backend will assign an ```id``` and return a _complete_ ```Watchlist``` object to you.
+Once you've constructed a ```Watchlist``` object, you need to save it. The backend will assign ```id```, ```user```, and ```context``` property values and return the _completed_ ```Watchlist``` object to you.
 
 #### Using the SDK
 
-_SDK documentation will be added soon._
+```js
+const watchlist = {
+	name: 'Notable Tech Stocks',
+	entries: [
+		{ symbol: 'TSLA' },
+		{ symbol: 'AAPL' }
+	]
+};
+
+watchlistGateway.createWatchlist(watchlist)
+	.then((created) => {
+		console.log(`Watchlist created with identifier [ ${created.id} ]`);
+	});
+```
 
 #### Using the API
 
@@ -120,11 +133,16 @@ The result will be a complete ```Watchlist``` object, similar to the example bel
 
 ## Retrieving Your Watchlists
 
-Once you've saved a watchlist, you can retrieve all watchlists (for the current user).
+You can retrieve all watchlists (for the current user), as follows:
 
 #### Using the SDK
 
-_SDK documentation will be added soon._
+```js
+watchlistGateway.readWatchlists()
+	.then((watchlists) => {
+		console.log(`You have [ ${watchlists.length} ] watchlist(s)`);
+	});
+```
 
 #### Using the API
 
@@ -137,7 +155,7 @@ curl 'https://watchlist-test.aws.barchart.com/v1/watchlists' \
 
 ## Adding a Symbol
 
-After a ```Watchlist``` has been saved, additional symbols can be added. Each symbol is wrapped in an ```Entry``` object. Here is an example:
+After a ```Watchlist``` has been saved, additional symbols can be added. Each symbol is wrapped in a [```WatchlistEntry```](content/sdk/lib-data?id=schemawatchlistentry) object. Here is the simplest example:
 
 ```json
 {
@@ -145,9 +163,20 @@ After a ```Watchlist``` has been saved, additional symbols can be added. Each sy
 }
 ```
 
+You can add additional, ad hoc properties to any ```WatchlistEntry``` object. However, only ```String```, ```Number```, or ```Boolean``` values are permitted for ad hoc properties.
+
 #### Using the SDK
 
-_SDK documentation will be added soon._
+```js
+const entry = {
+	symbol: 'CSCO'
+};
+
+watchlistGateway.addSymbol(watchlist.id, entry)
+	.then((updated) => {
+		console.log(`Watchlist [ ${updated.id} ] now as [ ${updated.entries.length} ] entries`);
+	});
+```
 
 #### Using the API
 
@@ -166,7 +195,14 @@ After a ```Watchlist``` has been saved, you can remove symbols.
 
 #### Using the SDK
 
-_SDK documentation will be added soon._
+```js
+const symbol = 'CSCO';
+
+watchlistGateway.deleteSymbol(watchlist.id, symbol)
+	.then((updated) => {
+		console.log(`Watchlist [ ${updated.id} ] now as [ ${updated.entries.length} ] entries`);
+	});
+```
 
 #### Using the API
 
@@ -184,7 +220,12 @@ If desired, a watchlist can be _permanently_ deleted.
 
 #### Using the SDK
 
-_SDK documentation will be added soon._
+```js
+watchlistGateway.deleteWatchlist(watchlist.id)
+	.then(() => {
+		console.log('Watchlist [ ${watchlist.id} ] was deleted.');
+	});
+```
 
 #### Using the API
 
