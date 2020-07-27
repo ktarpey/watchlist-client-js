@@ -56,7 +56,7 @@ _SDK documentation will be added soon._
 
 If you choose to work directly with the REST interface, you won't need to perform an explicit "connect" action. Each HTTP request is independently authorized by the backend. You simply need to include a JWT token in the _Authorization_ header of each request.
 
-## Constructing Watchlists
+## Constructing a Watchlist
 
 First, we must construct an object which conforms to the [```Watchlist```](content/sdk/lib-data?id=schemawatchlist) schema. Here is a simple example:
 
@@ -74,7 +74,7 @@ First, we must construct an object which conforms to the [```Watchlist```](conte
 }
 ```
 
-## Saving Watchlists
+## Saving a Watchlist
 
 Once you've constructed a ```Watchlist``` object, you need to save it. The backend will assign ```id```, ```user```, and ```context``` property values and return the _completed_ ```Watchlist``` object to you.
 
@@ -131,7 +131,7 @@ The result will be a complete ```Watchlist``` object, similar to the example bel
 }
 ```
 
-## Retrieving Watchlists
+## Retrieving Your Watchlists
 
 You can retrieve all watchlists (for the current user), as follows:
 
@@ -153,7 +153,7 @@ curl 'https://watchlist-test.aws.barchart.com/v1/watchlists' \
   -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb250ZXh0SWQiOiJiYXJjaGFydCIsInVzZXJJZCI6Im1lIiwianRpIjoiOThjMjdjNmMtN2RlNS00MTQ4LTg4ZDgtNzgxN2M5M2E1OGE4IiwiaWF0IjoxNTk0MDcwNzgyLCJleHAiOjE1OTQwNzQzODJ9.Pm8O_SG-KBqj_BibPdKIwTIj4zmbIJ9v5MqJbqdgBfw'
 ```
 
-## Adding Symbols
+## Adding a Symbol
 
 After a ```Watchlist``` has been saved, additional symbols can be added. Each symbol is wrapped in a [```WatchlistEntry```](content/sdk/lib-data?id=schemawatchlistentry) object. Here is the simplest example:
 
@@ -189,7 +189,7 @@ curl 'https://watchlist-test.aws.barchart.com/v1/watchlists/425803d2-a98a-4ee3-9
   --data-binary '{"index":0,"entry":{"symbol":"CSCO"}}'
 ```
 
-## Removing Symbols
+## Removing a Symbol
 
 After a ```Watchlist``` has been saved, you can remove symbols.
 
@@ -214,7 +214,7 @@ curl 'https://watchlist-test.aws.barchart.com/v1/watchlists/425803d2-a98a-4ee3-9
   -H 'Content-Type: application/json;charset=UTF-8'
 ```
 
-## Deleting Watchlists
+## Deleting a Watchlist
 
 If desired, a watchlist can be _permanently_ deleted.
 
