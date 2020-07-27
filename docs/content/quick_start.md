@@ -3,7 +3,7 @@
 As a consumer of the Barchart Watchlist Service, you have two options:
 
 1. Connect and communicate with the backend _by embedding this SDK in your software_, or
-2. Connect and communicate with the backend _by direct interaction with the REST interface_.
+2. Connect and communicate with the backend _by direct interaction with the REST API_.
 
 **If you choose to use the SDK**, you can install it from NPM (Node Package Manager), as follows:
 
