@@ -23,12 +23,12 @@
     "API"
   ],
   "dependencies": {
-    "@barchart/common-js": "^3.8.0",
+    "@barchart/common-js": "^3.14.0",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.6.2",
-    "aws-sdk": "^2.715.0",
+    "@babel/core": "^7.10.5",
+    "aws-sdk": "^2.720.0",
     "babel-loader": "^8.1.0",
     "babelify": "^10.0.0",
     "browserify": "^16.5.0",
@@ -43,10 +43,10 @@
     "gulp-jshint": "~2.1.0",
     "gulp-prompt": "^1.2.0",
     "gulp-rename": "^1.4.0",
-    "gulp-run-command": "0.0.10",
     "gulp-replace": "^0.5.4",
-    "merge-stream": "^2.0.0",
+    "gulp-run-command": "0.0.10",
     "jshint": "^2.10.3",
+    "merge-stream": "^2.0.0",
     "style-loader": "^1.2.1",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
@@ -54,7 +54,7 @@
     "vue-json-viewer": "^2.2.13",
     "vue-loader": "^15.9.3",
     "vue-template-compiler": "^2.6.11",
-    "webpack": "^4.43.0",
+    "webpack": "^4.44.0",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
   },
