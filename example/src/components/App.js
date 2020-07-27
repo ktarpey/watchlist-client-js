@@ -4,7 +4,7 @@ import Section from './Section/Section.vue';
 import Footer from './Footer/Footer.vue';
 
 import WatchlistGateway from './../../../lib/gateway/WatchlistGateway';
-import JwtGateway from './../../../lib/gateway/jwt/JwtGateway';
+import JwtProvider from './../../../lib/gateway/jwt/JwtProvider';
 
 export default {
 	components: {
@@ -16,7 +16,7 @@ export default {
 	created() {
 		window.Barchart = { };
 
-		WatchlistGateway.forTest(JwtGateway.forTestClient('me'))
+		WatchlistGateway.forTest(JwtProvider.forTest('me', 'BARCHART'))
 			.then((gateway) => {
 				window.Barchart.gateway = gateway;
 

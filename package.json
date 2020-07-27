@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",
-    "aws-sdk": "^2.720.0",
+    "aws-sdk": "^2.721.0",
     "babel-loader": "^8.1.0",
     "babelify": "^10.0.0",
     "browserify": "^16.5.0",
@@ -51,7 +51,7 @@
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
     "vue": "^2.6.11",
-    "vue-json-viewer": "^2.2.13",
+    "vue-json-viewer": "^2.2.14",
     "vue-loader": "^15.9.3",
     "vue-template-compiler": "^2.6.11",
     "webpack": "^4.44.0",
