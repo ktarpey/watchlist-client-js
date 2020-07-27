@@ -56,7 +56,7 @@ _SDK documentation will be added soon._
 
 If you choose to work directly with the REST interface, you won't need to perform an explicit "connect" action. Each HTTP request is independently authorized by the backend. You simply need to include a JWT token in the _Authorization_ header of each request.
 
-## Constructing a Watchlist
+## Constructing Watchlists
 
 First, we must construct an object which conforms to the [```Watchlist```](content/sdk/lib-data?id=schemawatchlist) schema. Here is a simple example:
 
@@ -74,7 +74,7 @@ First, we must construct an object which conforms to the [```Watchlist```](conte
 }
 ```
 
-## Saving a Watchlist
+## Saving Watchlists
 
 Once you've constructed a ```Watchlist``` object, you need to save it. The backend will assign ```id```, ```user```, and ```context``` property values and return the _completed_ ```Watchlist``` object to you.
 
@@ -214,7 +214,7 @@ curl 'https://watchlist-test.aws.barchart.com/v1/watchlists/425803d2-a98a-4ee3-9
   -H 'Content-Type: application/json;charset=UTF-8'
 ```
 
-## Deleting a Watchlist
+## Deleting Watchlists
 
 If desired, a watchlist can be _permanently_ deleted.
 
