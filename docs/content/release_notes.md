@@ -1,5 +1,10 @@
 # Release Notes
 
+## 5.0.2
+**Bug Fixes**
+
+* Added missing "is" dependency in the WatchlistGateway.
+
 ## 5.0.1
 **New Features**
 
