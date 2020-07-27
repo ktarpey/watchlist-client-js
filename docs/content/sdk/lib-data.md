@@ -33,9 +33,8 @@
 * * *
 
 ### Schema.WatchlistEntry :id=schemawatchlistentry
-> <p>An item in the watchlist. A <code>symbol</code> property must exist. Properties with
-> other names may be added -- as long as they have <code>String</code>, <code>Boolean</code>,
-> or <code>Number</code> values.</p>
+> <p>An item in the watchlist. A <code>symbol</code> property must exist. Additional ad hoc properties
+> can be added -- as long as they have <code>String</code>, <code>Boolean</code>, or <code>Number</code> values.</p>
 
 **Kind**: static typedef of [<code>Schema</code>](#Schema)  
 **Properties**

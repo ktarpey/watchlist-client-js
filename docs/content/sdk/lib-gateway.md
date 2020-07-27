@@ -27,7 +27,7 @@
         * [.editWatchlist(watchlist)](#WatchlistGatewayeditWatchlist) ⇒ [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)
         * [.deleteWatchlist(id)](#WatchlistGatewaydeleteWatchlist) ⇒ <code>Promise.&lt;Object&gt;</code>
         * [.editPreferences(id, preferences)](#WatchlistGatewayeditPreferences) ⇒ [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)
-        * [.addSymbol(id, entry)](#WatchlistGatewayaddSymbol) ⇒ [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)
+        * [.addSymbol(id, entry, [index])](#WatchlistGatewayaddSymbol) ⇒ [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)
         * [.deleteSymbol(id, symbol)](#WatchlistGatewaydeleteSymbol) ⇒ [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)
         * [.querySymbol(symbol)](#WatchlistGatewayquerySymbol) ⇒ [<code>Promise.&lt;Array.&lt;Schema.WatchlistSymbolQueryResult&gt;&gt;</code>](/content/sdk/lib-data?id=schemawatchlistsymbolqueryresult)
         * [.readServiceMetadata()](#WatchlistGatewayreadServiceMetadata) ⇒ [<code>Promise.&lt;Schema.WatchlistServiceMetadata&gt;</code>](/content/sdk/lib-data?id=schemawatchlistservicemetadata)
@@ -148,7 +148,7 @@
 
 * * *
 
-### watchlistGateway.addSymbol(id, entry) :id=watchlistgatewayaddsymbol
+### watchlistGateway.addSymbol(id, entry, [index]) :id=watchlistgatewayaddsymbol
 > <p>Adds a new entry (i.e. symbol) to an existing watchlist.</p>
 
 **Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
@@ -159,6 +159,7 @@
 | --- | --- | --- |
 | id | <code>String</code> | <p>The identifier of the watchlist to edit.</p> |
 | entry | [<code>Schema.WatchlistEntry</code>](/content/sdk/lib-data?id=schemawatchlistentry) | <p>The entry to add.</p> |
+| [index] | <code>Number</code> | <p>The index to insert the entry (if absent, the entry will be placed at the end of the list).</p> |
 
 
 * * *
