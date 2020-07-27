@@ -56,7 +56,7 @@ _SDK documentation will be added soon._
 
 If you choose to work directly with the REST interface, you won't need to perform an explicit "connect" action. Each HTTP request is independently authorized by the backend. You simply need to include a JWT token in the _Authorization_ header of each request.
 
-## Creating a Watchlist
+## Constructing a Watchlist
 
 First, we must construct an object which conforms to the [```Watchlist```](content/sdk/lib-data?id=schemawatchlist) schema. Here is a simple example:
 
