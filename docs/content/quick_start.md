@@ -153,7 +153,7 @@ curl 'https://watchlist-test.aws.barchart.com/v1/watchlists' \
   -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb250ZXh0SWQiOiJiYXJjaGFydCIsInVzZXJJZCI6Im1lIiwianRpIjoiOThjMjdjNmMtN2RlNS00MTQ4LTg4ZDgtNzgxN2M5M2E1OGE4IiwiaWF0IjoxNTk0MDcwNzgyLCJleHAiOjE1OTQwNzQzODJ9.Pm8O_SG-KBqj_BibPdKIwTIj4zmbIJ9v5MqJbqdgBfw'
 ```
 
-## Adding a Symbol
+## Adding Symbols
 
 After a ```Watchlist``` has been saved, additional symbols can be added. Each symbol is wrapped in a [```WatchlistEntry```](content/sdk/lib-data?id=schemawatchlistentry) object. Here is the simplest example:
 
@@ -189,7 +189,7 @@ curl 'https://watchlist-test.aws.barchart.com/v1/watchlists/425803d2-a98a-4ee3-9
   --data-binary '{"index":0,"entry":{"symbol":"CSCO"}}'
 ```
 
-## Removing a Symbol
+## Removing Symbols
 
 After a ```Watchlist``` has been saved, you can remove symbols.
 
