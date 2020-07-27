@@ -223,7 +223,7 @@ If desired, a watchlist can be _permanently_ deleted.
 ```js
 watchlistGateway.deleteWatchlist(watchlist.id)
 	.then(() => {
-		console.log('Watchlist [ ${watchlist.id} ] was deleted.');
+		console.log(`Watchlist [ ${watchlist.id} ] was deleted.`);
 	});
 ```
 
