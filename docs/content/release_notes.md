@@ -1,9 +1,19 @@
 # Release Notes
 
+## 6.0.0
+**Breaking Changes**
+
+* The mechanism for passing JSON Web Tokens (JWT) to the ```WatchlistGateway``` has changed. Consumers are now required to provide ``JwtProvider``` instances instead of a ```RequestInterceptor``` instances. Here are the specifics:
+  * The ```RequestInterceptor``` argument was replaced with a ```JwtProvider``` argument on static factory functions (e.g. ```WatchlistGateway.forProduction```).
+  * The ```RequestInterceptor``` argument was removed from the ```WatchlistGateway``` constructor.
+  * The ```WatchlistGateway.start``` function was renamed to ```WatchlistGateway.connect``` and now has a ```JwtProvider``` argument.
+  * The ```JwtGateway``` and ```JwtEndpoint``` classes were removed.
+  * Static factory functions for impersonating users in the ```test``` and ```development``` environments were added. See ```JwtProvider.forTest``` and ```JwtProvider.forDevelopment```.
+
 ## 5.0.2
 **Bug Fixes**
 
-* Added missing "is" dependency in the WatchlistGateway.
+* Corrected missing dependency which caused ```WatchlistGateway``` to be completely inoperable.
 
 ## 5.0.1
 **New Features**

@@ -20,7 +20,7 @@
 * [WatchlistGateway](#WatchlistGateway) ⇐ <code>Disposable</code>
     * _instance_
         * [.environment](#WatchlistGatewayenvironment) ⇒ <code>String</code>
-        * [.start()](#WatchlistGatewaystart) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
+        * [.connect(jwtProvider)](#WatchlistGatewayconnect) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
         * [.readWatchlists()](#WatchlistGatewayreadWatchlists) ⇒ [<code>Promise.&lt;Array.&lt;Schema.Watchlist&gt;&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)
         * [.subscribeWatchlists(messageCallback, statusCallback, [echo])](#WatchlistGatewaysubscribeWatchlists) ⇒ <code>Promise</code>
         * [.createWatchlist(watchlist)](#WatchlistGatewaycreateWatchlist) ⇒ [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)
@@ -32,13 +32,13 @@
         * [.querySymbol(symbol)](#WatchlistGatewayquerySymbol) ⇒ [<code>Promise.&lt;Array.&lt;Schema.WatchlistSymbolQueryResult&gt;&gt;</code>](/content/sdk/lib-data?id=schemawatchlistsymbolqueryresult)
         * [.readServiceMetadata()](#WatchlistGatewayreadServiceMetadata) ⇒ [<code>Promise.&lt;Schema.WatchlistServiceMetadata&gt;</code>](/content/sdk/lib-data?id=schemawatchlistservicemetadata)
     * _static_
-        * [.forTest(requestInterceptor)](#WatchlistGatewayforTest) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
-        * [.forDevelopment(requestInterceptor)](#WatchlistGatewayforDevelopment) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
-        * [.forStaging(requestInterceptor)](#WatchlistGatewayforStaging) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
-        * [.forDemo(requestInterceptor)](#WatchlistGatewayforDemo) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
-        * [.forProduction(requestInterceptor)](#WatchlistGatewayforProduction) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
+        * [.forTest(jwtProvider)](#WatchlistGatewayforTest) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
+        * [.forDevelopment(jwtProvider)](#WatchlistGatewayforDevelopment) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
+        * [.forStaging(jwtProvider)](#WatchlistGatewayforStaging) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
+        * [.forDemo(jwtProvider)](#WatchlistGatewayforDemo) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
+        * [.forProduction(jwtProvider)](#WatchlistGatewayforProduction) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
     * _constructor_
-        * [new WatchlistGateway(protocol, host, port, environment, [requestInterceptor])](#new_WatchlistGateway_new)
+        * [new WatchlistGateway(protocol, host, port, environment, [webSocketProtocol], [webSocketHost])](#new_WatchlistGateway_new)
 
 
 * * *
@@ -52,7 +52,7 @@
 
 * * *
 
-### watchlistGateway.start() :id=watchlistgatewaystart
+### watchlistGateway.connect(jwtProvider) :id=watchlistgatewayconnect
 > <p>Attempts to establish a connection to the backend. This function should be invoked
 > immediately following instantiation. Once the resulting promise resolves, a
 > connection has been established and other instance methods can be used.</p>
@@ -60,6 +60,11 @@
 **Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)  
 **Access**: public  
+
+| Param | Type |
+| --- | --- |
+| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-gateway-jwt?id=jwtprovider) | 
+
 
 * * *
 
@@ -202,86 +207,87 @@
 
 * * *
 
-### WatchlistGateway.forTest(requestInterceptor) :id=watchlistgatewayfortest
+### WatchlistGateway.forTest(jwtProvider) :id=watchlistgatewayfortest
 > <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the public test environment.</p>
 
 **Kind**: static method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)  
 **Access**: public  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| requestInterceptor | <code>RequestInterceptor</code> \| <code>Promise.&lt;RequestInterceptor&gt;&#x3D;</code> | <p>A request interceptor used with each request (typically used to inject JWT tokens).</p> |
+| Param | Type |
+| --- | --- |
+| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-gateway-jwt?id=jwtprovider) | 
 
 
 * * *
 
-### WatchlistGateway.forDevelopment(requestInterceptor) :id=watchlistgatewayfordevelopment
+### WatchlistGateway.forDevelopment(jwtProvider) :id=watchlistgatewayfordevelopment
 > <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the private development environment.</p>
 
 **Kind**: static method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)  
 **Access**: public  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| requestInterceptor | <code>RequestInterceptor</code> \| <code>Promise.&lt;RequestInterceptor&gt;&#x3D;</code> | <p>A request interceptor used with each request (typically used to inject JWT tokens).</p> |
+| Param | Type |
+| --- | --- |
+| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-gateway-jwt?id=jwtprovider) | 
 
 
 * * *
 
-### WatchlistGateway.forStaging(requestInterceptor) :id=watchlistgatewayforstaging
+### WatchlistGateway.forStaging(jwtProvider) :id=watchlistgatewayforstaging
 > <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the private staging environment.</p>
 
 **Kind**: static method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)  
 **Access**: public  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| requestInterceptor | <code>RequestInterceptor</code> \| <code>Promise.&lt;RequestInterceptor&gt;&#x3D;</code> | <p>A request interceptor used with each request (typically used to inject JWT tokens).</p> |
+| Param | Type |
+| --- | --- |
+| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-gateway-jwt?id=jwtprovider) | 
 
 
 * * *
 
-### WatchlistGateway.forDemo(requestInterceptor) :id=watchlistgatewayfordemo
+### WatchlistGateway.forDemo(jwtProvider) :id=watchlistgatewayfordemo
 > <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the private demo environment.</p>
 
 **Kind**: static method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)  
 **Access**: public  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| requestInterceptor | <code>RequestInterceptor</code> \| <code>Promise.&lt;RequestInterceptor&gt;&#x3D;</code> | <p>A request interceptor used with each request (typically used to inject JWT tokens).</p> |
+| Param | Type |
+| --- | --- |
+| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-gateway-jwt?id=jwtprovider) | 
 
 
 * * *
 
-### WatchlistGateway.forProduction(requestInterceptor) :id=watchlistgatewayforproduction
+### WatchlistGateway.forProduction(jwtProvider) :id=watchlistgatewayforproduction
 > <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the public production environment.</p>
 
 **Kind**: static method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)  
 **Access**: public  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| requestInterceptor | <code>RequestInterceptor</code> \| <code>Promise.&lt;RequestInterceptor&gt;&#x3D;</code> | <p>A request interceptor used with each request (typically used to inject JWT tokens).</p> |
+| Param | Type |
+| --- | --- |
+| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-gateway-jwt?id=jwtprovider) | 
 
 
 * * *
 
-### new WatchlistGateway(protocol, host, port, environment, [requestInterceptor]) :id=new_watchlistgateway_new
+### new WatchlistGateway(protocol, host, port, environment, [webSocketProtocol], [webSocketHost]) :id=new_watchlistgateway_new
 **Kind**: constructor of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| protocol | <code>String</code> | <p>The protocol to use (either HTTP or HTTPS).</p> |
-| host | <code>String</code> | <p>The host name of the Watchlist web service.</p> |
+| protocol | <code>String</code> | <p>The protocol of the of the Watchlist web service (either HTTP or HTTPS).</p> |
+| host | <code>String</code> | <p>The hostname of the Watchlist web service.</p> |
 | port | <code>Number</code> | <p>The TCP port number of the Watchlist web service.</p> |
 | environment | <code>String</code> | <p>A description of the environment we're connecting to.</p> |
-| [requestInterceptor] | <code>RequestInterceptor</code> | <p>A request interceptor used with each request (typically used to inject JWT tokens).</p> |
+| [webSocketProtocol] | <code>String</code> | <p>The protocol of the Watchlist subscription service (either WS or WSS).</p> |
+| [webSocketHost] | <code>String</code> | <p>The hostname of the Watchlist subscription service.</p> |
 
 
 * * *

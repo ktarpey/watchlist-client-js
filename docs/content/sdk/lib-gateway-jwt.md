@@ -1,169 +1,104 @@
 ## Contents {docsify-ignore}
 
-* [JwtEndpoint](#JwtEndpoint) 
+* [JwtProvider](#JwtProvider) 
 
-* [JwtGateway](#JwtGateway) 
+* [Callbacks](#Callbacks) 
 
 
 * * *
 
-## JwtEndpoint :id=jwtendpoint
-> <p>Static utilities for JWT token generation (used for development purposes only).</p>
+## JwtProvider :id=jwtprovider
+> <p>Generates and caches a signed token (using a delegate). The cached token
+> is refreshed periodically.</p>
 
 **Kind**: global class  
 **Access**: public  
+**Import**: @barchart/watchlist-client-js/lib/gateway/jwt/JwtProvider  
+**File**: /lib/gateway/jwt/JwtProvider.js  
 
-* [JwtEndpoint](#JwtEndpoint)
-    * _static_
-        * [.forDevelopment(user)](#JwtEndpointforDevelopment) ⇒ <code>Endpoint</code>
-        * [.forTest(user)](#JwtEndpointforTest) ⇒ <code>Endpoint</code>
-        * [.forDemo(user)](#JwtEndpointforDemo) ⇒ <code>Endpoint</code>
-
-
-* * *
-
-### JwtEndpoint.forDevelopment(user) :id=jwtendpointfordevelopment
-> <p>Creates and starts a new [JwtEndpoint](/content/sdk/lib-gateway-jwt?id=jwtendpoint) for use in the development environment.</p>
-
-**Kind**: static method of [<code>JwtEndpoint</code>](#JwtEndpoint)  
-**Returns**: <code>Endpoint</code>  
-**Access**: public  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| user | <code>String</code> | <p>The identifier of the user to impersonate.</p> |
-
-
-* * *
-
-### JwtEndpoint.forTest(user) :id=jwtendpointfortest
-> <p>Creates and starts a new [JwtEndpoint](/content/sdk/lib-gateway-jwt?id=jwtendpoint) for use in the test environment.</p>
-
-**Kind**: static method of [<code>JwtEndpoint</code>](#JwtEndpoint)  
-**Returns**: <code>Endpoint</code>  
-**Access**: public  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| user | <code>String</code> | <p>The identifier of the user to impersonate.</p> |
-
-
-* * *
-
-### JwtEndpoint.forDemo(user) :id=jwtendpointfordemo
-> <p>Creates and starts a new [JwtEndpoint](/content/sdk/lib-gateway-jwt?id=jwtendpoint) for use in the demo environment.</p>
-
-**Kind**: static method of [<code>JwtEndpoint</code>](#JwtEndpoint)  
-**Returns**: <code>Endpoint</code>  
-**Access**: public  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| user | <code>String</code> | <p>The identifier of the user to impersonate.</p> |
-
-
-* * *
-
-## JwtGateway :id=jwtgateway
-> <p>Web service gateway for obtaining JWT tokens (for development purposes).</p>
-
-**Kind**: global class  
-**Extends**: <code>Disposable</code>  
-**Access**: public  
-
-* [JwtGateway](#JwtGateway) ⇐ <code>Disposable</code>
+* [JwtProvider](#JwtProvider)
     * _instance_
-        * [.start()](#JwtGatewaystart) ⇒ [<code>Promise.&lt;JwtGateway&gt;</code>](#JwtGateway)
-        * [.readToken()](#JwtGatewayreadToken) ⇒ <code>Promise.&lt;String&gt;</code>
-        * [.toRequestInterceptor()](#JwtGatewaytoRequestInterceptor) ⇒ <code>RequestInterceptor</code>
+        * [.getToken()](#JwtProvidergetToken) ⇒ <code>Promise.&lt;String&gt;</code>
     * _static_
-        * [.forDevelopmentClient(userId)](#JwtGatewayforDevelopmentClient) ⇒ <code>Promise.&lt;RequestInterceptor&gt;</code>
-        * [.forTestClient(userId)](#JwtGatewayforTestClient) ⇒ <code>Promise.&lt;RequestInterceptor&gt;</code>
-        * [.forDemoClient(userId)](#JwtGatewayforDemoClient) ⇒ <code>Promise.&lt;RequestInterceptor&gt;</code>
+        * [.forTest(userId, contextId, [permissions])](#JwtProviderforTest) ⇒ [<code>JwtProvider</code>](#JwtProvider)
+        * [.forDevelopment(userId, contextId, [permissions])](#JwtProviderforDevelopment) ⇒ [<code>JwtProvider</code>](#JwtProvider)
     * _constructor_
-        * [new JwtGateway(endpoint, [refreshInterval])](#new_JwtGateway_new)
+        * [new JwtProvider(generator, interval)](#new_JwtProvider_new)
 
 
 * * *
 
-### jwtGateway.start() :id=jwtgatewaystart
-> <p>Initializes the connection to the remote server and returns a promise
-> containing the current instance</p>
+### jwtProvider.getToken() :id=jwtprovidergettoken
+> <p>Reads the current token, refreshing if necessary.</p>
 
-**Kind**: instance method of [<code>JwtGateway</code>](#JwtGateway)  
-**Returns**: [<code>Promise.&lt;JwtGateway&gt;</code>](#JwtGateway)  
-**Access**: public  
-
-* * *
-
-### jwtGateway.readToken() :id=jwtgatewayreadtoken
-> <p>Retrieves a JWT token from the remote server.</p>
-
-**Kind**: instance method of [<code>JwtGateway</code>](#JwtGateway)  
+**Kind**: instance method of [<code>JwtProvider</code>](#JwtProvider)  
 **Returns**: <code>Promise.&lt;String&gt;</code>  
 **Access**: public  
 
 * * *
 
-### jwtGateway.toRequestInterceptor() :id=jwtgatewaytorequestinterceptor
-> <p>Returns a [RequestInterceptor](#requestinterceptor) suitable for use with other API calls.</p>
+### JwtProvider.forTest(userId, contextId, [permissions]) :id=jwtproviderfortest
+> <p>Builds a [JwtProvider](/content/sdk/lib-gateway-jwt?id=jwtprovider) which will generate tokens impersonating the specified
+> user. These tokens will only work in the &quot;test&quot; environemnt.</p>
+> <p>Recall, the &quot;test&quot; environment is not &quot;secure&quot; -- any data saved here can be accessed
+> by anyone (using this feature). Furthermore, data is periodically purged from the
+> test environment.</p>
 
-**Kind**: instance method of [<code>JwtGateway</code>](#JwtGateway)  
-**Returns**: <code>RequestInterceptor</code>  
-**Access**: public  
-
-* * *
-
-### JwtGateway.forDevelopmentClient(userId) :id=jwtgatewayfordevelopmentclient
-> <p>Creates and starts a new [RequestInterceptor](#requestinterceptor) for use in the development environment.</p>
-
-**Kind**: static method of [<code>JwtGateway</code>](#JwtGateway)  
-**Returns**: <code>Promise.&lt;RequestInterceptor&gt;</code>  
+**Kind**: static method of [<code>JwtProvider</code>](#JwtProvider)  
+**Returns**: [<code>JwtProvider</code>](#JwtProvider)  
 **Access**: public  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| userId | <code>String</code> | <p>The identifier of the user to impersonate.</p> |
+| userId | <code>String</code> | <p>The user identifier to impersonate.</p> |
+| contextId | <code>String</code> | <p>The context identifier of the user to impersonate.</p> |
+| [permissions] | <code>String</code> | <p>The desired permission level.</p> |
 
 
 * * *
 
-### JwtGateway.forTestClient(userId) :id=jwtgatewayfortestclient
-> <p>Creates and starts a new [RequestInterceptor](#requestinterceptor) for use in the testing environment.</p>
+### JwtProvider.forDevelopment(userId, contextId, [permissions]) :id=jwtproviderfordevelopment
+> <p>Builds a [JwtProvider](/content/sdk/lib-gateway-jwt?id=jwtprovider) which will generate tokens impersonating the specified
+> user. The &quot;development&quot; environment is for Barchart use only and access is restricted
+> to Barchart's internal network.</p>
 
-**Kind**: static method of [<code>JwtGateway</code>](#JwtGateway)  
-**Returns**: <code>Promise.&lt;RequestInterceptor&gt;</code>  
+**Kind**: static method of [<code>JwtProvider</code>](#JwtProvider)  
+**Returns**: [<code>JwtProvider</code>](#JwtProvider)  
 **Access**: public  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| userId | <code>String</code> | <p>The identifier of the user to impersonate.</p> |
+| userId | <code>String</code> | <p>The user identifier to impersonate.</p> |
+| contextId | <code>String</code> | <p>The context identifier of the user to impersonate.</p> |
+| [permissions] | <code>String</code> | <p>The desired permission level.</p> |
 
 
 * * *
 
-### JwtGateway.forDemoClient(userId) :id=jwtgatewayfordemoclient
-> <p>Creates and starts a new [RequestInterceptor](#requestinterceptor) for use in the demo environment.</p>
+### new JwtProvider(generator, interval) :id=new_jwtprovider_new
+**Kind**: constructor of [<code>JwtProvider</code>](#JwtProvider)  
 
-**Kind**: static method of [<code>JwtGateway</code>](#JwtGateway)  
-**Returns**: <code>Promise.&lt;RequestInterceptor&gt;</code>  
+| Param | Type | Description |
+| --- | --- | --- |
+| generator | [<code>JwtTokenGenerator</code>](#CallbacksJwtTokenGenerator) | <p>An anonymous function which returns a signed JWT token.</p> |
+| interval | <code>Number</code> | <p>The number of milliseconds which must pass before a new JWT token is generated.</p> |
+
+
+* * *
+
+## Callbacks :id=callbacks
+> <p>A meta namespace containing signatures of anonymous functions.</p>
+
+**Kind**: global namespace  
+
+* * *
+
+### Callbacks.JwtTokenGenerator :id=callbacksjwttokengenerator
+> <p>A function which returns a signed token.</p>
+
+**Kind**: static typedef of [<code>Callbacks</code>](#Callbacks)  
+**Returns**: <code>String</code> \| <code>Promise.&lt;String&gt;</code>  
 **Access**: public  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| userId | <code>String</code> | <p>The identifier of the user to impersonate.</p> |
-
-
-* * *
-
-### new JwtGateway(endpoint, [refreshInterval]) :id=new_jwtgateway_new
-**Kind**: constructor of [<code>JwtGateway</code>](#JwtGateway)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| endpoint | <code>Endpoint</code> |  |
-| [refreshInterval] | <code>Number</code> | <p>Interval, in milliseconds, which a token refresh should occur. If zero, the token does not need to be refreshed.</p> |
-
 
 * * *
 
