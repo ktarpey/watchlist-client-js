@@ -1,4 +1,4 @@
-# @barchart/watchlist-client-js <small>6.0.0</small>
+# @barchart/watchlist-client-js <small>6.0.1</small>
 
 > Build and manage lists of investments
 
