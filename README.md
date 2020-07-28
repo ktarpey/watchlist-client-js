@@ -6,7 +6,9 @@ This JavaScript SDK connects your applications to the _Barchart Watchlist Servic
 
 ### Documentation
 
-Complete documentation can be found here: http://barchart.github.io/watchlist-client-js/
+Complete documentation can be found here:
+
+http://barchart.github.io/watchlist-client-js/
 
 ### Package Managers
 
@@ -18,4 +20,4 @@ This library has been published as a **public** module to NPM as [@barchart/watc
 
 ### Build
 
-Modern JavaScript language features are used. Some browsers may still require polyfills.
+The source code is written in [ES2018](https://en.wikipedia.org/wiki/ECMAScript#9th_Edition_%E2%80%93_ECMAScript_2018). Consequently, transpilation (or polyfill use) is recommended before distribution.
