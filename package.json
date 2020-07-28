@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/barchart/barchart/watchlist-client-js.git"
+    "url": "git+ssh://git@github.com/barchart/watchlist-client-js.git"
   },
   "keywords": [
     "Barchart",
