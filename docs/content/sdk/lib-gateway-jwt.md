@@ -39,7 +39,7 @@
 
 ### JwtProvider.forTest(userId, contextId, [permissions]) :id=jwtproviderfortest
 > <p>Builds a [JwtProvider](/content/sdk/lib-gateway-jwt?id=jwtprovider) which will generate tokens impersonating the specified
-> user. These tokens will only work in the &quot;test&quot; environemnt.</p>
+> user. These tokens will only work in the &quot;test&quot; environment.</p>
 > <p>Recall, the &quot;test&quot; environment is not &quot;secure&quot; -- any data saved here can be accessed
 > by anyone (using this feature). Furthermore, data is periodically purged from the
 > test environment.</p>
