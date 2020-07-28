@@ -16,10 +16,6 @@ http://barchart.github.io/watchlist-client-js/
 
 This library has been published as a *public* package to NPM as [@barchart/watchlist-client-js](https://www.npmjs.com/package/@barchart/watchlist-client-js).
 
- ```sh
- npm install @barchart/watchlist-client-js -S
-```
-
 ### Build
 
 Source code is written in [ES2018](https://en.wikipedia.org/wiki/ECMAScript#9th_Edition_%E2%80%93_ECMAScript_2018). Consequently, transpilation (or polyfill use) is recommended for use in web browsers.
