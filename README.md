@@ -12,7 +12,7 @@ http://barchart.github.io/watchlist-client-js/
 
 ### Package Managers
 
-This library has been published as a **public** module to NPM as [@barchart/watchlist-client-js](https://www.npmjs.com/package/@barchart/watchlist-client-js).
+This library has been published as a **public** package to NPM as [@barchart/watchlist-client-js](https://www.npmjs.com/package/@barchart/watchlist-client-js).
 
  ```sh
  npm install @barchart/watchlist-client-js -S
