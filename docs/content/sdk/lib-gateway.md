@@ -282,11 +282,11 @@
 
 | Param | Type | Description |
 | --- | --- | --- |
-| protocol | <code>String</code> | <p>The protocol of the of the Watchlist web service (either HTTP or HTTPS).</p> |
+| protocol | <code>String</code> | <p>The protocol of the of the Watchlist web service (either http or https).</p> |
 | host | <code>String</code> | <p>The hostname of the Watchlist web service.</p> |
 | port | <code>Number</code> | <p>The TCP port number of the Watchlist web service.</p> |
 | environment | <code>String</code> | <p>A description of the environment we're connecting to.</p> |
-| [webSocketProtocol] | <code>String</code> | <p>The protocol of the Watchlist subscription service (either WS or WSS).</p> |
+| [webSocketProtocol] | <code>String</code> | <p>The protocol of the Watchlist subscription service (either ws or wss).</p> |
 | [webSocketHost] | <code>String</code> | <p>The hostname of the Watchlist subscription service.</p> |
 
 
