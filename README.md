@@ -2,7 +2,9 @@
 
 [![AWS CodeBuild](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiUHlZU3ZxOHdDWHprRzNEMXhoUGhTUHlOc1hGM3pEMnFhVG1UekdCWEN1K1hvWEFnTTcxWnhGYjZuUFpuUnl4QVhvVWFVMUQ4Rkx3TGFpaFhFQzBLUm1JPSIsIml2UGFyYW1ldGVyU3BlYyI6ImN3Y1RhZnV1ais3VXZ2WlgiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)](https://github.com/barchart/watchlist-client-js)
 
-This JavaScript SDK connects your applications to the _Barchart Watchlist Service_ — a simple tool for building and monitoring lists of investments. The Watchlist Service provides **simple REST API**, if you prefer to access the service directly.
+This JavaScript SDK connects your applications to the _Barchart Watchlist Service_ — a simple tool for building and monitoring lists of investments.
+
+Also, the Watchlist Service provides **simple REST API**, if you prefer to access the service directly (bypassing this SDK).
 
 ### Documentation
 
