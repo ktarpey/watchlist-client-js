@@ -1,6 +1,6 @@
 # Release Notes
 
-## 6.0.0
+## 7.0.0
 **Breaking Changes**
 
 * The mechanism for passing JSON Web Tokens to the ```WatchlistGateway``` has changed. Consumers are now required to provide ```JwtProvider``` instances instead of a ```RequestInterceptor``` instances. Here are the specifics:
