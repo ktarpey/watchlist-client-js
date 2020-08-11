@@ -63,7 +63,7 @@
 
 | Param | Type |
 | --- | --- |
-| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-gateway-jwt?id=jwtprovider) | 
+| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-security?id=jwtprovider) | 
 
 
 * * *
@@ -216,7 +216,7 @@
 
 | Param | Type |
 | --- | --- |
-| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-gateway-jwt?id=jwtprovider) | 
+| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-security?id=jwtprovider) | 
 
 
 * * *
@@ -230,7 +230,7 @@
 
 | Param | Type |
 | --- | --- |
-| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-gateway-jwt?id=jwtprovider) | 
+| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-security?id=jwtprovider) | 
 
 
 * * *
@@ -244,7 +244,7 @@
 
 | Param | Type |
 | --- | --- |
-| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-gateway-jwt?id=jwtprovider) | 
+| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-security?id=jwtprovider) | 
 
 
 * * *
@@ -258,7 +258,7 @@
 
 | Param | Type |
 | --- | --- |
-| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-gateway-jwt?id=jwtprovider) | 
+| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-security?id=jwtprovider) | 
 
 
 * * *
@@ -272,7 +272,7 @@
 
 | Param | Type |
 | --- | --- |
-| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-gateway-jwt?id=jwtprovider) | 
+| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-security?id=jwtprovider) | 
 
 
 * * *
