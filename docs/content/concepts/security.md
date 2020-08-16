@@ -56,7 +56,7 @@ Here are the connection details:
 * Algorithm: ```HMAC-SHA256``` (aka ```HS256```)
 * Secret: ```"public-knowledge-1234567890"```
 
-Since the test environment is intended for testing and evaluation purposes only, the signing secret has been made public. As a result, data saved in the test environment can be viewed and manipulated by anyone. Use caution with any sensitive data.
+Since the test environment is intended for testing and evaluation purposes only, the signing secret has been publicized. As a result, data saved in the test environment can be viewed and manipulated by anyone. Do not save sensitive data in the _test_ environment.
 
 **Production Environment:**
 
@@ -67,7 +67,16 @@ Here are the connection details:
 * Algorithm: Agreed upon when your account is configured
 * Secret: Agreed upon when your account is configured
 
-Once you're ready to move to production, you'll need to exchange a public/private key pair with Barchart. **Contact us at solutions@barchart.com or (866) 333-7587 for assistance configuring your account.**
+Once you're ready to move to production, you'll need to generate a [public/private key pair](https://en.wikipedia.org/wiki/Public-key_cryptography). To generate new keys, use the following (with no passphrase):
+
+```shell
+ssh-keygen -t rsa -b 4096 -m PEM -f jwtRS256.key
+openssl rsa -in jwtRS256.key -pubout -outform PEM -out jwtRS256.key.pub
+```
+
+Once you're done, use the private key — called ```jwtRS256.key``` — to sign tokens and send the public key — called ```jwtRS256.key.pub``` — to Barchart.
+
+**Contact us at solutions@barchart.com or (866) 333-7587 for assistance configuring your account.**
 
 ## Token Usage
 
