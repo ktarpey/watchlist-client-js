@@ -1,5 +1,15 @@
 # Release Notes
 
+## 8.1.0
+**New Features**
+
+* Added ```JwtProvider.forAdmin``` function.
+
+## 8.0.0
+**Breaking Changes**
+
+* The backend WebSocket connection has been updated. No code change is required in consumer code.
+
 ## 7.1.0
 **New Features**
 
