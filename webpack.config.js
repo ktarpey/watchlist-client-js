@@ -7,14 +7,14 @@ const { VueLoaderPlugin } = require('vue-loader');
 module.exports = {
 	mode: 'development',
 	entry: [
-		'./example/src/main.js'
+		'./example/browser/src/main.js'
 	],
 	output: {
-		path: path.resolve(__dirname, './example'),
+		path: path.resolve(__dirname, './example/browser'),
 		filename: 'bundle.js'
 	},
 	devServer: {
-		contentBase: path.join(__dirname, './example'),
+		contentBase: path.join(__dirname, './example/browser'),
 		open: true,
 		watchOptions: {
 			poll: true

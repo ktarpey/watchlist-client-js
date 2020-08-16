@@ -3,8 +3,8 @@ import SectionLoader from './SectionLoader/SectionLoader.vue';
 import Section from './Section/Section.vue';
 import Footer from './Footer/Footer.vue';
 
-import WatchlistGateway from './../../../lib/gateway/WatchlistGateway';
-import JwtProvider from './../../../lib/security/JwtProvider';
+import WatchlistGateway from './../../../../lib/gateway/WatchlistGateway';
+import JwtProvider from './../../../../lib/security/JwtProvider';
 
 export default {
 	components: {
