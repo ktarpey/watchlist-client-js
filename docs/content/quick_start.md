@@ -44,13 +44,26 @@ The _production_ environment is secure. You will generate a [public/private key 
 Regardless of environment, the token payload must include two claims:
 
 * ```userId``` is the unique identifier of the current user
-* ```contextId``` is a unique identifier for your organization (use ```"BARCHART"``` in the _test_ environment).
+* ```contextId``` is a unique identifier for your organization (use ```"barchart"``` in the _test_ environment).
 
 ## Connecting
 
 #### Using the SDK
 
-_SDK documentation will be added soon._
+Before you can do anything meaningful with the SDK, you must obtain an instance of the ```WatchlistGateway``` class. Use one of the static factory functions and provide a strategy for generating JSON Web Tokens, as follows:
+
+```js
+const WatchlistGateway = require('@barchart/watchlist-client-js/lib/gateway/WatchlistGateway'),
+	JwtProvider = require('@barchart/watchlist-client-js/lib/security/JwtProvider');
+
+const myUserId = 'me';
+const myContextId = 'barchart';
+
+WatchlistGateway.forTest(JwtProvider.forTest(myUserId, myContextId))
+	.then((watchlistGateway) => {
+		// ready ...
+	});
+```
 
 #### Using the API
 
