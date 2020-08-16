@@ -135,7 +135,7 @@ gulp.task('release', gulp.series(
 ));
 
 gulp.task('lint', () => {
-	return gulp.src([ './**/*.js', './test/specs/**/*.js', '!./node_modules/**', '!./test/SpecRunner.js', '!./example/bundle.js', '!./docs/**', '!./webpack.config.js'])
+	return gulp.src([ './**/*.js', './test/specs/**/*.js', '!./node_modules/**', '!./test/SpecRunner.js', '!./example/browser/bundle.js', '!./docs/**', '!./webpack.config.js'])
 		.pipe(jshint({ esversion: 9 }))
 		.pipe(jshint.reporter('default'))
 		.pipe(jshint.reporter('fail'));
@@ -156,7 +156,7 @@ gulp.task('deploy-example', () => {
 	const headers = { 'Cache-Control': 'no-cache' };
 	const options = { };
 
-	return gulp.src(['./example/index.html', './example/bundle.js'])
+	return gulp.src(['./example/browser/index.html', './example/browser/bundle.js'])
 		.pipe(rename((path) => {
 			path.dirname = 'watchlist-client-js';
 		}))
