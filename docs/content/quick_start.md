@@ -30,18 +30,18 @@ The _production_ environment does not permit permit anonymous connections. **Con
 
 ## Authorization
 
-[JSON Web Tokens](https://en.wikipedia.org/wiki/JSON_Web_Token) — called JWT — are used for authorization. Each request made to the backend must include a token. Generating these tokens is surprisingly easy -- refer to the [Key Concepts: Security](/content/concepts/security) section for details.
+[JSON Web Tokens](https://en.wikipedia.org/wiki/JSON_Web_Token) — called JWT — are used for authorization. Each request made to the backend must include a token. Generating these tokens is surprisingly easy — refer to the [Key Concepts: Security](/content/concepts/security) section for details.
 
-In the _test_ environment, token generation follows these rules:
+In the _test_ environment, token generation uses these parameters:
 
-* All tokens are signed with the ```HMAC-SHA256``` (aka ```HS256```) algorithm
-* All tokens are signed with the ```"public-knowledge-1234567890"``` secret
+* Tokens are signed with the ```HMAC-SHA256``` (aka ```HS256```) algorithm
+* Tokens are signed with the following secret: ```"public-knowledge-1234567890"```
 
-Since the signing secret is available to everyone, there can be no expectation of privacy; the _test_ environment is for testing and evaluation only.
+The _test_ environment is intended for evaluation and testing purposes. Since the signing secret has been publicized (above), there can be no expectation of privacy. Consequently, no sensitive information should be saved in the _test_ environment.
 
-In the the _production_ environment, you must exchange a _"secret"_  with Barchart — in the form of a [public/private key pair](https://en.wikipedia.org/wiki/Public-key_cryptography). Consequently, your data will be secure.
+The _production_ environment is secure. You will generate a [public/private key pair](https://en.wikipedia.org/wiki/Public-key_cryptography) and provide the public certificate to Barchart. As long as you maintain control over your private certificate, your data will be protected.
 
-Regardless of environment, the token payload uses two fields:
+Regardless of environment, the token payload must include two claims:
 
 * ```userId``` is the unique identifier of the current user
 * ```contextId``` is a unique identifier for your organization (use ```"BARCHART"``` in the _test_ environment).
