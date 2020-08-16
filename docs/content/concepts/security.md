@@ -102,7 +102,7 @@ When using this token, we can only interact with watchlists owned by ```me@barch
 
 ## Best Practices
 
-Under no circumstances should your JWT secret be accessible to anyone outside of your organization. If someone outside your organization obtains your signing secret, they could interact with the Barchart Watchlist Service on your behalf.
+Under no circumstances should your JWT secret be accessible to anyone outside of your organization. If someone obtains your signing secret, they could interact with the Barchart Watchlist Service on your behalf.
 
 If you are developing a web application, you should not generate tokens inside the web browser. A clever user could read your JWT secret (from the web browser) and use it to impersonate other users.
 
