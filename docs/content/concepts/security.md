@@ -8,7 +8,7 @@ The Barchart Watchlist Service uses commercially reasonable procedures to ensure
 
 ## Token Generation
 
-### Authentication
+#### Authentication
 
 Your system is responsible for authentication, for example:
 
@@ -18,7 +18,7 @@ Your system is responsible for authentication, for example:
 
 Since your system _knows_ the user, it is _responsible for token generation_. The Barchart Watchlist Service will _decode_ the token and _verify_ its authenticity (using a shared secret).
 
-### Token Payload
+#### Token Payload
 
 The token payload must include the following claims:
 
@@ -43,7 +43,7 @@ A **context** is a container for users. Your **context identifier** will be prov
 
 Your **context identifier** and **user identifiers** are always ```String``` values.
 
-### JWT Signing
+#### Token Signing Secrets
 
 All tokens are _signed_ with shared secret using a specific algorithm. Each environment uses different algorithms and signing secrets.
 
@@ -77,6 +77,28 @@ openssl rsa -in jwtRS256.key -pubout -outform PEM -out jwtRS256.key.pub
 Once you're done, use the private key — called ```jwtRS256.key``` — to sign tokens and send the public key — called ```jwtRS256.key.pub``` — to Barchart.
 
 **Contact us at solutions@barchart.com or (866) 333-7587 for assistance configuring your account.**
+
+#### Token Signing Example
+
+Token signing should be done such that:
+
+* The signing secret (e.g. private key or secret string) is not exposed.
+* The signing system should be trusted to keep time correctly.
+* The cryptography uses battle-tested code. This means you'll probably want to find a third-party library to help.
+
+Here is an example written for Node.js. It uses a third-party library called [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken#readme).
+
+```js
+const jwt = require('jsonwebtoken');
+
+const claims = {
+	userId: 'me',
+	contextId: 'barchart'
+};
+
+const secret = 'public-knowledge-1234567890';
+const token = jwt.sign(claims, secret, { algorithm: 'HS256', expiresIn: '2 days' });
+```
 
 ## Token Usage
 
