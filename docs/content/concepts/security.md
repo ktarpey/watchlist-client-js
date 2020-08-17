@@ -56,7 +56,7 @@ Here are the connection details:
 * Algorithm: ```HMAC-SHA256``` (aka ```HS256```)
 * Secret: ```"public-knowledge-1234567890"```
 
-Since the test environment is intended for testing and evaluation purposes only, the signing secret has been publicized. As a result, data saved in the test environment can be viewed and manipulated by anyone. Do not save sensitive data in the _test_ environment.
+Since the _test_ environment is intended for testing and evaluation purposes only, the _"secret"_ is intentionally publicized. Data saved in the _test_ environment can be viewed and manipulated by anyone. Use caution with any sensitive data.
 
 **Production Environment:**
 
