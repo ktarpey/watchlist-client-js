@@ -45,7 +45,7 @@ Your **context identifier** and **user identifiers** are always ```String``` val
 
 #### Token Signing Secrets
 
-All tokens are _signed_ with shared secret using a specific algorithm. Each environment uses different algorithms and signing secrets.
+All tokens are _signed_ with a secret using a specific algorithm. Each environment uses different algorithms and signing secrets.
 
 **Test Environment:**
 
