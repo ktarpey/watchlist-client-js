@@ -8,7 +8,7 @@
 				<div class="input-container" v-if="selected.inputs && selected.inputs.length > 0">
 					<input v-for="input in selected.inputs" :id="input" :class="{ 'form-control': true, 'custom-input': true }" type="text" :placeholder="input" v-model.trim="inputs[input]" v-on:keyup.enter="send()" />
 				</div>
-				<Button :action="() => send()" :text="'Send'" class="header-btn"></Button>
+				<Button :disabled="loading" :action="() => send()" :text="'Send'" class="header-btn"></Button>
 			</div>
 		</div>
 
