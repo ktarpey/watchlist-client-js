@@ -49,28 +49,21 @@ All tokens are _signed_ with a secret using a specific algorithm. Each environme
 
 **Test Environment:**
 
+Since the _test_ environment is intended for testing and evaluation purposes only, the secret is intentionally publicized (see below). Data saved in the _test_ environment can be viewed and manipulated by anyone. Use caution with any sensitive data.
+
 * Hostname:```watchlist-test.aws.barchart.com```
 * Port: ```443```
 * Algorithm: ```HMAC-SHA256``` (aka ```HS256```)
 * Secret: ```"public-knowledge-1234567890"```
 
-Since the _test_ environment is intended for testing and evaluation purposes only, the secret is intentionally publicized (see above). Data saved in the _test_ environment can be viewed and manipulated by anyone. Use caution with any sensitive data.
-
 **Production Environment:**
+
+When you're ready to move to production, you'll need to generate a [public/private key pair](https://en.wikipedia.org/wiki/Public-key_cryptography) (see below).
 
 * Hostname:```watchlist-prod.aws.barchart.com```
 * Port: ```443```
 * Algorithm: Agreed upon when your account is configured
 * Secret: Agreed upon when your account is configured
-
-When you're ready to move to production, you'll need to generate a [public/private key pair](https://en.wikipedia.org/wiki/Public-key_cryptography). To generate new keys, use the following (with no passphrase):
-
-```shell
-ssh-keygen -t rsa -b 4096 -m PEM -f jwtRS256.key
-openssl rsa -in jwtRS256.key -pubout -outform PEM -out jwtRS256.key.pub
-```
-
-Once you're done, use the private key — called ```jwtRS256.key``` — to sign tokens and send the public key — called ```jwtRS256.key.pub``` — to Barchart.
 
 **Contact us at solutions@barchart.com or (866) 333-7587 for assistance configuring your account.**
 
