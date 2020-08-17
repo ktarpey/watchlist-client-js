@@ -67,7 +67,7 @@ Here are the connection details:
 * Algorithm: Agreed upon when your account is configured
 * Secret: Agreed upon when your account is configured
 
-Once you're ready to move to production, you'll need to generate a [public/private key pair](https://en.wikipedia.org/wiki/Public-key_cryptography). To generate new keys, use the following (with no passphrase):
+When you're ready to move to production, you'll need to generate a [public/private key pair](https://en.wikipedia.org/wiki/Public-key_cryptography). To generate new keys, use the following (with no passphrase):
 
 ```shell
 ssh-keygen -t rsa -b 4096 -m PEM -f jwtRS256.key
