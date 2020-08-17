@@ -248,3 +248,23 @@ curl 'https://watchlist-test.aws.barchart.com/v1/watchlists/425803d2-a98a-4ee3-9
   -H 'Accept: application/json' \
   -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb250ZXh0SWQiOiJiYXJjaGFydCIsInVzZXJJZCI6Im1lIiwianRpIjoiOThjMjdjNmMtN2RlNS00MTQ4LTg4ZDgtNzgxN2M5M2E1OGE4IiwiaWF0IjoxNTk0MDcwNzgyLCJleHAiOjE1OTQwNzQzODJ9.Pm8O_SG-KBqj_BibPdKIwTIj4zmbIJ9v5MqJbqdgBfw'
 ```
+
+## Sample Applications
+
+Two sample applications were built with the SDK. Reviewing them may provide some insight into SDK features and usage.
+
+### Web Application
+
+A single-page HTML application connects to the _test_ environment. It allows you to invoke watchlist operations (e.g. create a watchlist, add a symbol, etc).
+
+Run the application by opening ```example/browser/index.html``` in a modern web browser.
+
+### Node.js
+
+A simple Node.js script connects to the _test_ environment, retrieves a list of watchlists, and creates a new watchlist. Run the script from a command prompt, as follows:
+
+```shell
+npm install
+node ./example/node/example.js {user_id}
+```
+
