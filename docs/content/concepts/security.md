@@ -86,7 +86,7 @@ Token signing should be done such that:
 * The signing system should be trusted to keep time correctly.
 * The cryptography uses battle-tested code. This means you'll probably want to find a third-party library to help.
 
-Here is an example written for Node.js. It uses a third-party library called [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken#readme).
+Here is an example written for Node.js using the [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken#readme) library.
 
 ```js
 const jwt = require('jsonwebtoken');
