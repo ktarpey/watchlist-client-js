@@ -95,7 +95,37 @@ const token = jwt.sign(claims, secret, { algorithm: 'HS256', expiresIn: '2 days'
 
 ### Using the SDK
 
-_SDK documentation will be added soon._
+First, write a function that signs and returns a token. The function must conform to the [```Schema.JwtTokenGenerator```](/content/sdk/lib-security?id=callbacksjwttokengenerator) contract — which accepts no arguments and returns a ```String``` (synchronously or asynchronously). For example:
+
+```js
+function getJwtToken() {
+	return Promise.resolve()
+		.then(() => {
+			// Generate a signed token and return it. You'll probably want to delegate
+			// the actual work to a remote service. This helps to ensure your JWT signing
+			// secret cannot be compromised.
+
+			return token;
+		});
+}
+```
+
+Next, instantiate a [```JwtProvider```](/content/sdk/lib-security?id=jwtprovider) and pass it to one of the environment-specific factory functions:
+
+* ```WatchlistGateway.forTest```
+* ```WatchlistGateway.forStaging```
+* ```WatchlistGateway.forProduction```
+
+For example:
+
+```js
+const jwtProvider = new JwtProvider(getJwtToken);
+
+WatchlistGateway.forProduction(jwtProvider)
+	.then((watchlistGateway) => {
+		// Ready to use ...
+	});
+```
 
 ### Using the API
 
