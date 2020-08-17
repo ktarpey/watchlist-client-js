@@ -18,7 +18,7 @@ Your system is responsible for authentication, for example:
 
 **Since your system authenticated the user, it is responsible for token generation.**
 
-Each interaction with the Barchart Watchlist Service will include a JWT. Barchart will _decode_ your token and _verify_ the token's authenticity (using a shared secret).
+Each interaction with the Barchart Watchlist Service will include a token. Barchart will _decode_ your token and _verify_ the token's authenticity (using a shared secret).
 
 #### Token Payload
 
