@@ -49,18 +49,14 @@ All tokens are _signed_ with a secret using a specific algorithm. Each environme
 
 **Test Environment:**
 
-Here are the connection details:
-
 * Hostname:```watchlist-test.aws.barchart.com```
 * Port: ```443```
 * Algorithm: ```HMAC-SHA256``` (aka ```HS256```)
 * Secret: ```"public-knowledge-1234567890"```
 
-Since the _test_ environment is intended for testing and evaluation purposes only, the _"secret"_ is intentionally publicized. Data saved in the _test_ environment can be viewed and manipulated by anyone. Use caution with any sensitive data.
+Since the _test_ environment is intended for testing and evaluation purposes only, the secret is intentionally publicized (see above). Data saved in the _test_ environment can be viewed and manipulated by anyone. Use caution with any sensitive data.
 
 **Production Environment:**
-
-Here are the connection details:
 
 * Hostname:```watchlist-prod.aws.barchart.com```
 * Port: ```443```
