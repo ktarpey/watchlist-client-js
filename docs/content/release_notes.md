@@ -1,5 +1,20 @@
 # Release Notes
 
+## 8.2.1
+**No Functional Changes**
+
+* Documentation Updated
+  * Completed JavaScript example code to Quick Start section.
+  * Completed JavaScript example code to Security section.
+  * Added description of example applications to Quick Start section.
+  * Other miscellaneous clarifications.
+* Example Application Added for Node.js
+
+## 8.2.0
+**New Features**
+
+* The example application now allows the user to specify a user to impersonate (in the _test_ environment only).
+
 ## 8.1.0
 **New Features**
 
