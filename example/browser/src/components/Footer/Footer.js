@@ -3,12 +3,20 @@ import packageJson from './../../../../../package.json';
 export default {
 	name: 'Footer',
 	created() {
-		window.Barchart.gateway.readServiceMetadata()
+		this.$store.mutate.setLoading(true);
+
+		this.$store.gateway.readServiceMetadata()
 			.then((metadata) => {
 				this.versions.api = metadata.server.semver;
 				this.environment = metadata.server.environment;
 				this.user = metadata.user.id;
 				this.context = metadata.context.id;
+
+				this.$store.mutate.setLoading(false);
+			}).catch((err) => {
+				console.error(err);
+
+				this.$store.mutate.setLoading(false);
 			});
 	},
 	computed: {

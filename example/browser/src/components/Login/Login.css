@@ -1,0 +1,33 @@
+.wrapper {
+  align-items: center;
+  display: flex;
+  font-size: 16px;
+  justify-content: center;
+  text-align: center;
+}
+
+.login {
+  min-width: 300px;
+}
+
+.asterisk-required {
+  color: red;
+  margin-left: 4px;
+}
+
+.btn-connect {
+  background-color: #265a88;
+  color: white;
+}
+
+.btn-connect:hover {
+  background-color: #254a77;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .2s;
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}

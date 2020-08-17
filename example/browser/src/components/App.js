@@ -1,31 +1,20 @@
-import Header from './Header/Header.vue';
-import SectionLoader from './SectionLoader/SectionLoader.vue';
-import Section from './Section/Section.vue';
 import Footer from './Footer/Footer.vue';
-
-import WatchlistGateway from './../../../../lib/gateway/WatchlistGateway';
-import JwtProvider from './../../../../lib/security/JwtProvider';
+import Header from './Header/Header.vue';
+import Login from './Login/Login.vue';
+import Section from './Section/Section.vue';
+import SectionLoader from './SectionLoader/SectionLoader.vue';
 
 export default {
 	components: {
+		Footer,
 		Header,
-		SectionLoader,
+		Login,
 		Section,
-		Footer
+		SectionLoader
 	},
-	created() {
-		window.Barchart = { };
-
-		WatchlistGateway.forTest(JwtProvider.forTest('me', 'BARCHART'))
-			.then((gateway) => {
-				window.Barchart.gateway = gateway;
-
-				this.loading = false;
-			});
-	},
-	data() {
-		return {
-			loading: true
-		};
+	computed: {
+		authorized() {
+			return this.$store.authorized;
+		}
 	}
 };

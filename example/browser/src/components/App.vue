@@ -2,9 +2,15 @@
 	<div class="app">
 		<Header></Header>
 
-		<Section v-if="!loading" class="content"></Section>
+		<template v-if="authorized">
+			<Section class="content"></Section>
 
-		<Footer v-if="!loading"></Footer>
+			<Footer></Footer>
+		</template>
+
+		<template v-else>
+			<Login class="content"></Login>
+		</template>
 	</div>
 </template>
 
@@ -21,6 +27,7 @@
 	}
 
 	html, body {
+		font-size: 14px;
 		margin: 0;
 		padding: 0;
 	}

@@ -1,10 +1,10 @@
 .wrapper {
   background-color: rgba(229, 237, 240, 1);
   position: absolute;
-  top: 140px;
+  top: 135px;
   left: 0;
   width: 100%;
-  height: calc(100% - 180px);
+  height: calc(100% - 175px);
   z-index: 10;
 }
 

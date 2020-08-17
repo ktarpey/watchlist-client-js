@@ -13,23 +13,25 @@ export default {
 		this.inputs.method = this.options[0].key;
 	},
 	computed: {
+		loading() {
+			return this.$store.loading;
+		},
 		selected() {
 			return this.options.find(o => o.key === this.inputs.method) || null;
 		}
 	},
 	data() {
 		return {
-			loading: false,
 			options: [
-				{ key: 'readServiceMetadata', label: 'Read Service Metadata', method: () => window.Barchart.gateway.readServiceMetadata() },
-				{ key: 'readWatchlists', label: 'Read Watchlists', method: () => window.Barchart.gateway.readWatchlists() },
-				{ key: 'createWatchlist', label: 'Create Watchlist', method: () => window.Barchart.gateway.createWatchlist(generator.watchlistCreate()) },
-				{ key: 'editWatchlist', label: 'Edit Watchlist', inputs: ['watchlistId'], method: ({ watchlistId }) => window.Barchart.gateway.editWatchlist(watchlistId, generator.watchlistEdit()) },
-				{ key: 'deleteWatchlist', label: 'Delete Watchlist', inputs: ['watchlistId'], method: ({ watchlistId }) => window.Barchart.gateway.deleteWatchlist(watchlistId) },
-				{ key: 'addSymbol', label: 'Add Symbol', inputs: ['watchlistId', 'symbol'], method: ({ watchlistId, symbol }) => window.Barchart.gateway.addSymbol(watchlistId, generator.entry(symbol)) },
-				{ key: 'deleteSymbol', label: 'Delete Symbol', inputs: ['watchlistId', 'symbol'], method: ({ watchlistId, symbol }) => window.Barchart.gateway.deleteSymbol(watchlistId, symbol) },
-				{ key: 'querySymbol', label: 'Query Symbol', inputs: ['symbol'], method: ({ symbol }) => window.Barchart.gateway.querySymbol(symbol) },
-				{ key: 'editPreferences', label: 'Edit Preferences', inputs: ['watchlistId'], method: ({ watchlistId }) => window.Barchart.gateway.editPreferences(watchlistId, generator.preferences()) }
+				{ key: 'readServiceMetadata', label: 'Read Service Metadata', method: () => this.$store.gateway.readServiceMetadata() },
+				{ key: 'readWatchlists', label: 'Read Watchlists', method: () => this.$store.gateway.readWatchlists() },
+				{ key: 'createWatchlist', label: 'Create Watchlist', method: () => this.$store.gateway.createWatchlist(generator.watchlistCreate()) },
+				{ key: 'editWatchlist', label: 'Edit Watchlist', inputs: ['watchlistId'], method: ({ watchlistId }) => this.$store.gateway.editWatchlist(watchlistId, generator.watchlistEdit()) },
+				{ key: 'deleteWatchlist', label: 'Delete Watchlist', inputs: ['watchlistId'], method: ({ watchlistId }) => this.$store.gateway.deleteWatchlist(watchlistId) },
+				{ key: 'addSymbol', label: 'Add Symbol', inputs: ['watchlistId', 'symbol'], method: ({ watchlistId, symbol }) => this.$store.gateway.addSymbol(watchlistId, generator.entry(symbol)) },
+				{ key: 'deleteSymbol', label: 'Delete Symbol', inputs: ['watchlistId', 'symbol'], method: ({ watchlistId, symbol }) => this.$store.gateway.deleteSymbol(watchlistId, symbol) },
+				{ key: 'querySymbol', label: 'Query Symbol', inputs: ['symbol'], method: ({ symbol }) => this.$store.gateway.querySymbol(symbol) },
+				{ key: 'editPreferences', label: 'Edit Preferences', inputs: ['watchlistId'], method: ({ watchlistId }) => this.$store.gateway.editPreferences(watchlistId, generator.preferences()) }
 			],
 			response: null,
 			inputs: {
@@ -45,13 +47,13 @@ export default {
 				return;
 			}
 
-			this.loading = true;
+			this.$store.mutate.setLoading(true);
 
 			this.selected.method(this.inputs)
 				.then((response) => {
 					this.response = response;
 
-					this.loading = false;
+					this.$store.mutate.setLoading(false);
 				}).catch((err) => {
 
 					if (Array.isArray(err)) {
@@ -62,7 +64,7 @@ export default {
 						this.response = err.message;
 					}
 
-					this.loading = false;
+					this.$store.mutate.setLoading(false);
 				});
 		}
 	}

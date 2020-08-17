@@ -4,6 +4,10 @@
 			<div class="header-logo"></div>
 			<div class="header-title">[Barchart Watchlist Client API]</div>
 		</div>
+		<div class="header-right">
+			<Button v-if="$store.authorized" :text="'Logout'" :action="disconnect" :theme="'Dark'">
+			</Button>
+		</div>
 	</div>
 </template>
 
