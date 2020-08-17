@@ -16,7 +16,7 @@ Your system is responsible for authentication, for example:
 * Perhaps users are identified using an SSO technology.
 * Perhaps users are assumed to be valid because your software runs in a trusted environment.
 
-Since your system _knows_ the user, it is _responsible for token generation_. The Barchart Watchlist Service will _decode_ the token and _verify_ its authenticity (using a shared secret).
+Since your system _knows_ the user, it is _responsible for token generation_. The Barchart Watchlist Service will _decode_ your token and _verify_ its authenticity (using a shared secret).
 
 #### Token Payload
 
