@@ -51,7 +51,7 @@ Each environment uses different algorithms and signing secrets.
 
 **Test Environment:**
 
-Since the _test_ environment is intended for testing and evaluation purposes only, the secret is intentionally publicized (see below). Data saved in the _test_ environment can be viewed and manipulated by anyone. Use caution with any sensitive data.
+Since the _test_ environment is intended for testing and evaluation purposes only, the secret is intentionally publicized (see below). Data saved in the _test_ environment can be viewed and manipulated by anyone. Do not store sensitive data in the _test_ environment.
 
 * Hostname:```watchlist-test.aws.barchart.com```
 * Port: ```443```
