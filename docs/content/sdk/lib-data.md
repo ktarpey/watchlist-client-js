@@ -26,8 +26,8 @@
 | user | <code>String</code> | <p>The user identifier for the watchlist's owner. Omit when creating a new watchlist — the backend will assign.</p> |
 | context | <code>String</code> | <p>The context identifier for the watchlist's owner. Omit when creating a new watchlist — the backend will assign.</p> |
 | name | <code>String</code> | <p>The name of the watchlist.</p> |
-| preferences | <code>Array.&lt;WatchlistEntry&gt;</code> | <p>The ordered list of watchlist items (i.e. investments).</p> |
-| preferences | <code>WatchlistPreferences</code> | <p>An object containing display preferences (e.g. sort order for entries). This property can be omitted when creating a new watchlist.</p> |
+| entries | [<code>Array.&lt;WatchlistEntry&gt;</code>](#SchemaWatchlistEntry) | <p>The ordered list of watchlist items (i.e. investments).</p> |
+| preferences | [<code>WatchlistPreferences</code>](#SchemaWatchlistPreferences) | <p>An object containing display preferences (e.g. sort order for entries). This property can be omitted when creating a new watchlist.</p> |
 
 
 * * *

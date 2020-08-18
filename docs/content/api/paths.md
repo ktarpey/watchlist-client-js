@@ -59,8 +59,8 @@
 | name | <code>String</code> | false | false |  |
 | context | <code>String</code> | false | false |  |
 | view | <code>String</code> | false | false |  |
-| entries | [<code>Entries</code>](/content/api/components?id=schemasentries) | false | false |  |
-| preferences | [<code>Preferences</code>](/content/api/components?id=schemaspreferences) | false | false |  |
+| entries | [<code>Entries</code>](/content/api/components?id=schemasentries) |  | false |  |
+| preferences | [<code>Preferences</code>](/content/api/components?id=schemaspreferences) |  | false |  |
 
 **Example**:
 
@@ -201,8 +201,8 @@
 | ---- | ---- | -------- | -------- | ----------- |
 | name | <code>String</code> | false | false |  |
 | view | <code>String</code> | false | false |  |
-| entries | [<code>Entries</code>](/content/api/components?id=schemasentries) | false | false |  |
-| preferences | [<code>Preferences</code>](/content/api/components?id=schemaspreferences) | false | false |  |
+| entries | [<code>Entries</code>](/content/api/components?id=schemasentries) |  | false |  |
+| preferences | [<code>Preferences</code>](/content/api/components?id=schemaspreferences) |  | false |  |
 
 **Example**:
 
@@ -333,7 +333,7 @@
 
 | Name | Type | Required | Nullable | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| entry | [<code>Entry</code>](/content/api/components?id=schemasentry) | true | false |  |
+| entry | [<code>Entry</code>](/content/api/components?id=schemasentry) |  | false |  |
 | index | <code>Integer</code> | false | false | The index at which the symbol will be inserted |
 
 **Example**:

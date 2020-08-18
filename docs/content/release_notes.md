@@ -1,5 +1,10 @@
 # Release Notes
 
+## 8.2.2
+**No Functional Changes**
+
+* Added Data Structures section to documentation. Documentation is complete.
+
 ## 8.2.1
 **No Functional Changes**
 
