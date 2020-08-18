@@ -26,7 +26,7 @@ export default {
 				{ key: 'readServiceMetadata', label: 'Read Service Metadata', method: () => this.$store.gateway.readServiceMetadata() },
 				{ key: 'readWatchlists', label: 'Read Watchlists', method: () => this.$store.gateway.readWatchlists() },
 				{ key: 'createWatchlist', label: 'Create Watchlist', method: () => this.$store.gateway.createWatchlist(generator.watchlistCreate()) },
-				{ key: 'editWatchlist', label: 'Edit Watchlist', inputs: ['watchlistId'], method: ({ watchlistId }) => this.$store.gateway.editWatchlist(watchlistId, generator.watchlistEdit()) },
+				{ key: 'editWatchlist', label: 'Edit Watchlist', inputs: ['watchlistId'], method: ({ watchlistId }) => this.$store.gateway.editWatchlist(generator.watchlistEdit(watchlistId)) },
 				{ key: 'deleteWatchlist', label: 'Delete Watchlist', inputs: ['watchlistId'], method: ({ watchlistId }) => this.$store.gateway.deleteWatchlist(watchlistId) },
 				{ key: 'addSymbol', label: 'Add Symbol', inputs: ['watchlistId', 'symbol'], method: ({ watchlistId, symbol }) => this.$store.gateway.addSymbol(watchlistId, generator.entry(symbol)) },
 				{ key: 'deleteSymbol', label: 'Delete Symbol', inputs: ['watchlistId', 'symbol'], method: ({ watchlistId, symbol }) => this.$store.gateway.deleteSymbol(watchlistId, symbol) },

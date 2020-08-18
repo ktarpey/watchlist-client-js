@@ -23,7 +23,8 @@ export default {
 		name: `Randomly generated name ${Math.random().toString(36).substring(7)}`,
 		entries: generateEntries()
 	}),
-	watchlistEdit: () => ({
+	watchlistEdit: (watchlistId) => ({
+		id: watchlistId,
 		name: `Edited name ${Math.random().toString(36).substring(7)}`,
 		entries: generateEntries()
 	}),
