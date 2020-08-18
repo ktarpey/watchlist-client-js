@@ -4,22 +4,18 @@
 
 ### Overview
 
-This SDK connects your applications to the  **[Barchart](https://www.barchart.com) Alert Service**.
-
-* Define conditional statements based on market data feeds (or other data streams),
-* Ask our remote service to track those conditions on your behalf, and
-* Receive immediate notifications when those conditions are met.
+This **JavaScript SDK** connects your applications to the _Barchart Watchlist Service_ — a simple tool for building and monitoring lists of investments.
 
 ### Documentation
 
-Complete documentation for this SDK can be accessed [here](https://barchart.github.io/alerts-client-js/).
+Complete documentation for this SDK can be accessed [here](https://barchart.github.io/watchlist-client-js/).
 
 ### Example Applications
 
-Refer to the [documentation](https://barchart.github.io/alerts-client-js/#/content/quick_start?id=sample-applications) for more information.
+Refer to the [documentation](https://barchart.github.io/watchlist-client-js/#/content/quick_start?id=sample-applications) for more information.
 
 ### Package Managers
 
-This library has been published as a _public_ module to NPM as [@barchart/alerts-client-js](https://www.npmjs.com/package/@barchart/alerts-client-js).
+This library has been published as a _public_ module to NPM as [@barchart/watchlist-client-js](https://www.npmjs.com/package/@barchart/watchlist-client-js).
 
 
