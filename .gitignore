@@ -4,3 +4,4 @@ node_modules
 aws/
 .DS_Store
 .awspublish-barchart-examples
+.awspublish-docs.barchart.com

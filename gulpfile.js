@@ -1,7 +1,8 @@
 const gulp = require('gulp');
 
 const exec = require('child_process').exec,
-	fs = require('fs');
+	fs = require('fs'),
+	path = require('path');
 
 const AWS = require('aws-sdk'),
 	awspublish = require('gulp-awspublish'),
@@ -76,6 +77,51 @@ gulp.task('embed-version', () => {
 
 gulp.task('build-example-bundle', run('npm run build'));
 
+
+gulp.task('deploy-example', () => {
+	const publisher = awspublish.create({
+		region: 'us-east-1',
+		params: {
+			Bucket: 'barchart-examples'
+		},
+		credentials: new AWS.SharedIniFileCredentials({ profile: 'default' })
+	});
+
+	const headers = { 'Cache-Control': 'no-cache' };
+	const options = { };
+
+	return gulp.src(['./example/browser/index.html', './example/browser/bundle.js'])
+		.pipe(rename((path) => {
+			path.dirname = 'watchlist-client-js';
+		}))
+		.pipe(publisher.publish(headers, options))
+		.pipe(publisher.cache())
+		.pipe(awspublish.reporter());
+});
+
+gulp.task('upload-documentation-site-to-S3', () => {
+	let publisher = awspublish.create({
+		region: 'us-east-1',
+		params: {
+			Bucket: 'docs.barchart.com'
+		},
+		credentials: new AWS.SharedIniFileCredentials({profile: 'default'})
+	});
+
+	let headers = {'Cache-Control': 'no-cache'};
+	let options = {};
+
+	return gulp.src(['./docs/**'])
+		.pipe(rename((filePath) => {
+			filePath.dirname = path.join('watchlist', filePath.dirname);
+		}))
+		.pipe(publisher.publish(headers, options))
+		.pipe(publisher.cache())
+		.pipe(awspublish.reporter());
+});
+
+gulp.task('deploy-documentation', gulp.series('upload-documentation-site-to-S3'));
+
 gulp.task('commit-changes', () => {
 	return gulp.src([ './', './test/', './package.json', './lib/index.js', './test/SpecRunner.js' ])
 		.pipe(git.add())
@@ -122,6 +168,8 @@ gulp.task('execute-tests', gulp.series(
 	'execute-node-tests'
 ));
 
+gulp.task('test', gulp.series('execute-tests'));
+
 gulp.task('release', gulp.series(
 	'ensure-clean-working-directory',
 	'execute-tests',
@@ -131,7 +179,8 @@ gulp.task('release', gulp.series(
 	'build-example-bundle',
 	'commit-changes',
 	'push-changes',
-	'create-tag'
+	'create-tag',
+	'deploy-documentation'
 ));
 
 gulp.task('lint', () => {
@@ -139,30 +188,6 @@ gulp.task('lint', () => {
 		.pipe(jshint({ esversion: 9 }))
 		.pipe(jshint.reporter('default'))
 		.pipe(jshint.reporter('fail'));
-});
-
-
-gulp.task('test', gulp.series('execute-tests'));
-
-gulp.task('deploy-example', () => {
-	const publisher = awspublish.create({
-		region: 'us-east-1',
-		params: {
-			Bucket: 'barchart-examples'
-		},
-		credentials: new AWS.SharedIniFileCredentials({ profile: 'default' })
-	});
-
-	const headers = { 'Cache-Control': 'no-cache' };
-	const options = { };
-
-	return gulp.src(['./example/browser/index.html', './example/browser/bundle.js'])
-		.pipe(rename((path) => {
-			path.dirname = 'watchlist-client-js';
-		}))
-		.pipe(publisher.publish(headers, options))
-		.pipe(publisher.cache())
-		.pipe(awspublish.reporter());
 });
 
 gulp.task('default', gulp.series('lint'));
