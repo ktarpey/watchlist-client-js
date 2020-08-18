@@ -1,6 +1,6 @@
 {
   "name": "@barchart/watchlist-client-js",
-  "version": "8.2.3",
+  "version": "8.2.4",
   "description": "JavaScript SDK for Barchart's Watchlist Service",
   "author": {
     "name": "Bryan Ingle",
