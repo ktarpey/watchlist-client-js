@@ -1,5 +1,6 @@
 .wrapper {
-
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
@@ -32,6 +33,10 @@
   margin-left: 20px;
 }
 
-.response {
+.content {
+  overflow: auto;
+}
+
+.content .response {
   padding: 20px;
 }

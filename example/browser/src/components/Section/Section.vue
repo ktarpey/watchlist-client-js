@@ -12,7 +12,7 @@
 			</div>
 		</div>
 
-		<div>
+		<div class="content">
 			<SectionLoader v-if="loading"></SectionLoader>
 			<div v-if="!loading && response" class="response">
 				<json-viewer

@@ -1,11 +1,11 @@
 <template>
 	<div class="app">
-		<Header></Header>
+		<Header class="header"></Header>
 
 		<template v-if="authorized">
 			<Section class="content"></Section>
 
-			<Footer></Footer>
+			<Footer class="footer"></Footer>
 		</template>
 
 		<template v-else>
