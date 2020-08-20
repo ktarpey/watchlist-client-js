@@ -1,5 +1,11 @@
 # Release Notes
 
+## 8.2.4
+**Other**
+
+* Updated hostname for _admin_ environment.
+* Updated hostname for  connections.WebSocket.
+
 ## 8.2.3
 **No Functional Changes**
 
