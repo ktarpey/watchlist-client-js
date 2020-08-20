@@ -36,6 +36,7 @@
         * [.forDevelopment(jwtProvider)](#WatchlistGatewayforDevelopment) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
         * [.forStaging(jwtProvider)](#WatchlistGatewayforStaging) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
         * [.forDemo(jwtProvider)](#WatchlistGatewayforDemo) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
+        * [.forAdmin(jwtProvider)](#WatchlistGatewayforAdmin) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
         * [.forProduction(jwtProvider)](#WatchlistGatewayforProduction) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
     * _constructor_
         * [new WatchlistGateway(protocol, host, port, environment, [webSocketProtocol], [webSocketHost])](#new_WatchlistGateway_new)
@@ -251,6 +252,20 @@
 
 ### WatchlistGateway.forDemo(jwtProvider) :id=watchlistgatewayfordemo
 > <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the private demo environment.</p>
+
+**Kind**: static method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
+**Returns**: [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)  
+**Access**: public  
+
+| Param | Type |
+| --- | --- |
+| jwtProvider | [<code>JwtProvider</code>](/content/sdk/lib-security?id=jwtprovider) | 
+
+
+* * *
+
+### WatchlistGateway.forAdmin(jwtProvider) :id=watchlistgatewayforadmin
+> <p>Creates and starts a new [WatchlistGateway](/content/sdk/lib-gateway?id=watchlistgateway) for use in the private admin environment.</p>
 
 **Kind**: static method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)  
