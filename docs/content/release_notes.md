@@ -4,7 +4,7 @@
 **Other**
 
 * Updated hostname for _admin_ environment.
-* Updated hostname for  connections.WebSocket.
+* Updated hostname for WebSocket connections.
 
 ## 8.2.3
 **No Functional Changes**
