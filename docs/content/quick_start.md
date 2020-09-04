@@ -176,7 +176,7 @@ After a ```Watchlist``` has been saved, additional symbols can be added. Each sy
 }
 ```
 
-You can add additional, ad hoc properties to any ```WatchlistEntry``` object. However, only ```String```, ```Number```, or ```Boolean``` values are permitted for ad hoc properties.
+You can add additional, ad hoc properties to any ```WatchlistEntry``` object. However, only ```String```, ```Number```, or ```Boolean``` values are permitted.
 
 #### Using the SDK
 
