@@ -18,4 +18,7 @@ Refer to the [documentation](https://barchart.github.io/watchlist-client-js/#/co
 
 This library has been published as a _public_ module to NPM as [@barchart/watchlist-client-js](https://www.npmjs.com/package/@barchart/watchlist-client-js).
 
+### License
+
+This software is provided under the MIT license.
 
