@@ -8,8 +8,8 @@
 * * *
 
 ## JwtProvider :id=jwtprovider
-> <p>Generates and caches a signed token (using a delegate). The cached token
-> is refreshed periodically.</p>
+> Generates and caches a signed token (using a delegate). The cached token
+> is refreshed periodically.
 
 **Kind**: global class  
 **Access**: public  
@@ -31,7 +31,7 @@
 * * *
 
 ### jwtProvider.getToken() :id=jwtprovidergettoken
-> <p>Reads the current token, refreshing if necessary.</p>
+> Reads the current token, refreshing if necessary.
 
 **Kind**: instance method of [<code>JwtProvider</code>](#JwtProvider)  
 **Returns**: <code>Promise.&lt;String&gt;</code>  
@@ -40,7 +40,7 @@
 * * *
 
 ### JwtProvider.fromTokenGenerator(tokenGenerator, [refreshInterval]) :id=jwtproviderfromtokengenerator
-> <p>A factory for [JwtProvider](/content/sdk/lib-security?id=jwtprovider) which is an alternative to the constructor.</p>
+> A factory for [JwtProvider](/content/sdk/lib-security?id=jwtprovider) which is an alternative to the constructor.
 
 **Kind**: static method of [<code>JwtProvider</code>](#JwtProvider)  
 **Returns**: [<code>JwtProvider</code>](#JwtProvider)  
@@ -57,11 +57,11 @@
 * * *
 
 ### JwtProvider.forTest(userId, contextId, [permissions]) :id=jwtproviderfortest
-> <p>Builds a [JwtProvider](/content/sdk/lib-security?id=jwtprovider) which will generate tokens impersonating the specified
+> Builds a [JwtProvider](/content/sdk/lib-security?id=jwtprovider) which will generate tokens impersonating the specified
 > user. These tokens will only work in the &quot;test&quot; environment.</p>
 > <p>Recall, the &quot;test&quot; environment is not &quot;secure&quot; -- any data saved here can be accessed
 > by anyone (using this feature). Furthermore, data is periodically purged from the
-> test environment.</p>
+> test environment.
 
 **Kind**: static method of [<code>JwtProvider</code>](#JwtProvider)  
 **Returns**: [<code>JwtProvider</code>](#JwtProvider)  
@@ -77,9 +77,9 @@
 * * *
 
 ### JwtProvider.forDevelopment(userId, contextId, [permissions]) :id=jwtproviderfordevelopment
-> <p>Builds a [JwtProvider](/content/sdk/lib-security?id=jwtprovider) which will generate tokens impersonating the specified
+> Builds a [JwtProvider](/content/sdk/lib-security?id=jwtprovider) which will generate tokens impersonating the specified
 > user. The &quot;development&quot; environment is for Barchart use only and access is restricted
-> to Barchart's internal network.</p>
+> to Barchart's internal network.
 
 **Kind**: static method of [<code>JwtProvider</code>](#JwtProvider)  
 **Returns**: [<code>JwtProvider</code>](#JwtProvider)  
@@ -95,9 +95,9 @@
 * * *
 
 ### JwtProvider.forAdmin(userId, contextId, [permissions]) :id=jwtproviderforadmin
-> <p>Builds a [JwtProvider](/content/sdk/lib-security?id=jwtprovider) which will generate tokens impersonating the specified
+> Builds a [JwtProvider](/content/sdk/lib-security?id=jwtprovider) which will generate tokens impersonating the specified
 > user. The &quot;admin&quot; environment is for Barchart use only and access is restricted
-> to Barchart's internal network.</p>
+> to Barchart's internal network.
 
 **Kind**: static method of [<code>JwtProvider</code>](#JwtProvider)  
 **Returns**: [<code>JwtProvider</code>](#JwtProvider)  
@@ -124,14 +124,14 @@
 * * *
 
 ## Callbacks :id=callbacks
-> <p>A meta namespace containing signatures of anonymous functions.</p>
+> A meta namespace containing signatures of anonymous functions.
 
 **Kind**: global namespace  
 
 * * *
 
 ### Callbacks.JwtTokenGenerator :id=callbacksjwttokengenerator
-> <p>A function which returns a signed token.</p>
+> A function which returns a signed token.
 
 **Kind**: static typedef of [<code>Callbacks</code>](#Callbacks)  
 **Returns**: <code>String</code> \| <code>Promise.&lt;String&gt;</code>  

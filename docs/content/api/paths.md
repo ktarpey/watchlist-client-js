@@ -22,15 +22,15 @@
 
 **Content Type**: <code>application/json</code>
 
-**Response Type:** [<code>Array&lt;Watchlist&gt;</code>](/content/api/components?id=schemaswatchlist)
+**Response Type:** [<code>Array&lt;watchlist&gt;</code>](/content/api/components?id=schemaswatchlist)
 
 * * *
 
-**Status Code**: 401 - [Unauthorized](/content/api/components?id&#x3D;responsesunauthorized)
+**Status Code**: 401 - [Unauthorized](/content/api/components?id=responsesunauthorized)
 
 * * *
 
-**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
+**Status Code**: 500 - [ServerError](/content/api/components?id=responsesservererror)
 
 * * *
 
@@ -56,11 +56,11 @@
 
 | Name | Type | Required | Nullable | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| name | <code>String</code> | false | false |  |
-| context | <code>String</code> | false | false |  |
+| name | <code>String</code> | true | false |  |
+| context | <code>String</code> | true | false |  |
 | view | <code>String</code> | false | false |  |
-| entries | [<code>Entries</code>](/content/api/components?id=schemasentries) |  | false |  |
-| preferences | [<code>Preferences</code>](/content/api/components?id=schemaspreferences) |  | false |  |
+| entries | [<code>entries</code>](/content/api/components?id=schemasentries) | true | false |  |
+| preferences | [<code>preferences</code>](/content/api/components?id=schemaspreferences) |  | false |  |
 
 **Example**:
 
@@ -95,23 +95,23 @@
 
 **Content Type**: <code>application/json</code>
 
-**Response Type:** [<code>Array&lt;Watchlist&gt;</code>](/content/api/components?id=schemaswatchlist)
+**Response Type:** [<code>Array&lt;watchlist&gt;</code>](/content/api/components?id=schemaswatchlist)
 
 * * *
 
-**Status Code**: 400 - [BadRequest](/content/api/components?id&#x3D;responsesbadrequest)
+**Status Code**: 400 - [BadRequest](/content/api/components?id=responsesbadrequest)
 
 * * *
 
-**Status Code**: 401 - [Unauthorized](/content/api/components?id&#x3D;responsesunauthorized)
+**Status Code**: 401 - [Unauthorized](/content/api/components?id=responsesunauthorized)
 
 * * *
 
-**Status Code**: 403 - [Forbidden](/content/api/components?id&#x3D;responsesforbidden)
+**Status Code**: 403 - [Forbidden](/content/api/components?id=responsesforbidden)
 
 * * *
 
-**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
+**Status Code**: 500 - [ServerError](/content/api/components?id=responsesservererror)
 
 * * *
 
@@ -159,15 +159,15 @@
 
 * * *
 
-**Status Code**: 401 - [Unauthorized](/content/api/components?id&#x3D;responsesunauthorized)
+**Status Code**: 401 - [Unauthorized](/content/api/components?id=responsesunauthorized)
 
 * * *
 
-**Status Code**: 404 - [NotFound](/content/api/components?id&#x3D;responsesnotfound)
+**Status Code**: 404 - [NotFound](/content/api/components?id=responsesnotfound)
 
 * * *
 
-**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
+**Status Code**: 500 - [ServerError](/content/api/components?id=responsesservererror)
 
 * * *
 
@@ -199,10 +199,10 @@
 
 | Name | Type | Required | Nullable | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| name | <code>String</code> | false | false |  |
+| name | <code>String</code> | true | false |  |
 | view | <code>String</code> | false | false |  |
-| entries | [<code>Entries</code>](/content/api/components?id=schemasentries) |  | false |  |
-| preferences | [<code>Preferences</code>](/content/api/components?id=schemaspreferences) |  | false |  |
+| entries | [<code>entries</code>](/content/api/components?id=schemasentries) | true | false |  |
+| preferences | [<code>preferences</code>](/content/api/components?id=schemaspreferences) |  | false |  |
 
 **Example**:
 
@@ -236,23 +236,23 @@
 
 **Content Type**: <code>application/json</code>
 
-**Response Type:** [<code>Array&lt;Watchlist&gt;</code>](/content/api/components?id=schemaswatchlist)
+**Response Type:** [<code>Array&lt;watchlist&gt;</code>](/content/api/components?id=schemaswatchlist)
 
 * * *
 
-**Status Code**: 400 - [BadRequest](/content/api/components?id&#x3D;responsesbadrequest)
+**Status Code**: 400 - [BadRequest](/content/api/components?id=responsesbadrequest)
 
 * * *
 
-**Status Code**: 401 - [Unauthorized](/content/api/components?id&#x3D;responsesunauthorized)
+**Status Code**: 401 - [Unauthorized](/content/api/components?id=responsesunauthorized)
 
 * * *
 
-**Status Code**: 404 - [NotFound](/content/api/components?id&#x3D;responsesnotfound)
+**Status Code**: 404 - [NotFound](/content/api/components?id=responsesnotfound)
 
 * * *
 
-**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
+**Status Code**: 500 - [ServerError](/content/api/components?id=responsesservererror)
 
 * * *
 
@@ -274,7 +274,7 @@
     
 **Content Type**: application/json
 
-**Type**: [<code>Array&lt;Preferences&gt;</code>](/content/api/components?id=schemaspreferences)
+**Type**: [<code>Array&lt;preferences&gt;</code>](/content/api/components?id=schemaspreferences)
 
 **Example**:
 
@@ -295,19 +295,19 @@
 
 **Content Type**: <code>application/json</code>
 
-**Response Type:** [<code>Array&lt;Watchlist&gt;</code>](/content/api/components?id=schemaswatchlist)
+**Response Type:** [<code>Array&lt;watchlist&gt;</code>](/content/api/components?id=schemaswatchlist)
 
 * * *
 
-**Status Code**: 401 - [Unauthorized](/content/api/components?id&#x3D;responsesunauthorized)
+**Status Code**: 401 - [Unauthorized](/content/api/components?id=responsesunauthorized)
 
 * * *
 
-**Status Code**: 404 - [NotFound](/content/api/components?id&#x3D;responsesnotfound)
+**Status Code**: 404 - [NotFound](/content/api/components?id=responsesnotfound)
 
 * * *
 
-**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
+**Status Code**: 500 - [ServerError](/content/api/components?id=responsesservererror)
 
 * * *
 
@@ -333,7 +333,7 @@
 
 | Name | Type | Required | Nullable | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| entry | [<code>Entry</code>](/content/api/components?id=schemasentry) |  | false |  |
+| entry | [<code>entry</code>](/content/api/components?id=schemasentry) |  | false |  |
 | index | <code>Integer</code> | false | false | The index at which the symbol will be inserted |
 
 **Example**:
@@ -359,23 +359,23 @@
 
 **Content Type**: <code>application/json</code>
 
-**Response Type:** [<code>Array&lt;Watchlist&gt;</code>](/content/api/components?id=schemaswatchlist)
+**Response Type:** [<code>Array&lt;watchlist&gt;</code>](/content/api/components?id=schemaswatchlist)
 
 * * *
 
-**Status Code**: 400 - [BadRequest](/content/api/components?id&#x3D;responsesbadrequest)
+**Status Code**: 400 - [BadRequest](/content/api/components?id=responsesbadrequest)
 
 * * *
 
-**Status Code**: 401 - [Unauthorized](/content/api/components?id&#x3D;responsesunauthorized)
+**Status Code**: 401 - [Unauthorized](/content/api/components?id=responsesunauthorized)
 
 * * *
 
-**Status Code**: 404 - [NotFound](/content/api/components?id&#x3D;responsesnotfound)
+**Status Code**: 404 - [NotFound](/content/api/components?id=responsesnotfound)
 
 * * *
 
-**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
+**Status Code**: 500 - [ServerError](/content/api/components?id=responsesservererror)
 
 * * *
 
@@ -408,19 +408,19 @@
 
 **Content Type**: <code>application/json</code>
 
-**Response Type:** [<code>Array&lt;Watchlist&gt;</code>](/content/api/components?id=schemaswatchlist)
+**Response Type:** [<code>Array&lt;watchlist&gt;</code>](/content/api/components?id=schemaswatchlist)
 
 * * *
 
-**Status Code**: 401 - [Unauthorized](/content/api/components?id&#x3D;responsesunauthorized)
+**Status Code**: 401 - [Unauthorized](/content/api/components?id=responsesunauthorized)
 
 * * *
 
-**Status Code**: 404 - [NotFound](/content/api/components?id&#x3D;responsesnotfound)
+**Status Code**: 404 - [NotFound](/content/api/components?id=responsesnotfound)
 
 * * *
 
-**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
+**Status Code**: 500 - [ServerError](/content/api/components?id=responsesservererror)
 
 * * *
 
@@ -447,8 +447,8 @@
 
 | Name | Type | Required | Nullable | Description |
 | ---- | ---- | -------- | -------- | ----------- |
-| from | <code>Integer</code> | false | false | The old index. |
-| to | <code>Integer</code> | false | false | The new index. |
+| from | <code>Integer</code> | true | false | The old index. |
+| to | <code>Integer</code> | true | false | The new index. |
 
 **Example**:
 
@@ -467,23 +467,23 @@
 
 **Content Type**: <code>application/json</code>
 
-**Response Type:** [<code>Array&lt;Watchlist&gt;</code>](/content/api/components?id=schemaswatchlist)
+**Response Type:** [<code>Array&lt;watchlist&gt;</code>](/content/api/components?id=schemaswatchlist)
 
 * * *
 
-**Status Code**: 400 - [BadRequest](/content/api/components?id&#x3D;responsesbadrequest)
+**Status Code**: 400 - [BadRequest](/content/api/components?id=responsesbadrequest)
 
 * * *
 
-**Status Code**: 401 - [Unauthorized](/content/api/components?id&#x3D;responsesunauthorized)
+**Status Code**: 401 - [Unauthorized](/content/api/components?id=responsesunauthorized)
 
 * * *
 
-**Status Code**: 404 - [NotFound](/content/api/components?id&#x3D;responsesnotfound)
+**Status Code**: 404 - [NotFound](/content/api/components?id=responsesnotfound)
 
 * * *
 
-**Status Code**: 500 - [ServerError](/content/api/components?id&#x3D;responsesservererror)
+**Status Code**: 500 - [ServerError](/content/api/components?id=responsesservererror)
 
 * * *
 

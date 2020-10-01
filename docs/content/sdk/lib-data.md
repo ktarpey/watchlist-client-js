@@ -1,5 +1,5 @@
 ## Schema :id=schema
-> <p>A meta namespace containing structural contracts of anonymous objects.</p>
+> A meta namespace containing structural contracts of anonymous objects.
 
 **Kind**: global namespace  
 
@@ -15,7 +15,7 @@
 * * *
 
 ### Schema.Watchlist :id=schemawatchlist
-> <p>A watchlist.</p>
+> A watchlist.
 
 **Kind**: static typedef of [<code>Schema</code>](#Schema)  
 **Properties**
@@ -33,8 +33,8 @@
 * * *
 
 ### Schema.WatchlistEntry :id=schemawatchlistentry
-> <p>An item in the watchlist. A <code>symbol</code> property must exist. Additional ad hoc properties
-> can be added -- as long as they have <code>String</code>, <code>Boolean</code>, or <code>Number</code> values.</p>
+> An item in the watchlist. A <code>symbol</code> property must exist. Additional ad hoc properties
+> can be added -- as long as they have <code>String</code>, <code>Boolean</code>, or <code>Number</code> values.
 
 **Kind**: static typedef of [<code>Schema</code>](#Schema)  
 **Properties**
@@ -47,7 +47,7 @@
 * * *
 
 ### Schema.WatchlistPreferences :id=schemawatchlistpreferences
-> <p>An object which contains display preferences.</p>
+> An object which contains display preferences.
 
 **Kind**: static typedef of [<code>Schema</code>](#Schema)  
 **Properties**
@@ -61,7 +61,7 @@
 * * *
 
 ### Schema.WatchlistSymbolQueryResult :id=schemawatchlistsymbolqueryresult
-> <p>The result item for querying watchlists for a specific symbol.</p>
+> The result item for querying watchlists for a specific symbol.
 
 **Kind**: static typedef of [<code>Schema</code>](#Schema)  
 **Properties**
@@ -76,7 +76,7 @@
 * * *
 
 ### Schema.WatchlistServiceMetadata :id=schemawatchlistservicemetadata
-> <p>An object describing the connection to the remote service.</p>
+> An object describing the connection to the remote service.
 
 **Kind**: static typedef of [<code>Schema</code>](#Schema)  
 **Properties**

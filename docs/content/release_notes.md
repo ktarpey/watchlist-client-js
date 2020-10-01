@@ -1,5 +1,10 @@
 # Release Notes
 
+## 8.3.2
+**Other**
+
+* Update SDK documentation (adding `Import` and `File` attributes).
+
 ## 8.2.4
 **Other**
 

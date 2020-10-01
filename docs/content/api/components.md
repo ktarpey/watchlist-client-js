@@ -154,10 +154,10 @@
 | context | <code>String</code> | false | false |  |
 | name | <code>String</code> | false | false |  |
 | view | <code>String</code> | false | false |  |
-| entries | [<code>Entries</code>](#schemasentries) |  | false |  |
-| preferences | [<code>Preferences</code>](#schemaspreferences) |  | false |  |
+| entries | [<code>entries</code>](#schemasentries) |  | false |  |
+| preferences | [<code>preferences</code>](#schemaspreferences) |  | false |  |
 | user | <code>String</code> | false | false |  |
-| system | [<code>System</code>](#schemassystem) |  | false |  |
+| system | [<code>system</code>](#schemassystem) |  | false |  |
 
 **Example**:
 
@@ -234,7 +234,7 @@
 * * *
 
 ### entries :id=schemasentries
-**Type**: [<code>Array&lt;Entry&gt;</code>](#schemasentry)
+**Type**: [<code>Array&lt;entry&gt;</code>](#schemasentry)
 
 * * *
 
