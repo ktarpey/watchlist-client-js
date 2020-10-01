@@ -1,6 +1,6 @@
 # API Reference
 
-## Watchlist API 4.0.0 {docsify-ignore}
+## Watchlist API 5.1.0 {docsify-ignore}
     
 > Watchlist API
 

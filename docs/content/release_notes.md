@@ -1,7 +1,12 @@
 # Release Notes
 
+## 8.3.3
+**No Functional Changes**
+
+* Update OpenAPI definition to refer to latest version of the Watchlist API (5.1.0).
+
 ## 8.3.2
-**Other**
+**No Functional Changes**
 
 * Update SDK documentation (adding `Import` and `File` attributes).
 
