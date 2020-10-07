@@ -2,6 +2,7 @@
   "name": "@barchart/watchlist-client-js",
   "version": "8.3.3",
   "description": "JavaScript SDK for Barchart's Watchlist Service",
+  "homepage": "https://docs.barchart.com/watchlist/#/",
   "author": {
     "name": "Bryan Ingle",
     "email": "bryan.ingle@barchart.com",
@@ -16,11 +17,17 @@
     "type": "git",
     "url": "git+ssh://git@github.com/barchart/watchlist-client-js.git"
   },
+  "directories": {
+    "test": "test"
+  },
+  "bugs": {
+    "url": "https://github.com/barchart/watchlist-client-js/issues"
+  }
   "keywords": [
     "Barchart",
+    "Watchlist",
     "JavaScript",
-    "Client",
-    "API"
+    "SDK"
   ],
   "dependencies": {
     "@barchart/common-js": "^3.15.0",
@@ -65,12 +72,5 @@
       ]
     ]
   },
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/barchart/watchlist-client-js/issues"
-  },
-  "homepage": "https://github.com/barchart/watchlist-client-js#readme",
-  "directories": {
-    "test": "test"
-  }
+  "license": "MIT"
 }
