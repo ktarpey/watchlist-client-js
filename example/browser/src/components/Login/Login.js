@@ -35,6 +35,10 @@ export default {
 
 			WatchlistGateway.forTest(JwtProvider.forTest(this.userId, contextId))
 				.then((gateway) => {
+					gateway.registerAuthorizationObserver((request, response) => {
+						console.log('Authorization triggered', JSON.stringify({ request, response }, null, 2));
+					});
+
 					this.$store.mutate.setGateway(gateway);
 					this.$store.mutate.setAuthorized(true);
 				});
