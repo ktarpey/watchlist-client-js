@@ -3,7 +3,7 @@
 ## 8.4.0
 **New Features**
 
-* Add ```WatchlistGateway.registerAuthorizationObserver``` which provides notification of entitlement failures.
+* Added ```WatchlistGateway.registerAuthorizationObserver``` function which notifies callbacks if an operation fails due to an entitlement problem.
 
 ## 8.3.3
 **No Functional Changes**
