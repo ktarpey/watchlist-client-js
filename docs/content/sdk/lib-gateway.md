@@ -33,6 +33,7 @@
         * [.deleteSymbol(id, symbol)](#WatchlistGatewaydeleteSymbol) ⇒ [<code>Promise.&lt;Schema.Watchlist&gt;</code>](/content/sdk/lib-data?id=schemawatchlist)
         * [.querySymbol(symbol)](#WatchlistGatewayquerySymbol) ⇒ [<code>Promise.&lt;Array.&lt;Schema.WatchlistSymbolQueryResult&gt;&gt;</code>](/content/sdk/lib-data?id=schemawatchlistsymbolqueryresult)
         * [.readServiceMetadata()](#WatchlistGatewayreadServiceMetadata) ⇒ [<code>Promise.&lt;Schema.WatchlistServiceMetadata&gt;</code>](/content/sdk/lib-data?id=schemawatchlistservicemetadata)
+        * [.registerAuthorizationObserver(authorizationObserver)](#WatchlistGatewayregisterAuthorizationObserver) ⇒ <code>Disposable</code>
     * _static_
         * [.forTest(jwtProvider)](#WatchlistGatewayforTest) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
         * [.forDevelopment(jwtProvider)](#WatchlistGatewayforDevelopment) ⇒ [<code>Promise.&lt;WatchlistGateway&gt;</code>](#WatchlistGateway)
@@ -207,6 +208,20 @@
 **Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
 **Returns**: [<code>Promise.&lt;Schema.WatchlistServiceMetadata&gt;</code>](/content/sdk/lib-data?id=schemawatchlistservicemetadata)  
 **Access**: public  
+
+* * *
+
+### watchlistGateway.registerAuthorizationObserver(authorizationObserver) :id=watchlistgatewayregisterauthorizationobserver
+> Registers a callback which will be notified when an authorization event occurs.
+
+**Kind**: instance method of [<code>WatchlistGateway</code>](#WatchlistGateway)  
+**Returns**: <code>Disposable</code>  
+**Access**: public  
+
+| Param | Type |
+| --- | --- |
+| authorizationObserver | <code>function</code> | 
+
 
 * * *
 

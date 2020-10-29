@@ -45,8 +45,6 @@
 **Kind**: static method of [<code>JwtProvider</code>](#JwtProvider)  
 **Returns**: [<code>JwtProvider</code>](#JwtProvider)  
 **Access**: public  
-**Import**: @barchart/watchlist-client-js/lib/security/JwtProvider  
-**File**: /lib/security/JwtProvider.js  
 
 | Param | Type | Description |
 | --- | --- | --- |
