@@ -1,6 +1,7 @@
 # @barchart/watchlist-client-js
 
 [![AWS CodeBuild](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiUHlZU3ZxOHdDWHprRzNEMXhoUGhTUHlOc1hGM3pEMnFhVG1UekdCWEN1K1hvWEFnTTcxWnhGYjZuUFpuUnl4QVhvVWFVMUQ4Rkx3TGFpaFhFQzBLUm1JPSIsIml2UGFyYW1ldGVyU3BlYyI6ImN3Y1RhZnV1ais3VXZ2WlgiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)](https://github.com/barchart/watchlist-client-js)
+[![NPM](https://img.shields.io/npm/v/@barchart/watchlist-client-js)](https://www.npmjs.com/package/@barchart/watchlist-client-js)
 
 ### Overview
 

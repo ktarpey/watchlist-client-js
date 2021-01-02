@@ -1,5 +1,15 @@
 # Release Notes
 
+## 8.4.2
+**Technical Enhancements**
+
+* Add `.npmignore` file to reduce size of NPM package. The `docs`, `test`, and `example` folders are no longer included in the published package.
+
+## 8.4.1
+**Bug Fixes**
+
+* Authorization observers are now notified of authorization successes (in addition to authorization failures).
+
 ## 8.4.0
 **New Features**
 
