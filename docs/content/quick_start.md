@@ -1,9 +1,9 @@
 ## Setup
 
-As a consumer of the Barchart Watchlist Service, you have two options:
+As a consumer of the Barchart Watchlist Service, you have two options for backend connection and communication:
 
-1. Connect and communicate with the backend _by embedding this SDK in your software_, or
-2. Connect and communicate with the backend _by direct interaction with the REST API_.
+1. _by embedding this SDK in your software_, or
+2. _by direct interaction with the REST API_.
 
 **If you choose to use the SDK**, you can install it from NPM (Node Package Manager), as follows:
 
@@ -11,7 +11,7 @@ As a consumer of the Barchart Watchlist Service, you have two options:
 npm install @barchart/watchlists-client-js -S
 ```
 
-**Otherwise, if you choose not to use the SDK**, please finish reviewing this page, then refer to the [API Reference](/content/api_reference) section.
+**If you choose not to use the SDK**, please finish reviewing this page, then refer to the [API Reference](/content/api_reference) section.
 
 ## Environments
 
@@ -67,11 +67,11 @@ WatchlistGateway.forTest(JwtProvider.forTest(myUserId, myContextId))
 
 #### Using the API
 
-If you choose to work directly with the REST interface, you won't need to perform an explicit "connect" action. Each HTTP request is independently authorized by the backend. You simply need to include a JWT token in the _Authorization_ header of each request.
+If you choose to work directly with the REST interface, you won't need to perform an explicit "connect" action. Each HTTP request is independently authorized by the backend. A JWT token is required in the _Authorization_ header of each request.
 
 ## Constructing a Watchlist
 
-First, we must construct an object which conforms to the [```Watchlist```](content/sdk/lib-data?id=schemawatchlist) schema. Here is a simple example:
+First, construct an object which conforms to the [```Watchlist```](content/sdk/lib-data?id=schemawatchlist) schema. Here is a simple example:
 
 ```json
 {
@@ -121,7 +121,7 @@ curl 'https://watchlist-test.aws.barchart.com/v1/watchlists' \
 
 #### Example Output
 
-The result will be a complete ```Watchlist``` object, similar to the example below. Obviously, the ```id``` value will differ for each watchlist created. We'll use this ```id``` value in subsequent examples.
+The result will be a complete ```Watchlist``` object, similar to the example below. The ```id``` value will differ for each watchlist created. This ```id``` value will be used in subsequent examples.
 
 ```json
 {
@@ -146,7 +146,7 @@ The result will be a complete ```Watchlist``` object, similar to the example bel
 
 ## Retrieving Your Watchlists
 
-You can retrieve all watchlists (for the current user), as follows:
+Retrieve all watchlists (for the current user), as follows:
 
 #### Using the SDK
 
@@ -176,7 +176,7 @@ After a ```Watchlist``` has been saved, additional symbols can be added. Each sy
 }
 ```
 
-You can add additional, ad hoc properties to any ```WatchlistEntry``` object. However, only ```String```, ```Number```, or ```Boolean``` values are permitted.
+You can add additional properties to any ```WatchlistEntry``` object as necessary. However, only ```String```, ```Number```, or ```Boolean``` values are permitted.
 
 #### Using the SDK
 
@@ -251,13 +251,13 @@ curl 'https://watchlist-test.aws.barchart.com/v1/watchlists/425803d2-a98a-4ee3-9
 
 ## Sample Applications
 
-Two sample applications were built with the SDK. Reviewing them may provide some insight into SDK features and usage.
+Two sample applications were built with the SDK to provide insight into features and usage.  
 
 ### Web Application
 
 A single-page HTML application connects to the _test_ environment. It allows you to invoke watchlist operations (e.g. create a watchlist, add a symbol, etc).
 
-Run the application by opening ```example/browser/index.html``` in a modern web browser.
+Run the application by opening ```example/browser/index.html``` in any modern web browser.
 
 ### Node.js
 
